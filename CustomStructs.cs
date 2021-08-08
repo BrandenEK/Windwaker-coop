@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 using Newtonsoft.Json;
 
-namespace WW_Coop
+namespace Windwaker_Rammer
 {
     struct MemoryLocation
     {
@@ -45,6 +47,14 @@ namespace WW_Coop
             this.text = text;
             this.bitfield = bitfield;
         }
+    }
+
+    struct TimeFlag
+    {
+        public IntPtr address;
+        public byte bit;
+        public float newTime;
+        //If newtime == -1, then this will actually endTimeZone
     }
 
     [Serializable]

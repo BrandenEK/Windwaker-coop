@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Diagnostics;
 
-namespace WW_Coop
+namespace Windwaker_Rammer
 {
     static class ReadWrite
     {
@@ -37,6 +37,11 @@ namespace WW_Coop
             int bytesWritten = 0;
 
             WriteProcessMemory(dolphinProcess, address, bytes, bytes.Length, out bytesWritten);
+
+            //string debugOutput = "Writing these bytes to memory: ";
+            //foreach (byte b in bytes)
+                //debugOutput += "0x" + b.ToString("X") + "  ";
+            //Program.displayDebug(debugOutput, 4);
         }
 
         public static byte[] Read(int playerNumber, IntPtr address, int size)
@@ -47,7 +52,18 @@ namespace WW_Coop
             byte[] result = new byte[size];
 
             ReadProcessMemory(dolphinProcess, address, result, size, out bytesWritten);
+
+            //string debugOutput = "Reading these bytes from memory: ";
+            //foreach (byte b in result)
+                //debugOutput += "0x" + b.ToString("X") + "  ";
+            //Program.displayDebug(debugOutput, 4);
+
             return result;
+        }
+
+        public static bool bitSet(uint number, uint bit)
+        {
+            return (number & (1 << (int)bit)) != 0;
         }
     }
 }

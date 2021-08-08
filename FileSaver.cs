@@ -4,7 +4,7 @@ using System.Text;
 using System.IO;
 using Newtonsoft.Json;
 
-namespace WW_Coop
+namespace Windwaker_Rammer
 {
     class FileSaver
     {
@@ -80,10 +80,31 @@ namespace WW_Coop
                 memoryLocations.Add(new MemoryLocation(0x803B4C57, 1, "Hookshot*0", "item", 1, 47, 255, 255, 0, empty));
                 memoryLocations.Add(new MemoryLocation(0x803B4C58, 1, "Skull Hammer*0", "item", 1, 51, 255, 255, 0, empty));
 
-                memoryLocations.Add(new MemoryLocation(0x803B4C61, 1, "", "flag", 9, 0, 3, 0, 0, empty)); //pictobox bitfield
-                memoryLocations.Add(new MemoryLocation(0x803B4C65, 1, "", "flag", 9, 0, 7, 0, 0, empty)); //arrows bitfield
-                memoryLocations.Add(new MemoryLocation(0x803B4C66, 1, "", "flag", 9, 0, 1, 0, 0, empty)); //bombs bitfield
-                memoryLocations.Add(new MemoryLocation(0x803B4C6B, 1, "", "flag", 9, 0, 1, 0, 0, empty)); //delivery bag bitfield
+                uint baseItem = 0x803B4C59; //item ownership bitfields
+                for (uint i = 0; i < 21; i++)
+                {
+                    if (i == 0)
+                    {
+                        memoryLocations.Add(new MemoryLocation(baseItem + i, 1, "done something with the weird telescope value*9", "flag", 9, 0, 255, 0, 0, empty)); //telescope is weird
+                    }
+                    else if (i == 8)
+                    {
+                        memoryLocations.Add(new MemoryLocation(baseItem + i, 1, "", "flag", 9, 0, 3, 0, 0, empty)); //pictobox is special
+                    }
+                    else if (i == 12)
+                    {
+                        memoryLocations.Add(new MemoryLocation(baseItem + i, 1, "", "flag", 9, 0, 7, 0, 0, empty)); //arrows are special
+                    }
+                    else
+                    {
+                        memoryLocations.Add(new MemoryLocation(baseItem + i, 1, "", "flag", 0, 0, 1, 0, 0, empty));
+                    }
+                }
+                //memoryLocations.Add(new MemoryLocation(0x803B4C5A, 1, "", "flag", 9, 0, 1, 0, 0, empty)); //sail bitfield
+                //memoryLocations.Add(new MemoryLocation(0x803B4C61, 1, "", "flag", 9, 0, 3, 0, 0, empty)); //pictobox bitfield
+                //memoryLocations.Add(new MemoryLocation(0x803B4C65, 1, "", "flag", 9, 0, 7, 0, 0, empty)); //arrows bitfield
+                //memoryLocations.Add(new MemoryLocation(0x803B4C66, 1, "", "flag", 9, 0, 1, 0, 0, empty)); //bombs bitfield
+                //memoryLocations.Add(new MemoryLocation(0x803B4C6B, 1, "", "flag", 9, 0, 1, 0, 0, empty)); //delivery bag bitfield
             }
 
             //Equipment items
@@ -148,8 +169,12 @@ namespace WW_Coop
             {
                 for (uint i = 0; i < 49; i++)
                 {
-                    memoryLocations.Add(new MemoryLocation(0x803B4D0C + i, 1, "new sector*9", "sector", 9, 0, 3, 0, 0,
-                        new ComparisonData(new uint[] { 0, 1 }, new string[] { "mapped out a new sector*9", "visited a new sector*9" }, true)));
+                    byte def = 0;
+                    if (i == 0 || i == 10 || i == 43) def = 3;
+                    string sectorName = "ABCDEFG".Substring((int)i / 7, 1) + (i % 7 + 1).ToString();
+
+                    memoryLocations.Add(new MemoryLocation(0x803B4D0C + i, 1, "new sector*9", "sector", 9, 0, 3, def, 0,
+                        new ComparisonData(new uint[] { 1, 0 }, new string[] { "visited sector " + sectorName + " for the first time*9", "mapped out sector " + sectorName + "*9" }, true)));
                 }
             }
 
@@ -189,26 +214,27 @@ namespace WW_Coop
             //Event bitfields
             if (settings.events)
             {
-                memoryLocations.Add(new MemoryLocation(0x803B522C, 4, "", "event", 9, 0, uint.MaxValue, 0, 0,
+                memoryLocations.Add(new MemoryLocation(0x803B522C, 4, "", "event", 9, 0, uint.MaxValue, 0, 0, 
                     new ComparisonData(new uint[] { 24, 16 }, new string[] { "saw Tetra fall into the Forest of Fairies*9", "rescued Tetra from the Forest of Fairies*9" }, true))); //event field 20
                 memoryLocations.Add(new MemoryLocation(0x803B5230, 4, "", "event", 9, 0, uint.MaxValue, 0, 0, empty)); //event field 30
-                memoryLocations.Add(new MemoryLocation(0x803B5234, 4, "", "eventtime", 9, 0, uint.MaxValue, 0, 0, new ComparisonData(new uint[] { 24, 25, 27, 7 },
-                    new string[] { "activated a spawn in the Forsaken Fortress (Do not leave through the door on the Pirate Ship)*9", "finished speaking to Tetra after rescuing her on Ouset*9",
+                memoryLocations.Add(new MemoryLocation(0x803B5234, 4, "", "eventtime", 9, 0, uint.MaxValue, 0, 0, new ComparisonData(new uint[] { 24, 25, 27, 7 }, 
+                    new string[] { "activated a spawn in the Forsaken Fortress (Do not leave through the door on the Pirate Ship)*9", "finished speaking to Tetra after rescuing her on Ouset*9", 
                     "activated a spawn on the Pirate Ship (Docked) and set the time to 20:00*9", "freed Tingle from his cell*9" }, true)));
                 memoryLocations.Add(new MemoryLocation(0x803B5238, 4, "", "eventtime", 9, 0, uint.MaxValue, 0, 0,
                     new ComparisonData(new uint[] { 9, 7, 2 }, new string[] { "retreived the Father's Letter from Medli*9", "activated a new spawn on Windfall Island and set the time to 15:00*9", "calmed down Prince Komali*9" }, true)));
-                memoryLocations.Add(new MemoryLocation(0x803B523C, 4, "", "event", 9, 0, uint.MaxValue, 0, 0,
+                memoryLocations.Add(new MemoryLocation(0x803B523C, 4, "", "event", 9, 0, uint.MaxValue, 0, 0, 
                     new ComparisonData(new uint[] { 17, 6 }, new string[] { "thrown Medli onto the Dragon Roost Cavern ledge*9", "caught all of the Killer Bees*9" }, true)));
-                memoryLocations.Add(new MemoryLocation(0x803B5240, 4, "", "event", 9, 0, uint.MaxValue, 0, 0,
-                    new ComparisonData(new uint[] { 31, 30, 28, 4, 2 }, new string[] { "Din's Pearl*5", "Farore's Pearl*5", "Nayru's Pearl*5",
+                memoryLocations.Add(new MemoryLocation(0x803B5240, 4, "", "event", 9, 0, uint.MaxValue, 0, 0, 
+                    new ComparisonData(new uint[] { 31, 30, 28, 4, 2 }, new string[] { "Din's Pearl*5", "Farore's Pearl*5", "Nayru's Pearl*5", 
                     "the first companion statue in the Tower of the Gods*5", "the second companion statue in the Tower of the Gods*5" }, true))); //event field 40
-                memoryLocations.Add(new MemoryLocation(0x803B5244, 4, "", "event", 9, 0, uint.MaxValue, 0, 0,
+                memoryLocations.Add(new MemoryLocation(0x803B5244, 4, "", "event", 9, 0, uint.MaxValue, 0, 0, 
                     new ComparisonData(new uint[] { 24, 0 }, new string[] { "slain all chu-chus on the Great Deku Tree*9", "the third companion statue in the Tower of the Gods*5" }, true)));
-                memoryLocations.Add(new MemoryLocation(0x803B5248, 4, "", "event", 9, 0, uint.MaxValue, 0, 0, empty));
+                memoryLocations.Add(new MemoryLocation(0x803B5248, 4, "", "event", 9, 0, uint.MaxValue, 0, 0,
+                    new ComparisonData(new uint[] { 15 }, new string[] { "spoken to Quill on Greatfish Isle and set the time to 00:00*9" }, true)));
                 memoryLocations.Add(new MemoryLocation(0x803B524C, 4, "", "event", 9, 0, uint.MaxValue, 0, 0, empty));
                 memoryLocations.Add(new MemoryLocation(0x803B5250, 4, "", "event", 9, 0, uint.MaxValue, 0, 0,
                     new ComparisonData(new uint[] { 24 }, new string[] { "activated a spawn on the Pirate Ship (Sailing)*9" }, true))); //event field 50
-                memoryLocations.Add(new MemoryLocation(0x803B5254, 4, "", "event", 9, 0, uint.MaxValue, 0, 0,
+                memoryLocations.Add(new MemoryLocation(0x803B5254, 4, "", "event", 9, 0, uint.MaxValue, 0, 0, 
                     new ComparisonData(new uint[] { 15, 13 }, new string[] { "Hero's Clothes*0", "healed grandma with a fairy*9" }, true)));
                 memoryLocations.Add(new MemoryLocation(0x803B5258, 4, "", "event", 9, 0, uint.MaxValue, 0, 0, empty));
                 memoryLocations.Add(new MemoryLocation(0x803B525C, 4, "", "event", 9, 0, uint.MaxValue, 0, 0, empty));
@@ -244,7 +270,7 @@ namespace WW_Coop
             IntPtr sequenceStart = memoryLocations[0].startAddress;
             int sequenceLength = 0;
 
-            for (int i = 0; i < memoryLocations.Count; i++)
+            for(int i = 0; i < memoryLocations.Count; i++)
             {
                 MemoryLocation loc = memoryLocations[i];
                 sequenceLength += loc.size;
@@ -293,11 +319,7 @@ namespace WW_Coop
                 MemoryLocation loc = memoryLocations[i];
                 byteListIndex += loc.size;
 
-                if (i < memoryLocations.Count - 1 && memoryLocations[i + 1].startAddress == loc.startAddress + loc.size)
-                {
-                    //Do nothing
-                }
-                else
+                if (!(i < memoryLocations.Count - 1 && memoryLocations[i + 1].startAddress == loc.startAddress + loc.size))
                 {
                     ReadWrite.Write(player.playerNumber, sequenceStart, saveData.GetRange(sequenceStartIndex, byteListIndex - sequenceStartIndex).ToArray());
                     if (i < memoryLocations.Count - 1)

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace WW_Coop
+namespace Windwaker_Rammer
 {
     class NotificationManager
     {
@@ -28,7 +28,7 @@ namespace WW_Coop
             if (allLines != null && allLines.Length >= lastReadLine)
             {
                 Program.setConsoleColor(3);
-                while (lastReadLine < allLines.Length)
+                while(lastReadLine < allLines.Length)
                 {
                     Console.WriteLine(allLines[lastReadLine]);
                     lastReadLine++;
