@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace Windwaker_Rammer
+namespace Windwaker_coop
 {
     class Player
     {
@@ -82,7 +80,6 @@ namespace Windwaker_Rammer
                             }
                             else
                                 Program.displayDebug("Skipping sync because this player has no differences from last time", 1);
-                            //overrideIndividualItems();
                         }
                         else
                         {
@@ -224,8 +221,7 @@ namespace Windwaker_Rammer
             {
                 for (int i = 0; i < memLoc.cd.values.Length; i++) //checks each bit and only sends notification if the player just set it
                 {
-                    if (ReadWrite.bitSet(playerNum, memLoc.cd.values[i]) && !ReadWrite.bitSet(hostNum, memLoc.cd.values[i]))  
-                    //(playerNum & (1 << (int)memLoc.cd.values[i])) != 0 && (hostNum & (1 << (int)memLoc.cd.values[i])) == 0)
+                    if (ReadWrite.bitSet(playerNum, memLoc.cd.values[i]) && !ReadWrite.bitSet(hostNum, memLoc.cd.values[i]))
                     {
                         notificationString += nm.getNotificationText(playerName, memLoc.cd.text[i]);
                         notificationAmount++;
@@ -261,7 +257,7 @@ namespace Windwaker_Rammer
                     bit = 15; newTime = 0; break;
                 default:
                     return;
-                //arrive hyrule field (180), FF2
+                    //arrive hyrule field (180), FF2
             }
             if (bit != -1 && (host & (1 << bit)) != 0 && (player & (1 << bit)) == 0)
             {
@@ -272,21 +268,10 @@ namespace Windwaker_Rammer
             }
         }
 
-        //For every individual item that has been changed so far, overwrite it to the player's current item
-        private void overrideIndividualItems()
-        {
-            Program.displayDebug("Overwiting " + individualOverwrites.Count + " items", 2);
-            for(int i = 0; i < individualOverwrites.Count; i++) // for each memoryLocation that you are overriding
-            {
-                List<byte> oldValue = new List<byte>(getByteArrayFromNumber(overwriteValues[i], individualOverwrites[i].size));
-                fs.saveToMemory(this, oldValue, (uint)individualOverwrites[i].startAddress.ToInt64(), oldValue.Count);
-            }
-        }
-
         private static uint getNumberFromByteList(List<byte> list, int startIndex, int length)
         {
             byte[] bytes = new byte[4];
-            string debugOuput = "Converting byte[] { "; 
+            string debugOuput = "Converting byte[] { ";
             for (int i = 0; i < length; i++)
             {
                 bytes[length - 1 - i] = list[startIndex + i];
@@ -313,23 +298,10 @@ namespace Windwaker_Rammer
         {
             if (one.Count != two.Count)
                 return false;
-            for(int i = 0; i < one.Count; i++)
+            for (int i = 0; i < one.Count; i++)
                 if (one[i] != two[i])
                     return false;
             return true;
         }
     }
 }
-
-/*else if (playerNum != 255 && playerNum != hostNum) //Has different bottle contents than the host
-{
-    //Updates the overwrite list to contain player's current contents
-    if (!individualOverwrites.Contains(memLoc))
-    {
-        Program.displayDebug("Adding new individual overwrite: " + memLoc.name, 2);
-        individualOverwrites.Add(memLoc);
-        overwriteValues.Add(playerNum);
-    }
-    else
-        overwriteValues[individualOverwrites.IndexOf(memLoc)] = playerNum;
-}*/
