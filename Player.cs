@@ -18,9 +18,6 @@ namespace Windwaker_coop
         private int notificationAmount = 0;
         private List<byte> lastSavedData;
 
-        private List<MemoryLocation> individualOverwrites;
-        private List<uint> overwriteValues;
-
         public Player(string p, int n, string s, string directory)
         {
             playerName = p;
@@ -30,8 +27,6 @@ namespace Windwaker_coop
             fs = new FileSaver(directory);
             nm = new NotificationManager(directory, p);
             lastSavedData = new List<byte>();
-            individualOverwrites = new List<MemoryLocation>();
-            overwriteValues = new List<uint>();
         }
 
         public void beginSyncing()
