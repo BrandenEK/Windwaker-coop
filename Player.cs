@@ -221,7 +221,7 @@ namespace Windwaker_coop
             {
                 for (int i = 0; i < memLoc.cd.values.Length; i++) //checks each bit and only sends notification if the player just set it
                 {
-                    if ((playerNum & (1 << (int)memLoc.cd.values[i])) != 0 && (hostNum & (1 << (int)memLoc.cd.values[i])) == 0)
+                    if (ReadWrite.bitSet(playerNum, memLoc.cd.values[i]) && !ReadWrite.bitSet(hostNum, memLoc.cd.values[i]))
                     {
                         notificationString += nm.getNotificationText(playerName, memLoc.cd.text[i]);
                         notificationAmount++;
@@ -246,18 +246,20 @@ namespace Windwaker_coop
         //Checks if a timechanging event bit has been set and writes to that spot in memory
         private void checkAndUpdateNewTime(uint host, uint player, uint memAddress)
         {
-            int bit = -1; float newTime = 0;
+            uint bit = 32; float newTime = 0;
             switch (memAddress)
             {
                 case 0x803B5234: //Open spoils bag chest
                     bit = 27; newTime = 300; break;
                 case 0x803B5238: //windfall wake up
                     bit = 7; newTime = 225; break;
+                case 0x803B5248: //talked to quill on greatfish
+                    bit = 15; newTime = 0; break;
                 default:
                     return;
-                    //greatfish arrive, arrive hyrule field (180), FF2
+                    //arrive hyrule field (180), FF2
             }
-            if (bit != -1 && (host & (1 << bit)) != 0 && (player & (1 << bit)) == 0)
+            if (bit != 32 && ReadWrite.bitSet(host, bit) && !ReadWrite.bitSet(player, bit))
             {
                 Program.displayDebug("Setting new time to " + (newTime / 15) + ":00", 1);
                 byte[] timeBytes = BitConverter.GetBytes(newTime);

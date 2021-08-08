@@ -80,10 +80,18 @@ namespace Windwaker_coop
                 memoryLocations.Add(new MemoryLocation(0x803B4C57, 1, "Hookshot*0", "item", 1, 47, 255, 255, 0, empty));
                 memoryLocations.Add(new MemoryLocation(0x803B4C58, 1, "Skull Hammer*0", "item", 1, 51, 255, 255, 0, empty));
 
-                memoryLocations.Add(new MemoryLocation(0x803B4C61, 1, "", "flag", 9, 0, 3, 0, 0, empty)); //pictobox bitfield
-                memoryLocations.Add(new MemoryLocation(0x803B4C65, 1, "", "flag", 9, 0, 7, 0, 0, empty)); //arrows bitfield
-                memoryLocations.Add(new MemoryLocation(0x803B4C66, 1, "", "flag", 9, 0, 1, 0, 0, empty)); //bombs bitfield
-                memoryLocations.Add(new MemoryLocation(0x803B4C6B, 1, "", "flag", 9, 0, 1, 0, 0, empty)); //delivery bag bitfield
+                uint baseItem = 0x803B4C59; //item ownership bitfields
+                for (uint i = 0; i < 21; i++)
+                {
+                    if (i == 0)
+                        memoryLocations.Add(new MemoryLocation(baseItem + i, 1, "done something with the weird telescope value*9", "flag", 9, 0, 255, 0, 0, empty)); //telescope is weird
+                    else if (i == 8)
+                        memoryLocations.Add(new MemoryLocation(baseItem + i, 1, "", "flag", 9, 0, 3, 0, 0, empty)); //pictobox is special
+                    else if (i == 12)
+                        memoryLocations.Add(new MemoryLocation(baseItem + i, 1, "", "flag", 9, 0, 7, 0, 0, empty)); //arrows are special
+                    else
+                        memoryLocations.Add(new MemoryLocation(baseItem + i, 1, "", "flag", 0, 0, 1, 0, 0, empty));
+                }
             }
 
             //Equipment items
@@ -148,8 +156,12 @@ namespace Windwaker_coop
             {
                 for (uint i = 0; i < 49; i++)
                 {
-                    memoryLocations.Add(new MemoryLocation(0x803B4D0C + i, 1, "new sector*9", "sector", 9, 0, 3, 0, 0,
-                        new ComparisonData(new uint[] { 0, 1 }, new string[] { "mapped out a new sector*9", "visited a new sector*9" }, true)));
+                    byte def = 0;
+                    if (i == 0 || i == 10 || i == 43) def = 3;
+                    string sectorName = "ABCDEFG".Substring((int)i / 7, 1) + (i % 7 + 1).ToString();
+
+                    memoryLocations.Add(new MemoryLocation(0x803B4D0C + i, 1, "new sector*9", "sector", 9, 0, 3, def, 0,
+                        new ComparisonData(new uint[] { 1, 0 }, new string[] { "visited sector " + sectorName + " for the first time*9", "mapped out sector " + sectorName + "*9" }, true)));
                 }
             }
 
@@ -204,7 +216,8 @@ namespace Windwaker_coop
                     "the first companion statue in the Tower of the Gods*5", "the second companion statue in the Tower of the Gods*5" }, true))); //event field 40
                 memoryLocations.Add(new MemoryLocation(0x803B5244, 4, "", "event", 9, 0, uint.MaxValue, 0, 0,
                     new ComparisonData(new uint[] { 24, 0 }, new string[] { "slain all chu-chus on the Great Deku Tree*9", "the third companion statue in the Tower of the Gods*5" }, true)));
-                memoryLocations.Add(new MemoryLocation(0x803B5248, 4, "", "event", 9, 0, uint.MaxValue, 0, 0, empty));
+                memoryLocations.Add(new MemoryLocation(0x803B5248, 4, "", "event", 9, 0, uint.MaxValue, 0, 0,
+                    new ComparisonData(new uint[] { 15 }, new string[] { "spoken to Quill on Greatfish Isle and set the time to 00:00*9" }, true)));
                 memoryLocations.Add(new MemoryLocation(0x803B524C, 4, "", "event", 9, 0, uint.MaxValue, 0, 0, empty));
                 memoryLocations.Add(new MemoryLocation(0x803B5250, 4, "", "event", 9, 0, uint.MaxValue, 0, 0,
                     new ComparisonData(new uint[] { 24 }, new string[] { "activated a spawn on the Pirate Ship (Sailing)*9" }, true))); //event field 50
@@ -293,11 +306,7 @@ namespace Windwaker_coop
                 MemoryLocation loc = memoryLocations[i];
                 byteListIndex += loc.size;
 
-                if (i < memoryLocations.Count - 1 && memoryLocations[i + 1].startAddress == loc.startAddress + loc.size)
-                {
-                    //Do nothing
-                }
-                else
+                if (!(i < memoryLocations.Count - 1 && memoryLocations[i + 1].startAddress == loc.startAddress + loc.size))
                 {
                     ReadWrite.Write(player.playerNumber, sequenceStart, saveData.GetRange(sequenceStartIndex, byteListIndex - sequenceStartIndex).ToArray());
                     if (i < memoryLocations.Count - 1)

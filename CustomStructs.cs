@@ -47,6 +47,14 @@ namespace Windwaker_coop
         }
     }
 
+    struct TimeFlag
+    {
+        public IntPtr address;
+        public byte bit;
+        public float newTime;
+        //If newtime == -1, then this will actually endTimeZone
+    }
+
     [Serializable]
     struct SyncSettings
     {

@@ -49,5 +49,10 @@ namespace Windwaker_coop
             ReadProcessMemory(dolphinProcess, address, result, size, out bytesWritten);
             return result;
         }
+
+        public static bool bitSet(uint number, uint bit)
+        {
+            return (number & (1 << (int)bit)) != 0;
+        }
     }
 }
