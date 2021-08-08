@@ -246,7 +246,7 @@ namespace Windwaker_coop
         //Checks if a timechanging event bit has been set and writes to that spot in memory
         private void checkAndUpdateNewTime(uint host, uint player, uint memAddress)
         {
-            int bit = -1; float newTime = 0;
+            uint bit = 32; float newTime = 0;
             switch (memAddress)
             {
                 case 0x803B5234: //Open spoils bag chest
@@ -259,7 +259,7 @@ namespace Windwaker_coop
                     return;
                     //arrive hyrule field (180), FF2
             }
-            if (bit != -1 && (host & (1 << bit)) != 0 && (player & (1 << bit)) == 0)
+            if (bit != 32 && ReadWrite.bitSet(host, bit) && !ReadWrite.bitSet(player, bit))
             {
                 Program.displayDebug("Setting new time to " + (newTime / 15) + ":00", 1);
                 byte[] timeBytes = BitConverter.GetBytes(newTime);
