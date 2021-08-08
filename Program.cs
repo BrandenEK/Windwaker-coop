@@ -2,7 +2,7 @@
 using System.IO;
 using System.Configuration;
 
-namespace WW_Coop
+namespace Windwaker_coop
 {
     class Program
     {
@@ -208,3 +208,4 @@ namespace WW_Coop
         }
     }
 }
+

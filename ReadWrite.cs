@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Diagnostics;
 
-namespace WW_Coop
+namespace Windwaker_coop
 {
     static class ReadWrite
     {

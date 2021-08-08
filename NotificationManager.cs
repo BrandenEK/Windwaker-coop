@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace WW_Coop
+namespace Windwaker_coop
 {
     class NotificationManager
     {

@@ -4,7 +4,7 @@ using System.Text;
 using System.IO;
 using Newtonsoft.Json;
 
-namespace WW_Coop
+namespace Windwaker_coop
 {
     class FileSaver
     {

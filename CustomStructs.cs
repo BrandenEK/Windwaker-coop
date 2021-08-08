@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace WW_Coop
+namespace Windwaker_coop
 {
     struct MemoryLocation
     {
