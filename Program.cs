@@ -1,9 +1,8 @@
 ﻿using System;
 using System.IO;
-using System.Collections.Generic;
 using System.Configuration;
 
-namespace Windwaker_Rammer
+namespace Windwaker_coop
 {
     class Program
     {
@@ -206,7 +205,6 @@ namespace Windwaker_Rammer
         {
             setConsoleColor(2);
             Console.WriteLine("Error: {0}\n", message);
-            //Console.Beep();
         }
     }
 }
