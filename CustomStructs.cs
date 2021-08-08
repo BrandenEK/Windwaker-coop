@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Newtonsoft.Json;
 
-namespace Windwaker_Rammer
+namespace Windwaker_coop
 {
     struct MemoryLocation
     {
