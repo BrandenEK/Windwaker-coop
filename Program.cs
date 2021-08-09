@@ -21,14 +21,6 @@ namespace Windwaker_coop
             string invalidCharacters = "<>:\"/\\|?*";
             readConfigFile();
 
-            /*testing start
-            Cheater c = new Cheater(null);
-
-            Console.WriteLine(c.processCommand("give sword 4"));
-
-            Console.ReadKey();
-            testing end*/
-
             //Ask for the server name & check for invalid characters
             string serverName = askQuestion("Enter server name: ");
             for (int i = 0; i < serverName.Length; i++)
