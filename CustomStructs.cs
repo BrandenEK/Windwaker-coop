@@ -55,6 +55,28 @@ namespace Windwaker_coop
         //If newtime == -1, then this will actually endTimeZone
     }
 
+    struct Cheat
+    {
+        public string itemName;
+        public uint address;
+        public byte noNumberByte;
+
+        public bool requiresNumber;
+        public int maxValue;
+        public byte[] valuesToWrite;
+        //If this cheat requires no number, then the maxValue & valuesToWrite are null
+
+        public Cheat(string itemName, uint address, byte noNumberByte, bool requiresNumber, int maxValue = -1, byte[] valuesToWrite = null)
+        {
+            this.itemName = itemName;
+            this.address = address;
+            this.noNumberByte = noNumberByte;
+            this.requiresNumber = requiresNumber;
+            this.maxValue = maxValue;
+            this.valuesToWrite = valuesToWrite;
+        }
+    }
+
     [Serializable]
     struct SyncSettings
     {
