@@ -4,8 +4,6 @@ A coop program for The Legend of Zelda: The Wind Waker that syncs player progres
 Progress board:
 https://trello.com/b/eBKLJlX5/windwaker-coop
 
-First release coming soon!
-
 
 ### Things that do sync:
 - Player stats (Max health, magic meter)
