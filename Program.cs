@@ -9,8 +9,10 @@ namespace Windwaker_coop
         public static bool programStopped = false;
         private static int debugLevel = 0;
         public static int syncDelay = 5000;
+        public static bool enableCheats = true;
 
         private static Player currPlayer;
+        private static Cheater currCheater;
 
         static void Main(string[] args)
         {
@@ -64,6 +66,7 @@ namespace Windwaker_coop
             int playerNumber = int.Parse(num);
 
             currPlayer = new Player(playerName, playerNumber, serverName, serverDirectory);
+            currCheater = new Cheater(currPlayer);
 
             //Begin looping and saving to a file
             setConsoleColor(3);
@@ -87,7 +90,7 @@ namespace Windwaker_coop
             while (lastCommand != "stop")
             {
                 setConsoleColor(5);
-                lastCommand = Console.ReadLine().ToLower();
+                lastCommand = Console.ReadLine().ToLower().Trim();
                 setConsoleColor(4);
 
                 if (lastCommand == "pause")
@@ -125,8 +128,17 @@ namespace Windwaker_coop
                 else if (lastCommand == "help")
                 {
                     Console.WriteLine("Available commands:\npause - temporarily disables syncing to and from the host\nunpause - resumes syncing to and from the host\n" +
-                        "reset - resets the host to default values\nstop - ends syncing and closes the application\nhelp - lists available commands\n");
+                        "reset - resets the host to default values\nstop - ends syncing and closes the application\ngive [item] [number] - gives player the specified item (If cheats are enabled)\nhelp - lists available commands\n");
 
+                }
+                else if (lastCommand.Length >= 4 && lastCommand.Substring(0, 4) == "give")
+                {
+                    //send this data to the cheats object & lets it process the command
+                    setConsoleColor(4);
+                    if (enableCheats)
+                        Console.WriteLine(currCheater.processCommand(lastCommand));
+                    else
+                        Console.WriteLine("Cheats are disabled!");
                 }
                 else if (lastCommand != "stop")
                 {
@@ -158,9 +170,11 @@ namespace Windwaker_coop
 
         private static void readConfigFile() //change to for loop once I add a new setting
         {
-            string debug = ConfigurationManager.AppSettings[0];
-            string syncTime = ConfigurationManager.AppSettings[1];
-            if (!int.TryParse(debug, out debugLevel) || !int.TryParse(syncTime, out syncDelay))
+            string debug = ConfigurationManager.AppSettings["debugLevel"];
+            string syncTime = ConfigurationManager.AppSettings["syncDelay"];
+            string cheats = ConfigurationManager.AppSettings["enableCheats"];
+
+            if (!int.TryParse(debug, out debugLevel) || !int.TryParse(syncTime, out syncDelay) || !bool.TryParse(cheats, out enableCheats))
             {
                 displayError("Configuration file unable to be parsed");
                 EndProgram();

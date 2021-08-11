@@ -31,20 +31,7 @@ namespace Windwaker_coop
 
             if (settings.stats)
             {
-                memoryLocations.Add(new MemoryLocation(0x803B4DA8, 1, "began the Hero's Quest*9", "stat", 0, 0, 255, 0, 0, empty));
-            }
-
-            //Capacity upgrades
-            if (settings.capacities)
-            {
-                memoryLocations.Add(new MemoryLocation(0x803B4C1A, 1, "wallet*1", "capacity", 0, 0, 2, 0, 0,
-                    new ComparisonData(new uint[] { 1, 2 }, new string[] { "1000 rupee wallet*0", "5000 rupee wallet*0" }, false)));
-                memoryLocations.Add(new MemoryLocation(0x803B4C1B, 1, "magic meter*1", "stat", 0, 0, 32, 0, 0,
-                    new ComparisonData(new uint[] { 16, 32 }, new string[] { "magic meter*1", "an enhanced magic meter*2" }, false)));
-                memoryLocations.Add(new MemoryLocation(0x803B4C77, 1, "quiver*1", "capacity", 0, 0, 99, 0, 0,
-                    new ComparisonData(new uint[] { 30, 60, 99 }, new string[] { "small quiver*1", "medium quiver*1", "large quiver*1" }, false)));
-                memoryLocations.Add(new MemoryLocation(0x803B4C78, 1, "bomb bag*1", "capacity", 0, 0, 99, 0, 0,
-                    new ComparisonData(new uint[] { 30, 60, 99 }, new string[] { "small bomb bag*1", "medium bomb bag*1", "large bomb bag*1" }, false)));
+                //memoryLocations.Add(new MemoryLocation(0x803B4DA8, 1, "began the Hero's Quest*9", "stat", 0, 0, 255, 0, 0, empty));
             }
 
             //Inventory items
@@ -102,7 +89,25 @@ namespace Windwaker_coop
                 memoryLocations.Add(new MemoryLocation(0x803B4C17, 1, "shield*1", "item", 2, 59, 255, 255, 0,
                     new ComparisonData(new uint[] { 59, 60 }, new string[] { "Hero's Shield*0", "Mirror Shield*0" }, false))); //shield level
                 memoryLocations.Add(new MemoryLocation(0x803B4C18, 1, "Power Bracelets*0", "item", 1, 40, 255, 255, 0, empty)); //power bracelets
+                memoryLocations.Add(new MemoryLocation(0x803B4C19, 1, "Mystery item - I have no idea what this is for (4C19)*0", "item", 0, 0, 255, 0, 0, empty));
+            }
 
+            //Capacity upgrades
+            if (settings.capacities)
+            {
+                memoryLocations.Add(new MemoryLocation(0x803B4C1A, 1, "wallet*1", "capacity", 0, 0, 2, 0, 0,
+                    new ComparisonData(new uint[] { 1, 2 }, new string[] { "1000 rupee wallet*0", "5000 rupee wallet*0" }, false)));
+                memoryLocations.Add(new MemoryLocation(0x803B4C1B, 1, "magic meter*1", "stat", 0, 0, 32, 0, 0,
+                    new ComparisonData(new uint[] { 16, 32 }, new string[] { "magic meter*1", "an enhanced magic meter*2" }, false)));
+                memoryLocations.Add(new MemoryLocation(0x803B4C77, 1, "quiver*1", "capacity", 0, 0, 99, 0, 0,
+                    new ComparisonData(new uint[] { 30, 60, 99 }, new string[] { "small quiver*1", "medium quiver*1", "large quiver*1" }, false)));
+                memoryLocations.Add(new MemoryLocation(0x803B4C78, 1, "bomb bag*1", "capacity", 0, 0, 99, 0, 0,
+                    new ComparisonData(new uint[] { 30, 60, 99 }, new string[] { "small bomb bag*1", "medium bomb bag*1", "large bomb bag*1" }, false)));
+            }
+
+            //More equipment items
+            if (settings.equipmentItems)
+            { 
                 memoryLocations.Add(new MemoryLocation(0x803B4CBC, 1, "", "flag", 9, 0, 15, 0, 0, empty)); //sword bitfield
                 memoryLocations.Add(new MemoryLocation(0x803B4CBD, 1, "", "flag", 9, 0, 3, 0, 0, empty)); //shield bitfield
                 memoryLocations.Add(new MemoryLocation(0x803B4CBE, 1, "", "flag", 9, 0, 1, 0, 0, empty)); //bracelets bitfield
@@ -143,12 +148,13 @@ namespace Windwaker_coop
                     new ComparisonData(fourByteValues, chartsOne, true))); //owned charts bitfield
                 memoryLocations.Add(new MemoryLocation(0x803B4CE0, 4, "treasure/triforce chart*1", "chart", 9, 0, uint.MaxValue, 0, 0,
                     new ComparisonData(fourByteValues, chartsTwo, true)));
-                memoryLocations.Add(new MemoryLocation(0x803B4CEC, 4, "", "chart", 9, 0, uint.MaxValue, 0, 0, empty)); //opened charts bitfield
-                memoryLocations.Add(new MemoryLocation(0x803B4CF0, 4, "", "chart", 9, 0, uint.MaxValue, 0, 0, empty));
-                memoryLocations.Add(new MemoryLocation(0x803B4CFC, 4, "", "location", 9, 0, uint.MaxValue, 0, 0, empty)); //obtained sunked treasure bitfield
-                memoryLocations.Add(new MemoryLocation(0x803B4D00, 4, "", "location", 9, 0, uint.MaxValue, 0, 0, empty));
-                memoryLocations.Add(new MemoryLocation(0x803B4D4D, 1, "deciphered a new triforce chart*9", "chart", 9, 0, 255, 0, 0, new ComparisonData(new uint[] { 0, 1, 2, 3, 4, 5, 6, 7 },
-                    new string[] { "Triforce Chart 1*4", "Triforce Chart 2*4", "Triforce Chart 3*4", "Triforce Chart 4*4", "Triforce Chart 5*4", "Triforce Chart 6*4", "Triforce Chart 7*4", "Triforce Chart 8*4" }, true))); //deciphered charts bitfield
+                memoryLocations.Add(new MemoryLocation(0x803B4CE4, 4, "extra chart bitfield*9", "chart", 9, 0, uint.MaxValue, 0, 0, empty));
+                memoryLocations.Add(new MemoryLocation(0x803B4CE8, 4, "extra chart bitfield*9", "chart", 9, 0, uint.MaxValue, 0, 0, empty));
+
+                for(int i = 0; i < 4; i++)
+                    memoryLocations.Add(new MemoryLocation(0x803B4CEC + 4 * (uint)i, 4, "", "chart", 9, 0, uint.MaxValue, 0, 0, empty)); //opened charts bitfield
+                for(int i = 0; i < 4; i++)
+                    memoryLocations.Add(new MemoryLocation(0x803B4CFC + 4 * (uint)i, 4, "", "location", 9, 0, uint.MaxValue, 0, 0, empty)); //obtained sunked treasure bitfield
             }
 
             //Sectors
@@ -164,6 +170,9 @@ namespace Windwaker_coop
                         new ComparisonData(new uint[] { 1, 0 }, new string[] { "visited sector " + sectorName + " for the first time*9", "mapped out sector " + sectorName + "*9" }, true)));
                 }
             }
+            if (settings.charts)
+                memoryLocations.Add(new MemoryLocation(0x803B4D4D, 1, "deciphered a new triforce chart*9", "chart", 9, 0, 255, 0, 0, new ComparisonData(new uint[] { 0, 1, 2, 3, 4, 5, 6, 7 },
+                    new string[] { "Triforce Chart 1*4", "Triforce Chart 2*4", "Triforce Chart 3*4", "Triforce Chart 4*4", "Triforce Chart 5*4", "Triforce Chart 6*4", "Triforce Chart 7*4", "Triforce Chart 8*4" }, true))); //deciphered charts bitfield
 
             //Stage infos
             if (settings.stageInfos)
@@ -187,6 +196,7 @@ namespace Windwaker_coop
                     memoryLocations.Add(new MemoryLocation(stageOffset + 33, 1, "important*9", "dungeon", 9, 0, 255, 0, 0,
                         new ComparisonData(new uint[] { 0, 1, 2, 3, 4 }, new string[] { "map to " + stageNames[i] + "*0", "compass to " + stageNames[i] + "*0", "big key to " + stageNames[i] + "*0",
                         "defeated the boss of " + stageNames[i] + "*9", "heart container in " + stageNames[i] + "*0" }, true))); //important dungeon flags bitfield
+                    memoryLocations.Add(new MemoryLocation(stageOffset + 34, 2, "changed a stageInfoBuffer - you should not see this!*9", "buffer", 0, 0, ushort.MaxValue, 0, 0, empty));
                 }
 
                 //Warp pots
@@ -265,6 +275,7 @@ namespace Windwaker_coop
                 if (!(i < memoryLocations.Count - 1 && memoryLocations[i + 1].startAddress == loc.startAddress + loc.size))
                 {
                     //reads the entire sequence then resets the sequence
+                    Program.displayDebug("Reading contiguous region of " + sequenceLength + " bytes", 3);
                     byte[] value = ReadWrite.Read(player.playerNumber, sequenceStart, sequenceLength);
                     if (value == null)
                     {
@@ -308,6 +319,7 @@ namespace Windwaker_coop
 
                 if (!(i < memoryLocations.Count - 1 && memoryLocations[i + 1].startAddress == loc.startAddress + loc.size))
                 {
+                    Program.displayDebug("Writing contiguous region of " + (byteListIndex - sequenceStartIndex) + " bytes", 3);
                     ReadWrite.Write(player.playerNumber, sequenceStart, saveData.GetRange(sequenceStartIndex, byteListIndex - sequenceStartIndex).ToArray());
                     if (i < memoryLocations.Count - 1)
                     {
@@ -321,6 +333,8 @@ namespace Windwaker_coop
         public void saveToMemory(Player player, List<byte> saveData, uint customStartAddress = 0, int customSize = 0)
         {
             //Writes each value in saveData to the player's game's memory
+            if (!checkMemoryInitialized(player.playerNumber))
+                return;
             ReadWrite.Write(player.playerNumber, (IntPtr)customStartAddress, saveData.ToArray());
         }
 
