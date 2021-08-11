@@ -134,6 +134,7 @@ namespace Windwaker_coop
                 else if (lastCommand.Length >= 4 && lastCommand.Substring(0, 4) == "give")
                 {
                     //send this data to the cheats object & lets it process the command
+                    setConsoleColor(4);
                     if (enableCheats)
                         Console.WriteLine(currCheater.processCommand(lastCommand));
                     else
