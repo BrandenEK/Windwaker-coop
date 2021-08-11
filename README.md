@@ -14,7 +14,9 @@ https://trello.com/b/eBKLJlX5/windwaker-coop
 - You must be using Dolphin 5.0 (Other versions may possibly work, but they changed how memory is initialized after 5.0 and I haven't tested them).
 - For now everybody must play locally on the same computer (This is going to change very soon).
 - Most events in the game such as cutscenes being triggered/watched or chests being opened require a room transition to take effect.  For example, in Dragon Roost Cavern, once somebody unlocks the first locked door, other players must enter this room after the event has synced in order for the change to take place.
+- At this time, you can not see other players in your game, but their progress will still sync
 - It also takes a small amount of time to read/write to the game's memory and to the host file, so try not to have multiple players start their client at the exact same time.
+- You can change some of the settings by editing the "Windwaker-coop.dll.config" file
 
 ## Sync details:
 ### Things that do sync:
