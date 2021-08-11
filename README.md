@@ -29,7 +29,7 @@ https://trello.com/b/eBKLJlX5/windwaker-coop
 - Dungeon progress (Unlocked doors, events, chests, etc)
 - Story progression
 
-###Things that sync but are not perfect:
+### Things that sync but are not perfect:
 - Heart containers/pieces
 - Small keys
 - Bottles
