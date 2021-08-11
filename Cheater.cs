@@ -81,10 +81,15 @@ namespace Windwaker_coop
             int number = -1;
             bool foundItem = false;
 
+            string debugOuput = "Processing command:";
+            foreach (string word in words)
+                debugOuput += " \"" + word + "\"";
+            Program.displayDebug(debugOuput, 2);
+
             //Takes in the command and makes sure it is valid
             if (words.Length > 3 || words.Length < 2 || words[0] != "give" || words[1] == "" || (words.Length == 3 && !int.TryParse(words[2], out number)))
                 return "Syntax error with the 'give' command!";
-            
+
             //searchs for the specified item
             foreach (Cheat cheat in cheats)
             {
