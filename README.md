@@ -18,7 +18,7 @@ https://trello.com/b/eBKLJlX5/windwaker-coop
 
 ## Sync details:
 ### Things that do sync:
-- Player stats (Max health, magic meter)
+- Capacity upgrades (Magic meter, quiver, etc)
 - All inventory items
 - All equipment items (Power bracelets, hero's charm, etc)
 - Sword & shield levels
@@ -26,8 +26,13 @@ https://trello.com/b/eBKLJlX5/windwaker-coop
 - Pearls & Triforce shards
 - Treasure & Triforce charts
 - Sea map
-- Dungeon progress (Unlocked doors, events, etc)
+- Dungeon progress (Unlocked doors, events, chests, etc)
 - Story progression
+
+###Things that sync but are not perfect:
+- Heart containers/pieces
+- Small keys
+- Bottles
 
 ### Things that don't sync
 - Rupees
@@ -36,6 +41,5 @@ https://trello.com/b/eBKLJlX5/windwaker-coop
 
 ### Things that will sync soon
 - Figurines
-- Small keys
 - Delivery bag letters
 - Mail?
