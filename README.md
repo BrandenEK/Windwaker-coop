@@ -16,6 +16,7 @@ https://trello.com/b/eBKLJlX5/windwaker-coop
 - Most events in the game such as cutscenes being triggered/watched or chests being opened require a room transition to take effect.  For example, in Dragon Roost Cavern, once somebody unlocks the first locked door, other players must enter this room after the event has synced in order for the change to take place.
 - It also takes a small amount of time to read/write to the game's memory and to the host file, so try not to have multiple players start their client at the exact same time.
 
+## Sync details:
 ### Things that do sync:
 - Player stats (Max health, magic meter)
 - All inventory items
