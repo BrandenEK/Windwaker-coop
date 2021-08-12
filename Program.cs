@@ -16,10 +16,45 @@ namespace Windwaker_coop
 
         static void Main(string[] args)
         {
+            Console.Title = "Windwaker Coop Server/Client";
             setConsoleColor(3);
             Console.WriteLine("-WindWaker Coop-\n");
             string invalidCharacters = "<>:\"/\\|?*";
             readConfigFile();
+
+            setConsoleColor(1);
+            string playerName = askQuestion("Enter player name: ");
+            if (playerName == "host")
+            {
+                Console.Title = "Windwaker Coop Server";
+                Server server = new Server("192.168.0.148", 25565);
+                server.Start();
+
+                while (true)
+                {
+                    string message = Console.ReadLine();
+                    server.Send(message);
+                }
+            }
+            else if (playerName != "")
+            {
+                Console.Title = "Windwaker Coop Client";
+                Client client = new Client("192.168.0.148", 25565, playerName);
+                client.Connect();
+                client.beginSyncing(syncDelay);
+
+                while (true)
+                {
+                    string message = Console.ReadLine();
+                    client.Send(message);
+                }
+            }
+
+
+
+
+
+            /*
 
             //Ask for the server name & check for invalid characters
             string serverName = askQuestion("Enter server name: ");
@@ -81,6 +116,11 @@ namespace Windwaker_coop
             commandLoop();
             currPlayer.nm.SendNotifications(playerName + " has left the game!", 1);
 
+            EndProgram();
+
+            */
+
+            Console.ReadKey();
             EndProgram();
         }
 

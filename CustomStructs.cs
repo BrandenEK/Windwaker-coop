@@ -97,7 +97,7 @@ namespace Windwaker_coop
         public bool bottles;
         public bool smallKeys;
 
-        public static string getDefaultSettings()
+        /*public static string getDefaultSettings()
         {
             SyncSettings ss = new SyncSettings();
             ss.inventoryItems = true;
@@ -114,6 +114,25 @@ namespace Windwaker_coop
             ss.bottles = true;
             ss.smallKeys = true;
             return JsonConvert.SerializeObject(ss);
+        }*/
+
+        public static SyncSettings getDefaultSettings()
+        {
+            SyncSettings ss = new SyncSettings();
+            ss.inventoryItems = true;
+            ss.equipmentItems = true;
+            ss.storyItems = true;
+            ss.stats = true;
+            ss.capacities = true;
+            ss.charts = true;
+            ss.seaMap = true;
+            ss.stageInfos = true;
+            ss.events = true;
+
+            ss.maxHealth = true;
+            ss.bottles = true;
+            ss.smallKeys = true;
+            return ss;
         }
     }
 }
