@@ -11,8 +11,12 @@ namespace Windwaker_coop
         public static int syncDelay = 5000;
         public static bool enableCheats = true;
 
-        private static Player currPlayer;
+        private static Client currClient;
+        private static Server currServer;
         private static Cheater currCheater;
+
+        public static string tempIp = "172.16.16.60";
+
 
         static void Main(string[] args)
         {
@@ -22,75 +26,59 @@ namespace Windwaker_coop
             string invalidCharacters = "<>:\"/\\|?*";
             readConfigFile();
 
-            setConsoleColor(1);
-            string playerName = askQuestion("Enter player name: ");
-            if (playerName == "host")
-            {
-                Console.Title = "Windwaker Coop Server";
-                Server server = new Server("192.168.0.148", 25565);
-                server.Start();
+            string ip = askQuestion("Enter server ip address: ");
+            if (ip == "x")
+                ip = tempIp;
 
-                while (true)
-                {
-                    string message = Console.ReadLine();
-                    server.Send(message);
-                }
-            }
-            else if (playerName != "")
-            {
-                Console.Title = "Windwaker Coop Client";
-                Client client = new Client("192.168.0.148", 25565, playerName);
-                client.Connect();
-                client.beginSyncing(syncDelay);
-
-                while (true)
-                {
-                    string message = Console.ReadLine();
-                    client.Send(message);
-                }
-            }
-
-
-
-
-
-            /*
-
-            //Ask for the server name & check for invalid characters
-            string serverName = askQuestion("Enter server name: ");
-            for (int i = 0; i < serverName.Length; i++)
-            {
-                if (invalidCharacters.Contains(serverName.Substring(i, 1)))
-                {
-                    displayError("These characters can not be used in the server name: " + invalidCharacters);
-                    EndProgram();
-                }
-            }
-            string serverDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\WW-coop\\servers\\" + serverName;
-
-            //Create the server directory if it doesn't already exist
-            setConsoleColor(4);
-            if (File.Exists(serverDirectory + "\\host.txt") && File.Exists(serverDirectory + "\\messageLog.txt") && File.Exists(serverDirectory + "\\syncSettings.json"))
-                Console.WriteLine("Joining a pre-existing server...");
-            else
-            {
-                Console.WriteLine("Creating a brand new server...");
-                Directory.CreateDirectory(serverDirectory);
-
-                File.WriteAllText(serverDirectory + "\\messageLog.txt", "");
-                File.WriteAllText(serverDirectory + "\\syncSettings.json", SyncSettings.getDefaultSettings());
-                FileSaver fs = new FileSaver(serverDirectory);
-                fs.SaveToFile(serverDirectory + "\\host.txt", fs.getDefaultValues());
-            }
-
-            //Ask for the player name & make sure it is valid
             string playerName = askQuestion("Enter player name: ").Trim();
-            if (playerName.Length < 1)
+            if (playerName.Length < 1 || playerName.Contains('~'))
             {
                 displayError("That player name is invalid");
                 EndProgram();
             }
 
+            string startText = "";
+            if (playerName == "host")
+            {
+                Console.Title = "Windwaker Coop Server";
+                currServer = new Server(ip, 25565);
+                startText = "Wait until everybody is ready, then press any key to start the server...";
+            }
+            else
+            {
+                Console.Title = "Windwaker Coop Client";
+                currClient = new Client(ip, 25565, playerName);
+                currCheater = new Cheater(null); //set to client once cheater is set up
+                startText = "Wait until your game is started, then press any key to connect to the server...";
+            }
+
+            //Begin host/client and start command loop
+            setConsoleColor(3);
+            Console.WriteLine(startText);
+            Console.ReadKey();
+            Console.Clear();
+            setConsoleColor(3);
+            Console.WriteLine("-WindWaker Coop-\n");
+
+            if (currClient != null)
+            {
+                currClient.Connect();
+                currClient.beginSyncing(syncDelay);
+                commandLoop(1);
+            }
+            else if (currServer != null)
+            {
+                currServer.Start();
+                commandLoop(0);
+            }
+            else
+            {
+                displayError("Something has gone terribly wrong");
+            }
+
+            EndProgram();
+
+            /*
             //Ask for the player number & make sure it is valid
             string num = askQuestion("Enter player number (Which instance of dolphin is this?): ");
             if (!(num.Length == 1 && "1234".Contains(num)))  //Change for max number of players
@@ -99,33 +87,14 @@ namespace Windwaker_coop
                 EndProgram();
             }
             int playerNumber = int.Parse(num);
-
-            currPlayer = new Player(playerName, playerNumber, serverName, serverDirectory);
-            currCheater = new Cheater(currPlayer);
-
-            //Begin looping and saving to a file
-            setConsoleColor(3);
-            Console.WriteLine("Wait until your game is started, then press any key to start syncing...");
-            Console.ReadKey();
-            Console.Clear();
-            setConsoleColor(3);
-            Console.WriteLine("-WindWaker Coop-\n");
-
-            currPlayer.nm.SendNotifications(playerName + " has joined the game!", 1);
-            currPlayer.beginSyncing();
-            commandLoop();
-            currPlayer.nm.SendNotifications(playerName + " has left the game!", 1);
-
-            EndProgram();
-
             */
-
-            Console.ReadKey();
-            EndProgram();
         }
 
-        static void commandLoop()
+        static void commandLoop(int user)
         {
+            while (true)
+                Console.ReadKey();
+            /*
             string lastCommand = "";
             while (lastCommand != "stop")
             {
@@ -186,11 +155,12 @@ namespace Windwaker_coop
                 }
             }
             Console.WriteLine();
+            */
         }
 
+        //Ends the program
         public static void EndProgram()
         {
-            //End program
             setConsoleColor(0);
             Console.WriteLine("Applcation terminated.  Press any key to exit...");
             programStopped = true;

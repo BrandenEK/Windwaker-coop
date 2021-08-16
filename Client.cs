@@ -6,14 +6,10 @@ using System.Threading.Tasks;
 
 namespace Windwaker_coop
 {
-    class Client
+    class Client : User
     {
-        public string IpAddress;
-        public int port;
         public string playerName;
-
         private SimpleTcpClient client;
-        private MemoryReader mr;
 
         public Client(string ip, int port, string playerName)
         {
@@ -27,36 +23,9 @@ namespace Windwaker_coop
             mr = new MemoryReader();
         }
 
-        private void Events_DataReceived(object sender, DataReceivedEventArgs e)
-        {
-            Console.WriteLine("Server: " + Encoding.UTF8.GetString(e.Data));
-            //write the notification or write the new data to memory
-        }
-
-        public void Connect()
-        {
-            //add exception handling
-            client.Connect();
-        }
-
-        public void Send(byte[] data)
-        {
-            if (client.IsConnected && data != null && data.Length > 0)
-            {
-                client.Send(data);
-            }
-        }
-        public void Send(string message)
-        {
-            if (client.IsConnected && message != null && message != "")
-            {
-                client.Send(playerName + "~" + message);
-            }
-        }
-
+        //Once the player is ready, starts the syncLoop
         public void beginSyncing(int syncDelay)
         {
-            //Start every x seconds reading from memory and sending this to the server
             syncLoop(syncDelay);
         }
 
@@ -74,8 +43,7 @@ namespace Windwaker_coop
                 List<byte> memory = mr.readFromMemory();
                 if (memory != null)
                 {
-                    Send(memory.ToArray());
-                    Console.WriteLine("Sending " + memory.Count + " bytes");
+                    sendMemoryList(memory);
                 }
 
                 Program.displayDebug("Time taken to complete entire sync loop: " + (Environment.TickCount - timeStart) + " milliseconds", 1);
@@ -85,14 +53,75 @@ namespace Windwaker_coop
             }
         }
 
+        //Connects to the server
+        public void Connect()
+        {
+            //add exception handling
+            client.Connect();
+        }
+
+        #region Send functions
+        public void Send(byte[] data)
+        {
+            if (client.IsConnected && data != null && data.Length > 0)
+            {
+                client.Send(data);
+                Program.displayDebug("Sending " + data.Length + " bytes", 2);
+            }
+        }
+
+        protected override void sendMemoryList(List<byte> data)
+        {
+            List<byte> toSend = new List<byte>();
+            toSend.AddRange(Encoding.UTF8.GetBytes(playerName + "~"));
+            toSend.AddRange(data);
+            toSend.Add(109);
+
+            Send(toSend.ToArray());
+        }
+
+        protected override void sendTextMessage(string message)
+        {
+            Send(Encoding.UTF8.GetBytes(playerName + '~' + message + 't'));
+        }
+        #endregion
+
+        #region Receive functions
+        //type 'v' - locates the updated memoryLocation and writes the newValue to memory
+        protected override void receiveNewMemoryLocation(List<byte> data)
+        {
+            if (data.Count != 8)
+            {
+                Program.displayError("New memoryLocation received from server is invalid");
+                return;
+            }
+
+            foreach (byte b in data)
+                Console.Write(b + " ");
+            
+
+            uint memLocIdx = BitConverter.ToUInt32(data.GetRange(0, 4).ToArray());
+            mr.saveToMemory(data.GetRange(4, 4), (uint)mr.memoryLocations[(int)memLocIdx].startAddress);
+        }
+
+        //type 'n' - displays the notification in the console
+        protected override void receiveNotification(List<byte> data)
+        {
+            Program.setConsoleColor(3);
+            Console.WriteLine(Encoding.UTF8.GetString(data.ToArray()));
+        }
+        #endregion
+
         private void Events_Disconnected(object sender, ClientDisconnectedEventArgs e)
         {
-            Console.WriteLine("Disconnected from the server");
+            Program.setConsoleColor(1);
+            Console.WriteLine("Disconnected from the server at " + e.IpPort);
         }
 
         private void Events_Connected(object sender, ClientConnectedEventArgs e)
         {
-            Console.WriteLine("Successfully connected to the server");
+            Program.setConsoleColor(1);
+            Console.WriteLine("Successfully connected to the server at " + e.IpPort);
         }
     }
 }

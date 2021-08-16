@@ -86,7 +86,7 @@ namespace Windwaker_coop
                 if (!(i < memoryLocations.Count - 1 && memoryLocations[i + 1].startAddress == loc.startAddress + loc.size))
                 {
                     Program.displayDebug("Writing contiguous region of " + (byteListIndex - sequenceStartIndex) + " bytes", 3);
-                    ReadWrite.Write(0, sequenceStart, saveData.GetRange(sequenceStartIndex, byteListIndex - sequenceStartIndex).ToArray());
+                    ReadWrite.Write(1, sequenceStart, saveData.GetRange(sequenceStartIndex, byteListIndex - sequenceStartIndex).ToArray());
                     if (i < memoryLocations.Count - 1)
                     {
                         sequenceStartIndex = byteListIndex;
@@ -96,12 +96,12 @@ namespace Windwaker_coop
             }
         }
 
-        public void saveToMemory(List<byte> saveData, uint customStartAddress = 0, int customSize = 0)
+        public void saveToMemory(List<byte> saveData, uint customStartAddress)
         {
             //Writes each value in saveData to the player's game's memory
-            if (!checkMemoryInitialized(0))
+            if (!checkMemoryInitialized(1))
                 return;
-            ReadWrite.Write(0, (IntPtr)customStartAddress, saveData.ToArray());
+            ReadWrite.Write(1, (IntPtr)customStartAddress, saveData.ToArray());
         }
 
         private bool checkMemoryInitialized(int playerNumber)
