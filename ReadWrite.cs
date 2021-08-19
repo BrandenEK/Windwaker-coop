@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace Windwaker_coop
@@ -48,6 +49,17 @@ namespace Windwaker_coop
 
             ReadProcessMemory(dolphinProcess, address, result, size, out bytesWritten);
             return result;
+        }
+
+        //Assumes neither are null
+        public static bool checkIfSame(List<byte> one, List<byte> two)
+        {
+            if (one.Count != two.Count)
+                return false;
+            for (int i = 0; i < one.Count; i++)
+                if (one[i] != two[i])
+                    return false;
+            return true;
         }
 
         public static bool bitSet(uint number, uint bit)

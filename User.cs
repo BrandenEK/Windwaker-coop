@@ -10,22 +10,40 @@ namespace Windwaker_coop
         public string IpAddress;
         public int port;
         protected MemoryReader mr;
+        protected string currIp = "";
 
         protected virtual void Events_DataReceived(object sender, DataReceivedEventArgs e)
         {
             Program.displayDebug("Bytes received: " + e.Data.Length, 2);
-            byte type = e.Data[e.Data.Length - 1];
-            List<byte> newData = new List<byte>(e.Data);
-            newData.RemoveAt(newData.Count - 1);
+            currIp = e.IpPort;
 
+            List<byte> newData = new List<byte>(e.Data);
+            for (int i = 0; i < newData.Count; i++)
+            {
+                if (i < newData.Count - 2 && newData[i] == 126 && newData[i + 1] == 126)
+                {
+                    //If index is the start of a ~~x section
+                    byte type = newData[i + 2];
+                    List<byte> singleData = newData.GetRange(0, i);
+                    newData.RemoveRange(0, i + 3);
+                    processDataReceived(type, singleData);
+                    i = -1;
+                }
+            }
+            if (newData.Count > 0)
+                Program.displayError("Received data was formatted incorrectly");
+        }
+
+        private void processDataReceived(byte type, List<byte> data)
+        {
             if (type == 109) //m
-                receiveMemoryList(newData);
+                receiveMemoryList(data);
             else if (type == 110) //n
-                receiveNotification(newData);
+                receiveNotification(data);
             else if (type == 116) //t
-                receiveTextMessage(newData);
+                receiveTextMessage(data);
             else if (type == 118) //v
-                receiveNewMemoryLocation(newData);
+                receiveNewMemoryLocation(data);
             else
                 Program.displayError("Unrecognized data type (m, n, t, v)");
         }
@@ -35,15 +53,15 @@ namespace Windwaker_coop
         {
             Program.displayError("sendMemoryList() not implemented here");
         }
-        protected virtual void sendNewMemoryLocation(uint memLocIndex, uint newValue)
+        protected virtual void sendNewMemoryLocation(short memLocIndex, uint newValue, bool sendToAllButThis)
         {
             Program.displayError("sendNewMemoryLocation() not implemented here");
         }
-        protected virtual void sendTextMessage(string message)
+        protected virtual void sendTextMessage(string message, bool sendToAllButThis)
         {
             Program.displayError("sendTextMessage() not implemented here");
         }
-        protected virtual void sendNotification(string notification)
+        protected virtual void sendNotification(string notification, bool sendToAllButThis)
         {
             Program.displayError("sendNotification() not implemented here");
         }
