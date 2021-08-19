@@ -57,12 +57,12 @@ namespace Windwaker_coop
             return memoryList;
         }
 
-        public List<byte> readFromMemory(uint customStartAddress, int customSize)
+        public List<byte> readFromMemory(IntPtr customStartAddress, int customSize)
         {
             if (!checkMemoryInitialized(1))
                 return null;
 
-            byte[] value = ReadWrite.Read(1, (IntPtr)customStartAddress, customSize);
+            byte[] value = ReadWrite.Read(1, customStartAddress, customSize);
             if (value == null)
             {
                 Program.displayError("Aborting \"ReadFromMemory\" due to null byte[]");
@@ -96,12 +96,12 @@ namespace Windwaker_coop
             }
         }
 
-        public void saveToMemory(List<byte> saveData, uint customStartAddress)
+        public void saveToMemory(List<byte> saveData, IntPtr customStartAddress)
         {
             //Writes each value in saveData to the player's game's memory
             if (!checkMemoryInitialized(1))
                 return;
-            ReadWrite.Write(1, (IntPtr)customStartAddress, saveData.ToArray());
+            ReadWrite.Write(1, customStartAddress, saveData.ToArray());
         }
 
         private bool checkMemoryInitialized(int playerNumber)

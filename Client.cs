@@ -75,14 +75,14 @@ namespace Windwaker_coop
             List<byte> toSend = new List<byte>();
             toSend.AddRange(Encoding.UTF8.GetBytes(playerName + "~"));
             toSend.AddRange(data);
-            toSend.Add(109);
+            toSend.AddRange(new byte[] { 126, 126, 109 });
 
             Send(toSend.ToArray());
         }
 
-        protected override void sendTextMessage(string message)
+        protected override void sendTextMessage(string message, bool useless)
         {
-            Send(Encoding.UTF8.GetBytes(playerName + '~' + message + 't'));
+            Send(Encoding.UTF8.GetBytes(playerName + '~' + message + "~~t"));
         }
         #endregion
 
@@ -90,18 +90,14 @@ namespace Windwaker_coop
         //type 'v' - locates the updated memoryLocation and writes the newValue to memory
         protected override void receiveNewMemoryLocation(List<byte> data)
         {
-            if (data.Count != 8)
+            if (data.Count < 3 || data.Count > 6)
             {
-                Program.displayError("New memoryLocation received from server is invalid");
+                Program.displayError("New memoryLocation received from server has an invalid size");
                 return;
             }
 
-            foreach (byte b in data)
-                Console.Write(b + " ");
-            
-
-            uint memLocIdx = BitConverter.ToUInt32(data.GetRange(0, 4).ToArray());
-            mr.saveToMemory(data.GetRange(4, 4), (uint)mr.memoryLocations[(int)memLocIdx].startAddress);
+            short memLocIdx = BitConverter.ToInt16(data.GetRange(0, 2).ToArray());
+            mr.saveToMemory(data.GetRange(2, data.Count - 2), mr.memoryLocations[memLocIdx].startAddress);
         }
 
         //type 'n' - displays the notification in the console
@@ -116,6 +112,7 @@ namespace Windwaker_coop
         {
             Program.setConsoleColor(1);
             Console.WriteLine("Disconnected from the server at " + e.IpPort);
+            Program.EndProgram();
         }
 
         private void Events_Connected(object sender, ClientConnectedEventArgs e)
