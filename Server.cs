@@ -84,7 +84,7 @@ namespace Windwaker_coop
                             }
                             break;
                         case 9:
-                            if ((playerNumber & (playerNumber ^ hostNumber)) > 0) //Checks if the new number has at least one bit more than the host
+                            if ((playerNumber & (playerNumber ^ hostNumber)) > 0)
                             {
                                 newNumber = playerNumber | hostNumber;
                                 gotNewItem = true;

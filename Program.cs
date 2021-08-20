@@ -24,6 +24,11 @@ namespace Windwaker_coop
             string invalidCharacters = "<>:\"/\\|?*";
             readConfigFile();
 
+            /*string hostName = Dns.GetHostName();
+            Console.WriteLine("Host name: " + hostName);
+            string ipAd = Dns.GetHostEntry(hostName).AddressList[0].ToString();
+            Console.WriteLine("Ip address: " + ipAd);*/
+
             string ip = askQuestion("Enter server ip address: ");
             if (ip == "x")
                 ip = tempIp;
