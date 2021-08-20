@@ -23,6 +23,12 @@ namespace Windwaker_coop
             mr = new MemoryReader();
         }
 
+        public override void Begin()
+        {
+            Connect();
+            beginSyncing(Program.syncDelay);
+        }
+
         //Once the player is ready, starts the syncLoop
         public void beginSyncing(int syncDelay)
         {
@@ -31,12 +37,9 @@ namespace Windwaker_coop
 
         private async Task syncLoop(int loopTime)
         {
-            while (true)
+            while (!Program.programStopped)
             {
                 Program.setConsoleColor(5);
-                if (Program.programStopped)
-                    return;
-
                 int timeStart = Environment.TickCount;
 
                 //syncLoop stuff
@@ -61,7 +64,7 @@ namespace Windwaker_coop
         }
 
         #region Send functions
-        public void Send(byte[] data)
+        private void Send(byte[] data)
         {
             if (client.IsConnected && data != null && data.Length > 0)
             {
@@ -70,7 +73,7 @@ namespace Windwaker_coop
             }
         }
 
-        protected override void sendMemoryList(List<byte> data)
+        public override void sendMemoryList(List<byte> data)
         {
             List<byte> toSend = new List<byte>();
             toSend.AddRange(Encoding.UTF8.GetBytes(playerName + "~"));
@@ -80,9 +83,14 @@ namespace Windwaker_coop
             Send(toSend.ToArray());
         }
 
-        protected override void sendTextMessage(string message, bool useless)
+        public override void sendTextMessage(string message)
         {
-            Send(Encoding.UTF8.GetBytes(playerName + '~' + message + "~~t"));
+            Send(Encoding.UTF8.GetBytes(playerName + ": " + message + "~~t"));
+        }
+
+        public override void sendNotification(string notification, bool useless)
+        {
+            Send(Encoding.UTF8.GetBytes(notification + "~~n"));
         }
         #endregion
 
@@ -106,19 +114,27 @@ namespace Windwaker_coop
             Program.setConsoleColor(3);
             Console.WriteLine(Encoding.UTF8.GetString(data.ToArray()));
         }
+
+        //type 't' - displays the text message in the console
+        protected override void receiveTextMessage(List<byte> data)
+        {
+            Program.setConsoleColor(8);
+            Console.WriteLine(Encoding.UTF8.GetString(data.ToArray()) + "\n");
+        }
         #endregion
 
         private void Events_Disconnected(object sender, ClientDisconnectedEventArgs e)
         {
             Program.setConsoleColor(1);
             Console.WriteLine("Disconnected from the server at " + e.IpPort);
-            Program.EndProgram();
+            sendNotification(playerName + " has left the game!", true);
         }
 
         private void Events_Connected(object sender, ClientConnectedEventArgs e)
         {
             Program.setConsoleColor(1);
             Console.WriteLine("Successfully connected to the server at " + e.IpPort);
+            sendNotification(playerName + " has joined the game!", true);
         }
     }
 }
