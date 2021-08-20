@@ -1,15 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Windwaker_coop
 {
     class Cheater
     {
-        private Player player;
+        private Client client;
         private Cheat[] cheats;
 
-        public Cheater(Player player)
+        public Cheater(Client client)
         {
-            this.player = player;
+            this.client = client;
             uint baseItem = 0x803B4C44, baseOwner = 0x803B4C59;
             cheats = new Cheat[]
             {
@@ -75,37 +76,34 @@ namespace Windwaker_coop
             };
         }
 
-        public string processCommand(string command)
+        public string processCommand(string[] arguments)
         {
-            string[] words = command.Split(' ');
             int number = -1;
             bool foundItem = false;
 
-            string debugOuput = "Processing command:";
-            foreach (string word in words)
-                debugOuput += " \"" + word + "\"";
-            Program.displayDebug(debugOuput, 2);
-
-            //Takes in the command and makes sure it is valid
-            if (words.Length > 3 || words.Length < 2 || words[0] != "give" || words[1] == "" || (words.Length == 3 && !int.TryParse(words[2], out number)))
-                return "Syntax error with the 'give' command!";
+            if (!Program.enableCheats)
+                return "Cheats are disabled!";
+            if (arguments.Length < 2 || arguments.Length > 3)
+                return "Command 'give' takes either 1 or 2 arguments!";
+            if (arguments.Length == 3 && !int.TryParse(arguments[2], out number))
+                return "The 'number' argument was not a valid number!";
 
             //searchs for the specified item
             foreach (Cheat cheat in cheats)
             {
-                if (cheat.itemName == words[1])
+                if (cheat.itemName == arguments[1])
                 {
                     byte toWrite = 0;
                     if (!cheat.requiresNumber)
                     {
-                        if (words.Length > 2)
+                        if (arguments.Length > 2)
                             return "Item '" + cheat.itemName + "' does not require a number!";
                         toWrite = cheat.noNumberByte;
                     }
                     else
                     {
                         //Checks the possible values the number can be and sets byteToWrite equal to the corresponding value
-                        if (words.Length < 3)
+                        if (arguments.Length < 3)
                             return "Item '" + cheat.itemName + "' requires a number!";
                         bool foundValue = false;
 
@@ -115,6 +113,7 @@ namespace Windwaker_coop
                             {
                                 toWrite = cheat.valuesToWrite[i - 1];
                                 foundValue = true;
+                                break;
                             }
                         }
                         if (!foundValue)
@@ -126,18 +125,16 @@ namespace Windwaker_coop
                 }
             }
             if (foundItem)
-            {
-                player.nm.SendNotifications(player.playerName + " has used a cheat!", 1);
-                return "Cheat activated!";
-            }
+                return "Cheat avtivated!";
             else
-                return "'" + words[1] + "' is not a valid item!";
+                return "'" + arguments[1] + "' is not a valid item!";
         }
 
         private void writeCheatResult(uint address, byte theByte)
         {
             List<byte> data = new List<byte>(); data.Add(theByte);
-            player.fs.saveToMemory(player, data, address, 1);
+            client.mr.saveToMemory(data, (IntPtr)address);
+            client.sendNotification(client.playerName + " has used a cheat!", false);
         }
     }
 }

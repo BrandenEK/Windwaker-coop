@@ -21,28 +21,26 @@ namespace Windwaker_coop
             server.Events.DataReceived += Events_DataReceived;
             clientIps = new List<string>();
             mr = new MemoryReader();
-            hostdata = mr.getDefaultValues();
+            setServerToDefault();
+        }
+
+        public override void Begin()
+        {
+            Start();
         }
 
         private void compareHostAndPlayer(List<byte> playerData, string playerName)
         {
-            //reverse byte endian first!!
-            //if new data add it to host list
-            //send new memoryLocation to everyone & notification
             //now has to check if player has new number and if host has new number
             //maybe between low/high values
 
             int byteListIndex = 0;
-            uint hostNumber = 0;
-            uint playerNumber = 0;
-            uint newNumber = 0;
-
             for (int locationListIndex = 0; locationListIndex < mr.memoryLocations.Count; locationListIndex++)
             {
                 MemoryLocation memLoc = mr.memoryLocations[locationListIndex];
-                hostNumber = getNumberFromByteList(hostdata, byteListIndex, memLoc.size);
-                playerNumber = getNumberFromByteList(playerData, byteListIndex, memLoc.size);
-                newNumber = 0;
+                uint hostNumber = getNumberFromByteList(hostdata, byteListIndex, memLoc.size);
+                uint playerNumber = getNumberFromByteList(playerData, byteListIndex, memLoc.size);
+                uint newNumber = 0;
 
                 if (playerNumber != hostNumber)
                 {
@@ -78,8 +76,22 @@ namespace Windwaker_coop
                                 gotNewItem = true;
                             }
                             break;
+                        case 3:
+                            if (hostNumber == 255)
+                            {
+                                newNumber = playerNumber;
+                                gotNewItem = true;
+                            }
+                            break;
+                        case 9:
+                            if ((playerNumber & (playerNumber ^ hostNumber)) > 0) //Checks if the new number has at least one bit more than the host
+                            {
+                                newNumber = playerNumber | hostNumber;
+                                gotNewItem = true;
+                            }
+                            break;
                         default:
-                            //Program.displayError("Invalid compareId");
+                            Program.displayError("Invalid compareId");
                             break;
                     }
                     //If player has gotten a new item, send out new memoryLocation to everyone else along with notification
@@ -89,13 +101,72 @@ namespace Windwaker_coop
                         hostdata.RemoveRange(byteListIndex, memLoc.size);
                         hostdata.InsertRange(byteListIndex, newValue);
                         sendNewMemoryLocation((short)locationListIndex, newNumber, true);
-                        sendNotification(playerName + " has gotten the " + memLoc.name, true);
-                        sendNotification("You have gotten the " + memLoc.name, false);
+                        calculateNotification(playerName, newNumber, hostNumber, memLoc);
                     }
                 }
 
                 byteListIndex += memLoc.size;
             }
+        }
+
+        //Determines whether or not to send a notification & calculates what it should be
+        private void calculateNotification(string playerName, uint newNumber, uint hostNumber, MemoryLocation memLoc)
+        {
+            string itemText = "";
+
+            if (memLoc.cd.values == null || memLoc.cd.text == null)
+            {
+                //If the memoryLocation only has one possible value
+                if (memLoc.name != "")
+                    itemText = memLoc.name;
+                else
+                    return;
+            }
+            else
+            {
+                //If the memoryLocation has different possible levels, get exact notification
+                if (memLoc.cd.bitfield)
+                {
+                    for (int i = 0; i < memLoc.cd.values.Length; i++) //checks each bit and only sends notification if the player just set it
+                    {
+                        if (ReadWrite.bitSet(newNumber, memLoc.cd.values[i]) && !ReadWrite.bitSet(hostNumber, memLoc.cd.values[i]))
+                        {
+                            itemText = memLoc.cd.text[i];
+                            //Only one bitfield notification can be sent at once - this could be a problem in the future
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < memLoc.cd.values.Length; i++)  //compares the new value to everything in the list of possible values
+                    {
+                        if (newNumber == memLoc.cd.values[i])
+                        {
+                            itemText = memLoc.cd.text[i];
+                            break;
+                        }
+                    }
+                }
+            }
+            //use the itemText to actually send the notification
+            if (itemText != "")
+            {
+                sendNotification(getNotificationText(playerName, itemText, true), false);
+                sendNotification(getNotificationText(playerName, itemText, false), true);
+            }
+            else
+                Program.displayError("Notification was unable to be calculated");
+        }
+
+        public void setServerToDefault()
+        {
+            hostdata = mr.getDefaultValues(this);
+        }
+
+        public void kickPlayer(string ipPort)
+        {
+            server.DisconnectClient(ipPort);
         }
 
         public void Start()
@@ -106,7 +177,7 @@ namespace Windwaker_coop
         }
 
         #region Send functions
-        public void Send(string ip, byte[] data)
+        private void Send(string ip, byte[] data)
         {
             if (server.IsListening)
             {
@@ -115,7 +186,7 @@ namespace Windwaker_coop
             }
         }
 
-        protected override void sendNewMemoryLocation(short memLocIndex, uint newValue, bool sendToAllButThis)
+        public override void sendNewMemoryLocation(short memLocIndex, uint newValue, bool sendToAllButThis)
         {
             List<byte> toSend = new List<byte>();
             toSend.AddRange(BitConverter.GetBytes(memLocIndex));
@@ -134,7 +205,8 @@ namespace Windwaker_coop
                 Send(currIp, toSendArray);
             }
         }
-        protected override void sendNotification(string notification, bool sendToAllButThis)
+
+        public override void sendNotification(string notification, bool sendToAllButThis)
         {
             if (sendToAllButThis)
             {
@@ -146,6 +218,13 @@ namespace Windwaker_coop
             {
                 Send(currIp, Encoding.UTF8.GetBytes(notification + "~~n"));
             }
+        }
+
+        public override void sendTextMessage(string message)
+        {
+            foreach (string ip in clientIps)
+                if (ip != currIp)
+                    Send(ip, Encoding.UTF8.GetBytes(message + "~~t"));
         }
         #endregion
 
@@ -175,7 +254,14 @@ namespace Windwaker_coop
         //type 't' - reads player name & message and sends it to everybody else
         protected override void receiveTextMessage(List<byte> data)
         {
+            sendTextMessage(Encoding.UTF8.GetString(data.ToArray()));
+        }
 
+        //type 'n' - read notification an send it to everyone else
+        protected override void receiveNotification(List<byte> data)
+        {
+            string message = Encoding.UTF8.GetString(data.ToArray());
+            sendNotification(message, true);
         }
         #endregion
 

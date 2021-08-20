@@ -9,7 +9,7 @@ namespace Windwaker_coop
     {
         public string IpAddress;
         public int port;
-        protected MemoryReader mr;
+        public MemoryReader mr { get; protected set; }
         protected string currIp = "";
 
         protected virtual void Events_DataReceived(object sender, DataReceivedEventArgs e)
@@ -49,19 +49,19 @@ namespace Windwaker_coop
         }
 
         //Send new data functions
-        protected virtual void sendMemoryList(List<byte> memory)
+        public virtual void sendMemoryList(List<byte> memory)
         {
             Program.displayError("sendMemoryList() not implemented here");
         }
-        protected virtual void sendNewMemoryLocation(short memLocIndex, uint newValue, bool sendToAllButThis)
+        public virtual void sendNewMemoryLocation(short memLocIndex, uint newValue, bool sendToAllButThis)
         {
             Program.displayError("sendNewMemoryLocation() not implemented here");
         }
-        protected virtual void sendTextMessage(string message, bool sendToAllButThis)
+        public virtual void sendTextMessage(string message)
         {
             Program.displayError("sendTextMessage() not implemented here");
         }
-        protected virtual void sendNotification(string notification, bool sendToAllButThis)
+        public virtual void sendNotification(string notification, bool sendToAllButThis)
         {
             Program.displayError("sendNotification() not implemented here");
         }
@@ -83,6 +83,8 @@ namespace Windwaker_coop
         {
             Program.displayError("receiveNotification() not implemented here");
         }
+
+        public abstract void Begin();
 
         //Returns the player name from the messsage & removes it from the list leaving only the data
         protected string seperatePlayerAndData(List<byte> data)
@@ -108,7 +110,37 @@ namespace Windwaker_coop
             return Encoding.UTF8.GetString(nameArray);
         }
 
-        protected uint getNumberFromByteList(List<byte> list, int startIndex, int length)
+        protected string getNotificationText(string playerName, string itemText, bool yourself)
+        {
+            string[] strings = itemText.Split('*', 2);
+            itemText = strings[0]; int formatId = -1;
+            int.TryParse(strings[1], out formatId);
+            string output = "";
+
+            if (formatId == 0)
+                output = "obtained the " + itemText;
+            else if (formatId == 1)
+                output = "obtained a " + itemText;
+            else if (formatId == 2)
+                output = "obtained " + itemText;
+            else if (formatId == 3)
+                output = "learned the " + itemText;
+            else if (formatId == 4)
+                output = "deciphered " + itemText;
+            else if (formatId == 5)
+                output = "placed " + itemText;
+            else if (formatId == 9)
+                output = itemText;
+            else
+                output = "format id was wrong lol";
+
+            if (yourself)
+                return "You have " + output;
+            else
+                return playerName + " has " + output;
+        }
+
+        public uint getNumberFromByteList(List<byte> list, int startIndex, int length)
         {
             byte[] bytes = new byte[4];
             string debugOuput = "Converting byte[] { ";
@@ -121,7 +153,7 @@ namespace Windwaker_coop
             return BitConverter.ToUInt32(bytes);
         }
 
-        protected byte[] getByteArrayFromNumber(uint number, int length)
+        public byte[] getByteArrayFromNumber(uint number, int length)
         {
             byte[] fourByte = BitConverter.GetBytes(number);
             byte[] result = new byte[length];
