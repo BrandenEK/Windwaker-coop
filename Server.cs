@@ -44,64 +44,73 @@ namespace Windwaker_coop
 
                 if (playerNumber != hostNumber)
                 {
-                    bool gotNewItem = false;
-                    switch (memLoc.compareId)
+                    if (playerNumber >= memLoc.lowerValue && playerNumber <= memLoc.higherValue)
                     {
-                        //Checks if the player has gotten a new item & sets the newNumber & calculates notification
-                        case 0:
-                            if (playerNumber > hostNumber)
+                        bool gotNewItem = false;
+                        switch (memLoc.compareId)
+                        {
+                            //Checks if the player has gotten a new item & sets the newNumber & calculates notification
+                            case 0:
+                                if (playerNumber > hostNumber)
+                                {
+                                    //player --> host & other players
+                                    newNumber = playerNumber;
+                                    gotNewItem = true;
+                                }
+                                else
+                                {
+                                    //host --> player
+                                    //sendNewMemoryLocation((short)locationListIndex, hostNumber, false);
+                                    //sendNotification("You do not have the " + memLoc.name, false);
+                                }
+                                break;
+                            case 1:
+                                if (playerNumber < hostNumber)
+                                {
+                                    newNumber = playerNumber;
+                                    gotNewItem = true;
+                                }
+                                break;
+                            case 2:
+                                if (hostNumber == 255 || playerNumber > hostNumber && playerNumber != 255)
+                                {
+                                    newNumber = playerNumber;
+                                    gotNewItem = true;
+                                }
+                                break;
+                            case 3:
+                                if (hostNumber == 255)
+                                {
+                                    newNumber = playerNumber;
+                                    gotNewItem = true;
+                                }
+                                break;
+                            case 9:
+                                if ((playerNumber & (playerNumber ^ hostNumber)) > 0)
+                                {
+                                    newNumber = playerNumber | hostNumber;
+                                    gotNewItem = true;
+                                }
+                                break;
+                            default:
+                                Program.displayError("Invalid compareId");
+                                break;
+                        }
+                        //If player has gotten a new item, send out new memoryLocation to everyone else along with notification
+                        if (gotNewItem)
+                        {
+                            byte[] newValue = getByteArrayFromNumber(newNumber, memLoc.size);
+                            for (int i = 0; i < memLoc.size; i++)
                             {
-                                //player --> host & other players
-                                newNumber = playerNumber;
-                                gotNewItem = true;
+                                hostdata[byteListIndex + i] = newValue[i];
                             }
-                            else
-                            {
-                                //host --> player
-                                //sendNewMemoryLocation((short)locationListIndex, hostNumber, false);
-                                //sendNotification("You do not have the " + memLoc.name, false);
-                            }
-                            break;
-                        case 1:
-                            if (playerNumber < hostNumber)
-                            {
-                                newNumber = playerNumber;
-                                gotNewItem = true;
-                            }
-                            break;
-                        case 2:
-                            if (hostNumber == 255 || playerNumber > hostNumber && playerNumber != 255)
-                            {
-                                newNumber = playerNumber;
-                                gotNewItem = true;
-                            }
-                            break;
-                        case 3:
-                            if (hostNumber == 255)
-                            {
-                                newNumber = playerNumber;
-                                gotNewItem = true;
-                            }
-                            break;
-                        case 9:
-                            if ((playerNumber & (playerNumber ^ hostNumber)) > 0)
-                            {
-                                newNumber = playerNumber | hostNumber;
-                                gotNewItem = true;
-                            }
-                            break;
-                        default:
-                            Program.displayError("Invalid compareId");
-                            break;
+                            sendNewMemoryLocation((short)locationListIndex, newNumber, true);
+                            calculateNotification(playerName, newNumber, hostNumber, memLoc);
+                        }
                     }
-                    //If player has gotten a new item, send out new memoryLocation to everyone else along with notification
-                    if (gotNewItem)
+                    else
                     {
-                        byte[] newValue = getByteArrayFromNumber(newNumber, memLoc.size);
-                        hostdata.RemoveRange(byteListIndex, memLoc.size);
-                        hostdata.InsertRange(byteListIndex, newValue);
-                        sendNewMemoryLocation((short)locationListIndex, newNumber, true);
-                        calculateNotification(playerName, newNumber, hostNumber, memLoc);
+                        Program.displayDebug("The value at 0x" + memLoc.startAddress.ToInt64().ToString("X") + " is not inside of an acceptable range (" + playerNumber + "). It was not synced to the host.", 2);
                     }
                 }
 
@@ -262,6 +271,15 @@ namespace Windwaker_coop
         {
             string message = Encoding.UTF8.GetString(data.ToArray());
             sendNotification(message, true);
+        }
+
+        //type 'd' - reads the string and converts it to a long & displays it
+        protected override void receiveDelayTest(List<byte> data)
+        {
+            string str = Encoding.UTF8.GetString(data.ToArray());
+            long timeDelta = DateTime.Now.Ticks - long.Parse(str);
+            Program.setConsoleColor(4);
+            Console.WriteLine("Byte[] received from " + currIp + " came with a delay of " + (timeDelta / 10000) + " milliseconds");
         }
         #endregion
 
