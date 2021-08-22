@@ -13,46 +13,68 @@ namespace Windwaker_coop
         private static User currUser;
         private static Cheater currCheater;
 
+        private static Game[] games;
+        public static Game currGame;
         public static string tempIp = "172.16.16.60";
 
 
         static void Main(string[] args)
         {
-            Console.Title = "Windwaker Coop Server/Client";
+            Console.Title = "The Legend of Zelda Coop Server/Client";
             setConsoleColor(3);
-            Console.WriteLine("-WindWaker Coop-\n");
-            string invalidCharacters = "<>:\"/\\|?*";
+            Console.WriteLine("-The Legend of Zelda Coop-\n");
             readConfigFile();
+            games = loadGames();
+            currGame = games[2];
 
             /*string hostName = Dns.GetHostName();
             Console.WriteLine("Host name: " + hostName);
             string ipAd = Dns.GetHostEntry(hostName).AddressList[0].ToString();
             Console.WriteLine("Ip address: " + ipAd);*/
 
-            string ip = askQuestion("Enter server ip address: ");
-            if (ip == "x")
-                ip = tempIp;
-
-            string playerName = askQuestion("Enter player name: ").Trim();
-            if (playerName.Length < 1 || playerName.Contains('~'))
-            {
-                displayError("That player name is invalid");
-                EndProgram();
-            }
-
+            //Gets the type - server or client
+            string type = askQuestion("Is this instance a server or a client? (s/c): ").ToLower();
             string startText = "";
-            if (playerName == "host")
+
+            if (type == "s" || type == "server")
             {
-                Console.Title = "Windwaker Coop Server";
+                Console.Title = $"{currGame.gameName} Coop Server";
+
+                //Gets the ip address
+                string ip = askQuestion("Enter ip address of this machine: ");
+                if (ip == "x")
+                    ip = tempIp;
+
+                //Creates new server object
                 currUser = new Server(ip, 25565);
                 startText = "Wait until everybody is ready, then press any key to start the server...";
             }
-            else
+            else if (type == "c" || type == "client")
             {
-                Console.Title = "Windwaker Coop Client";
+                Console.Title = $"{currGame.gameName} Coop Client";
+
+                //gets the ip address
+                string ip = askQuestion("Enter ip address of the server: ");
+                if (ip == "x")
+                    ip = tempIp;
+
+                //gets the player name
+                string playerName = askQuestion("Enter player name: ").Trim();
+                if (playerName.Length < 1 || playerName.Contains('~'))
+                {
+                    displayError("That player name is invalid");
+                    EndProgram();
+                }
+
+                //Creates new client & cheater object
                 currUser = new Client(ip, 25565, playerName);
                 currCheater = new Cheater((Client)currUser);
                 startText = "Wait until your game is started, then press any key to connect to the server...";
+            }
+            else
+            {
+                displayError("The given input was neither 's' nor 'c'");
+                EndProgram();
             }
 
             //Begin host/client and start command loop
@@ -61,7 +83,7 @@ namespace Windwaker_coop
             Console.ReadKey();
             Console.Clear();
             setConsoleColor(3);
-            Console.WriteLine("-WindWaker Coop-\n");
+            Console.WriteLine($"-{currGame.gameName} Coop-\n");
 
             if (currUser != null)
             {
@@ -163,6 +185,12 @@ namespace Windwaker_coop
                             }
                             else
                                 displayError("Cheater object has not been initialized");
+                        }
+                        else if (lastCommand == "ping")
+                        {
+                            //sends a test to the server to determine the delay
+                            client.sendDelayTest();
+                            Console.WriteLine("Sending delay test!\n");
                         }
                         else if (lastCommand != "stop")
                         {
@@ -275,6 +303,18 @@ namespace Windwaker_coop
                 displayError("Configuration file unable to be parsed");
                 EndProgram();
             }
+        }
+
+        private static Game[] loadGames()
+        {
+            Game[] games = new Game[]
+            {
+                new Windwaker(),
+                new OcarinaOfTime(),
+                new Zelda1()
+            };
+            displayDebug("Loading " + games.Length + " games", 2);
+            return games;
         }
 
         public static void setConsoleColor(int colorId)

@@ -36,7 +36,9 @@ namespace Windwaker_coop
 
         private void processDataReceived(byte type, List<byte> data)
         {
-            if (type == 109) //m
+            if (type == 100) //d
+                receiveDelayTest(data);
+            else if (type == 109) //m
                 receiveMemoryList(data);
             else if (type == 110) //n
                 receiveNotification(data);
@@ -45,7 +47,7 @@ namespace Windwaker_coop
             else if (type == 118) //v
                 receiveNewMemoryLocation(data);
             else
-                Program.displayError("Unrecognized data type (m, n, t, v)");
+                Program.displayError("Unrecognized data type (d, m, n, t, v)");
         }
 
         //Send new data functions
@@ -65,6 +67,10 @@ namespace Windwaker_coop
         {
             Program.displayError("sendNotification() not implemented here");
         }
+        public virtual void sendDelayTest()
+        {
+            Program.displayError("sendDelayTest() not implemented here");
+        }
 
         //Receive new data functions
         protected virtual void receiveMemoryList(List<byte> data)
@@ -82,6 +88,10 @@ namespace Windwaker_coop
         protected virtual void receiveNotification(List<byte> data)
         {
             Program.displayError("receiveNotification() not implemented here");
+        }
+        protected virtual void receiveDelayTest(List<byte> data)
+        {
+            Program.displayError("receiveDelayTest() not implemented here");
         }
 
         public abstract void Begin();

@@ -43,11 +43,13 @@ namespace Windwaker_coop
                 int timeStart = Environment.TickCount;
 
                 //syncLoop stuff
+                Program.currGame.beginningFunctions();
                 List<byte> memory = mr.readFromMemory();
                 if (memory != null)
                 {
                     sendMemoryList(memory);
                 }
+                Program.currGame.endingFunctions();
 
                 Program.displayDebug("Time taken to complete entire sync loop: " + (Environment.TickCount - timeStart) + " milliseconds", 1);
                 Program.setConsoleColor(5);
@@ -92,6 +94,11 @@ namespace Windwaker_coop
         {
             Send(Encoding.UTF8.GetBytes(notification + "~~n"));
         }
+
+        public override void sendDelayTest()
+        {
+            Send(Encoding.UTF8.GetBytes(DateTime.Now.Ticks.ToString() + "~~d"));
+        }
         #endregion
 
         #region Receive functions
@@ -106,6 +113,7 @@ namespace Windwaker_coop
 
             short memLocIdx = BitConverter.ToInt16(data.GetRange(0, 2).ToArray());
             mr.saveToMemory(data.GetRange(2, data.Count - 2), mr.memoryLocations[memLocIdx].startAddress);
+            Program.currGame.onReceiveFunctions();
         }
 
         //type 'n' - displays the notification in the console
