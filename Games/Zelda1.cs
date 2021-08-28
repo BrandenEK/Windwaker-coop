@@ -54,7 +54,11 @@ namespace Windwaker_coop
 
         public override Cheat[] getCheats()
         {
-            return new Cheat[] { };
+            return new Cheat[] 
+            { 
+                new Cheat("health", 0x59FE7F, 0, true, 16, new byte[] { 0, 17, 34, 51, 68, 85, 102, 119, 136, 153, 170, 187, 204, 221, 238, 255 }),
+                new Cheat("sword", 0x59FE67, 0, true, 3, new byte[] { 1, 2, 3 })
+            };
         }
     }
 }
