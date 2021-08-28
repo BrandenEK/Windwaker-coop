@@ -181,6 +181,7 @@ namespace Windwaker_coop
                             if (currCheater != null)
                             {
                                 string result = currCheater.processCommand(words);
+                                setConsoleColor(4);
                                 Console.WriteLine(result + "\n");
                             }
                             else
@@ -189,8 +190,8 @@ namespace Windwaker_coop
                         else if (lastCommand == "ping")
                         {
                             //sends a test to the server to determine the delay
-                            client.sendDelayTest();
                             Console.WriteLine("Sending delay test!\n");
+                            client.sendDelayTest();
                         }
                         else if (lastCommand != "stop")
                         {
