@@ -1,2 +1,126 @@
-Ocarina of Time Ram Map:
+### Ocarina of Time Ram Map:
 
+*All memory addresses shown here should be increased by 0x01*
+*Each heart is worth 0x10 health points*
+
+# Player stats:
+
+11A5FC (2) - Maximum Health
+11A600 (1) - Current Magic
+11A602 (2) - Current Health
+11A606 (2) - Number of Rupees
+
+# Current items:
+
+11A638 (1) - Current C-Right item
+11A639 (1) - Current C-Down item
+11A63A (1) - Current C-Left item
+11A63B (1) - Current B item
+
+11A642 (1) - Current Sword & Shield
+(0d17 for Kokiri Sword & Deku Shield,
+Add 1 for each sword, add 16 for each shield)
+
+11A643 (1) - Current Tunic & Boots
+(0d17 for Kokiri Tunic & Kokiri Boots,
+Add 1 for each tunic, add 16 for each boot)
+
+# Inventory items:
+
+11A644 (1) - Fairy Bow (??)
+11A645 (1) - Bombs (02)
+11A646 (1) - Deku Nuts (01)
+11A647 (1) - Deku Sticks (00)
+11A648 (1) - Ocarina (07-08)
+11A649 (1) - Fairy Slingshot (06)
+11A64A (1) - Din's Fire (05)
+11A64B (1) - Fire Arrows (04)
+11A64C (1) - Farore's Wind (0D)
+11A64D (1) - Ice Arrows (0C?)
+11A64E (1) - Hookshot (0A-0B)
+11A64F (1) - Bombchus (09)
+11A650 (1) - Megaton Hammer (11)
+11A651 (1) - Magic Bean (10)
+11A652 (1) - Lens of Truth (0F)
+11A653 (1) - Boomerang (0E)
+11A654 (1) - Bottle 2
+11A655 (1) - Bottle 1
+11A656 (1) - Nayru's Love (13)
+11A657 (1) - Light Arrows (12?)
+11A658 (1) - Adult Trading Item (??)
+11A659 (1) - Child Trading Item (??)
+11A65A (1) - Bottle 4
+11A65B (1) - Bottle 3
+
+# Current consumables:
+
+11A65C (1) - Number of Arrows
+11A65D (1) - Number of Bombs
+11A65E (1) - Number of Deku Nuts
+11A65F (1) - Number of Deku Sticks
+
+11A661 (1) - Number of Deku Seeds
+
+11A667 (1) - Number of Bombchu
+
+11A669 (1) - Number of Magic Beans
+
+# Equipment:
+
+11A66E (1) - Sword & Shield bitfield ??Big??
+0 - Kokiri Sword
+1 - Master Sword
+2 - Giant's Knife
+3 - Giant's Knife (Broken)
+4 - Deku Shield
+5 - Hylian Shield
+6 - Mirror Shield
+7 - ???
+
+11A66F (1) - Tunic & Boots bitfield
+0 - Kokiri Tunic
+1 - Goron Tunic
+2 - Zora Tunic
+3 - ???
+4 - Kokiri Boots
+5 - Iron Boots
+6 - Hover Boots
+7 - ???
+
+11A670-2 (3?) - Capacity items?
+
+# Quest status:
+
+11A674 (1) - Medallion / Song bitfield
+0 - Forest Medallion
+1 - Fire Medallion
+2 - Water Medallion
+3 - Spirit Medallion
+4 - Shadow Medallion
+5 - Light Medallion
+6 - Minuet of Forest
+7 - Bolero of Fire
+
+11A675 (1) - Song bitfield
+0 - Serenade of Water
+1 - requiem of Spirit
+2 - Nocturne of Shadow
+3 - Prelude of Light
+4 - Zelda's Lullaby
+5 - Epona's Song
+6 - Saria's Song
+7 - Sun's Song
+
+11A676 (1) - Song / Quest bitfield
+0 - Song of Time
+1 - Song of Storms
+2 - Kokiri's Emerald
+3 - Goron's Ruby
+4 - Zora's Sapphire
+5 - Stone of Agony
+6 - Gerudo's Card
+7 - Have at least 1 GS
+
+11A677 (1) - Pieces of Heart (10, 20, or 30)
+
+11A6A2 (1) - Gold Skulltulas
