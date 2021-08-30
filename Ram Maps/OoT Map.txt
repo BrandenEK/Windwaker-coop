@@ -3,14 +3,18 @@
 *All memory addresses shown here should be increased by 0x01*
 *Each heart is worth 0x10 health points*
 
-# Player stats:
+============================================================
+Player stats:
+============================================================
 
 11A5FC (2) - Maximum Health
 11A600 (1) - Current Magic
 11A602 (2) - Current Health
 11A606 (2) - Number of Rupees
 
-# Current items:
+============================================================
+Current items:
+============================================================
 
 11A638 (1) - Current C-Right item
 11A639 (1) - Current C-Down item
@@ -25,7 +29,9 @@ Add 1 for each sword, add 16 for each shield)
 (0d17 for Kokiri Tunic & Kokiri Boots,
 Add 1 for each tunic, add 16 for each boot)
 
-# Inventory items:
+============================================================
+Inventory items:
+============================================================
 
 11A644 (1) - Fairy Bow (??)
 11A645 (1) - Bombs (02)
@@ -52,7 +58,9 @@ Add 1 for each tunic, add 16 for each boot)
 11A65A (1) - Bottle 4
 11A65B (1) - Bottle 3
 
-# Current consumables:
+============================================================
+Current consumables:
+============================================================
 
 11A65C (1) - Number of Arrows
 11A65D (1) - Number of Bombs
@@ -65,7 +73,9 @@ Add 1 for each tunic, add 16 for each boot)
 
 11A669 (1) - Number of Magic Beans
 
+============================================================
 # Equipment:
+============================================================
 
 11A66E (1) - Sword & Shield bitfield ??Big??
 0 - Kokiri Sword
@@ -89,7 +99,9 @@ Add 1 for each tunic, add 16 for each boot)
 
 11A670-2 (3?) - Capacity items?
 
-# Quest status:
+============================================================
+Quest status:
+============================================================
 
 11A674 (1) - Medallion / Song bitfield
 0 - Forest Medallion
@@ -125,13 +137,18 @@ Add 1 for each tunic, add 16 for each boot)
 
 11A6A2 (1) - Gold Skulltulas
 
-# Unfinished:
+============================================================
+Unfinished:
+============================================================
 
 53EF8E3C & 53EF8E3E (1) - Item currently hovered over on Item Screen
 53EF8E46 (1) - Item currently hovered over on Equipment Screen
 
 
-# Item Ids:
+
+============================================================
+Item Ids:
+============================================================
 
 00 - Deku Stick
 01 - Deku Nut
