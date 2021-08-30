@@ -11,11 +11,42 @@ Player Stats:
 4C0C (2) - Rupee Count
 
 ============================================================
+More Stuff:
+============================================================
+
+4C16 (1) - Current Sword
+4C17 (1) - Current Shield
+4C18 (1) - Power Bracelets
+
+4C1A (1) - Wallet
+4C1B (1) - Maximum Magic
+4C1C (1) - Current Magic
+
+4C2C (4-Float) - Current Time
+
+============================================================
 Inventory Items:
 ============================================================
 
-
-============================================================
-More Stuff:
-============================================================
+4C44 (1) - Telescope
+4C45 (1) - Sail
+4C46 (1) - Wind Waker
+4C47 (1) - Grappling Hook
+4C48 (1) - Spoils Bag
+4C49 (1) - Boomerang
+4C4A (1) - Deku Leaf
+4C4B (1) - Tingle Tuner
+4C4C (1) - Picto Box
+4C4D (1) - Iron Boots
+4C4E (1) - Magic Armor
+4C4F (1) - Bait Bag
+4C50 (1) - Bow
+4C51 (1) - Bombs
+4C52 (1) - Bottle #1
+4C53 (1) - Bottle #2
+4C54 (1) - Bottle #3
+4C55 (1) - Bottle #4
+4C56 (1) - Delivery Bag
+4C57 (1) - Hookshot
+4C58 (1) - Skull Hammer
 
