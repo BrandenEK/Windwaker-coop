@@ -124,3 +124,108 @@ Add 1 for each tunic, add 16 for each boot)
 11A677 (1) - Pieces of Heart (10, 20, or 30)
 
 11A6A2 (1) - Gold Skulltulas
+
+# Unfinished:
+
+53EF8E3C & 53EF8E3E (1) - Item currently hovered over on Item Screen
+53EF8E46 (1) - Item currently hovered over on Equipment Screen
+
+
+# Item Ids:
+
+00 - Deku Stick
+01 - Deku Nut
+02 - Bombs
+03 - Fairy Bow
+04 - Fire Arrow
+05 - Din's Fire
+06 - Fairy Slingshot
+07 - Fairy Ocarina
+08 - Ocarina of Time
+09 - Bombchus
+0A - Hookshot
+0B - Longshot
+0C - Ice Arrow
+0D - Farore's Wind
+0E - Boomerang
+0F - Lens of Truth
+10 - Magic Bean
+11 - Megaton Hammer
+12 - Light Arrow
+13 - Nayru's Love
+
+14 - Empty Bottle
+15 - Red Potion
+16 - Green Potion
+17 - Blue Potion
+18 - Fairy in a Bottle
+19 - Fish in a Bottle
+1A - Milk
+1B - Letter
+1C - Blue Fire
+1D - Bugs
+1E - Poe ???
+1F - Half Milk
+20 - Poe ???
+
+21 - Weird Egg
+22 - Chicken
+23 - Zelda's Letter
+24 - Keaton Mask
+25 - Skull Mask
+26 - Spooky Mask
+27 - Bunny Hood
+28 - Goron Mask
+29 - Zora Mask
+2A - Gerudo Mask
+2B - Mask of Truth
+2C - Sold Out
+2D - Pocket Egg
+2E - Pocket Cucco
+2F - Cojiro
+30 - Odd Mushroom
+31 - Odd Poultice
+32 - Poacher's Saw
+33 - Broken Goron's Sword
+34 - Prescription
+35 - Eyeball Frog
+36 - World's Finest Eye Drops
+37 - Claim Check
+
+38 - Bow & Fire Arrows
+39 - Bow & Ice Arrows
+3A - Bow & Light Arrows
+
+3B - Kokiri Sword
+3C - Master Sword
+3D - Biggoron's Sword
+3E - Deku Shield
+3F - Hylian Shield
+40 - Mirror Shield
+41 - Kokiri Tunic
+42 - Goron Tunic
+43 - Zora Tunic
+44 - Kokiri Boots
+45 - Iron Boots
+46 - Hover Boots
+
+47 - Bullet Bag 1
+48 - Bullet Bag 2
+49 - Bullet Bag 3
+4A - Quiver 1
+4B - Quiver 2
+4C - Quiver 3
+4D - Bomb Bag 1
+4E - Bomb Bag 2
+4F - Bomb Bag 3
+50 - Goron Bracelet
+51 - Silver Gauntlets
+52 - Golden Gauntlets
+53 - Silver Scale
+54 - Gold Scale
+
+55 - Broken Goron's Sword???
+56 - Rupee Wallet 1???
+57 - Rupee Wallet 2???
+58 - Deku Seeds
+59 - Fishing Rod
