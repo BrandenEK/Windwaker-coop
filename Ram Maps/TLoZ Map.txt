@@ -1,5 +1,7 @@
 Zelda 1 Ram Map:
 
+*Values taken from http://www.bwass.org/romhack/zelda1/zelda1rammap.txt*
+
 
 ============================================================
 Game Info:
