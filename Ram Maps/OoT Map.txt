@@ -1,7 +1,8 @@
-### Ocarina of Time Ram Map:
+Ocarina of Time Ram Map:
 
 *All memory addresses shown here should be increased by 0x01*
 *Each heart is worth 0x10 health points*
+
 
 ============================================================
 Player stats:
@@ -74,7 +75,7 @@ Current consumables:
 11A669 (1) - Number of Magic Beans
 
 ============================================================
-# Equipment:
+Equipment:
 ============================================================
 
 11A66E (1) - Sword & Shield bitfield ??Big??
@@ -143,8 +144,6 @@ Unfinished:
 
 53EF8E3C & 53EF8E3E (1) - Item currently hovered over on Item Screen
 53EF8E46 (1) - Item currently hovered over on Equipment Screen
-
-
 
 ============================================================
 Item Ids:
