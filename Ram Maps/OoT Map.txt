@@ -19,6 +19,10 @@ Player stats:
 
 11A609 (1) - Spin Attack & Magic Meter
 
+11A60D (1) - Owns Biggoron's Sword
+11A60E (1) - Double Defense
+11A60F (1) - Enhanced Magic Meter
+
 ============================================================
 Current items:
 ============================================================
@@ -188,23 +192,59 @@ Dungeon Info:
 0 - Big Key, 1 - Compass, 2 - Map
 
 11A678 (1) - Forest Temple
-11A679 (1) - Forest Temple
-11A67A (1) - Forest Temple
-11A67B (1) - Forest Temple
-11A67C (1) - Forest Temple
-11A67D (1) - Forest Temple
-11A67E (1) - Forest Temple
-11A67F (1) - Forest Temple
-11A678 (1) - Forest Temple
-11A678 (1) - Forest Temple
-11A678 (1) - Forest Temple
-11A678 (1) - Forest Temple
+11A679 (1) - Jabu Jabu's Belly
+11A67A (1) - Dodongo's Cavern
+11A67B (1) - Inside the Deku Tree
+11A67C (1) - Shadow Temple
+11A67D (1) - Spirit Temple
+11A67E (1) - Water Temple
+11A67F (1) - Fire Temple
+
+11A680 (1) - ...
+11A681 (1) - ...
+11A682 (1) - Ice Cavern
+11A683 (1) - Bottom of the Well
+
+*Dungeon Key Counts*
+
+11A68C (1) - Forest Temple Keys
+11A68D (1) - ...
+11A68E (1) - ...
+11A68F (1) - ...
+11A690 (1) - Shadow Temple Keys
+11A691 (1) - Spirit Temple Keys
+11A692 (1) - Water Temple Keys
+11A693 (1) - Fire Temple Keys
+11A694 (1) - Gerudo Training Ground Keys
+11A695 (1) - ???
+11A696 (1) - Ice Cavern Keys
+11A697 (1) - Bottom of the Well Keys
+11A698 (1) - ???
+11A699 (1) - ???
+11A69A (1) - Ganon's Castle Keys
+11A69B (1) - Gerudo Fortress Keys
+
+============================================================
+Miscellaneous:
+============================================================
+
+11A69C (1) - # of hearts with white outline
+
+11A6A2 (1) - Gold Skulltulas
+
+============================================================
+More Dungeon Info:
+============================================================
+
+11A6B8 (2) - Deku Tree Visited Rooms
+
+11A6D4 (2) - Dodongo's Cavern Visited Rooms
+
+11A6F0 (2) - Jabu Jabu's Belly Visted Rooms
 
 ============================================================
 Unfinished:
 ============================================================
-
-11A6A2 (1) - Gold Skulltulas
 
 53EF8E3C & 53EF8E3E (1) - Item currently hovered over on Item Screen
 53EF8E46 (1) - Item currently hovered over on Equipment Screen
