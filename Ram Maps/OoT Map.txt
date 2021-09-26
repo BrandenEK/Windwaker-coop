@@ -1,40 +1,50 @@
 Ocarina of Time Ram Map:
 
-*All memory addresses shown here should be increased by 0x01*
-*Each heart is worth 0x10 health points*
-
 
 ============================================================
 Player stats:
 ============================================================
 
+11A5DE (2) - Current Time
+11A5E0 (1) - Day or Night
+
+11A5E4 (1) - Current Date
+
 11A5FC (2) - Maximum Health
+[Each heart is worth 0x10 health points]
 11A600 (1) - Current Magic
+
 11A602 (2) - Current Health
 11A606 (2) - Number of Rupees
+
+11A609 (1) - Spin Attack & Magic Meter
 
 ============================================================
 Current items:
 ============================================================
 
-11A638 (1) - Current C-Right item
-11A639 (1) - Current C-Down item
-11A63A (1) - Current C-Left item
-11A63B (1) - Current B item
+11A638 (1) - Current C-Right item ID
+11A639 (1) - Current C-Down item ID
+11A63A (1) - Current C-Left item ID
+11A63B (1) - Current B item ID
+
+11A63D (1) - Current C-Right item Idx
+11A63E (1) - Current C-Down item Idx
+11A63F (1) - Current C-Left item Idx
 
 11A642 (1) - Current Sword & Shield
-(0d17 for Kokiri Sword & Deku Shield,
-Add 1 for each sword, add 16 for each shield)
+[0d17 for Kokiri Sword & Deku Shield,
+Add 1 for each sword, add 16 for each shield]
 
 11A643 (1) - Current Tunic & Boots
-(0d17 for Kokiri Tunic & Kokiri Boots,
-Add 1 for each tunic, add 16 for each boot)
+[0d17 for Kokiri Tunic & Kokiri Boots,
+Add 1 for each tunic, add 16 for each boot]
 
 ============================================================
 Inventory items:
 ============================================================
 
-11A644 (1) - Fairy Bow (??)
+11A644 (1) - Fairy Bow (4)
 11A645 (1) - Bombs (02)
 11A646 (1) - Deku Nuts (01)
 11A647 (1) - Deku Sticks (00)
@@ -43,7 +53,7 @@ Inventory items:
 11A64A (1) - Din's Fire (05)
 11A64B (1) - Fire Arrows (04)
 11A64C (1) - Farore's Wind (0D)
-11A64D (1) - Ice Arrows (0C?)
+11A64D (1) - Ice Arrows (0C)
 11A64E (1) - Hookshot (0A-0B)
 11A64F (1) - Bombchus (09)
 11A650 (1) - Megaton Hammer (11)
@@ -53,9 +63,9 @@ Inventory items:
 11A654 (1) - Bottle 2
 11A655 (1) - Bottle 1
 11A656 (1) - Nayru's Love (13)
-11A657 (1) - Light Arrows (12?)
-11A658 (1) - Adult Trading Item (??)
-11A659 (1) - Child Trading Item (??)
+11A657 (1) - Light Arrows (12)
+11A658 (1) - Adult Trading Item (2D-37)
+11A659 (1) - Child Trading Item (21-2C)
 11A65A (1) - Bottle 4
 11A65B (1) - Bottle 3
 
@@ -78,7 +88,7 @@ Current consumables:
 Equipment:
 ============================================================
 
-11A66E (1) - Sword & Shield bitfield ??Big??
+11A66E (1) - Sword & Shield bitfield
 0 - Kokiri Sword
 1 - Master Sword
 2 - Giant's Knife
@@ -86,19 +96,53 @@ Equipment:
 4 - Deku Shield
 5 - Hylian Shield
 6 - Mirror Shield
-7 - ???
+7 - ...
 
 11A66F (1) - Tunic & Boots bitfield
 0 - Kokiri Tunic
 1 - Goron Tunic
 2 - Zora Tunic
-3 - ???
+3 - ...
 4 - Kokiri Boots
 5 - Iron Boots
 6 - Hover Boots
-7 - ???
+7 - ...
 
-11A670-2 (3?) - Capacity items?
+11A670 (1) - Quiver / Bomb Bag / Strength Bitfield
+0 - Quiver 30
+1 - Quiver 40
+0 & 1 - Quiver 50
+2 - ...
+3 - Bomb Bag 20
+4 - Bomb Bag 30
+3 & 4 - Bomb Bag 40
+5 - ...
+6 - Goron's Bracelet
+7 - Silver Gauntlets
+6 & 7 - Golden Gauntlets
+
+11A671 (1) - Diving / Wallet / Bullet Bag Bitfield
+0 - ...
+1 - Silver Scale
+2 - Golden Scale
+3 - ...
+4 - Wallet 200
+5 - Wallet 500
+6 - Bullet Bag 30
+7 - Bullet Bag 40
+6 & 7 - Bullet Bag 50
+
+11A672 (1) - Sticks / Nuts Bitfield
+0 - ...
+1 - Deku Sticks 10
+2 - Deku Sticks 20
+1 & 2 - Deku Sticks 30
+3 - ...
+4 - Deku Nuts 20
+5 - Deku Nuts 30
+4 & 5 - Deku Nuts 40
+6 - ...
+7 - ...
 
 ============================================================
 Quest status:
@@ -136,11 +180,31 @@ Quest status:
 
 11A677 (1) - Pieces of Heart (10, 20, or 30)
 
-11A6A2 (1) - Gold Skulltulas
+============================================================
+Dungeon Info:
+============================================================
+
+*Dungeon Major Items*
+0 - Big Key, 1 - Compass, 2 - Map
+
+11A678 (1) - Forest Temple
+11A679 (1) - Forest Temple
+11A67A (1) - Forest Temple
+11A67B (1) - Forest Temple
+11A67C (1) - Forest Temple
+11A67D (1) - Forest Temple
+11A67E (1) - Forest Temple
+11A67F (1) - Forest Temple
+11A678 (1) - Forest Temple
+11A678 (1) - Forest Temple
+11A678 (1) - Forest Temple
+11A678 (1) - Forest Temple
 
 ============================================================
 Unfinished:
 ============================================================
+
+11A6A2 (1) - Gold Skulltulas
 
 53EF8E3C & 53EF8E3E (1) - Item currently hovered over on Item Screen
 53EF8E46 (1) - Item currently hovered over on Equipment Screen
