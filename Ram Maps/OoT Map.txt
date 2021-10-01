@@ -6,6 +6,7 @@ Player stats:
 ============================================================
 
 11A5DE (2) - Current Time
+[0000 - FFFF, Day ~ 0x4550, Night ~ 0xC200]
 11A5E0 (1) - Day or Night
 
 11A5E4 (1) - Current Date
@@ -188,7 +189,7 @@ Quest status:
 Dungeon Info:
 ============================================================
 
-*Dungeon Major Items*
+*Dungeon Major Items Bitfield*
 0 - Big Key, 1 - Compass, 2 - Map
 
 11A678 (1) - Forest Temple
@@ -199,7 +200,6 @@ Dungeon Info:
 11A67D (1) - Spirit Temple
 11A67E (1) - Water Temple
 11A67F (1) - Fire Temple
-
 11A680 (1) - ...
 11A681 (1) - ...
 11A682 (1) - Ice Cavern
@@ -233,21 +233,27 @@ Miscellaneous:
 11A6A2 (1) - Gold Skulltulas
 
 ============================================================
-More Dungeon Info:
+Stage Infos:
 ============================================================
 
-11A6B8 (2) - Deku Tree Visited Rooms
-
-11A6D4 (2) - Dodongo's Cavern Visited Rooms
-
-11A6F0 (2) - Jabu Jabu's Belly Visted Rooms
+11A6A4 - 11B1AF
+[There are 101 stage infos.  Each stage info is 0x1C bytes long]
+0x00 (4) - Opened chests bitfield
+0x04 (4) - Events bitfield
+0x08 (4) - Mystery bitfield
+0x0C (4) - Item pickups bitfield
+0x10 (4) - ???
+0x14 (4) - Visited rooms bitfield
+0x18 (4?) - Visited floors bitfield
 
 ============================================================
 Unfinished:
 ============================================================
 
-53EF8E3C & 53EF8E3E (1) - Item currently hovered over on Item Screen
-53EF8E46 (1) - Item currently hovered over on Equipment Screen
+11B46C (5?) - Gold Skulltulas bitfield
+
+11B4A0? - 11B50F?
+Event bitfields
 
 ============================================================
 Item Ids:
@@ -284,9 +290,9 @@ Item Ids:
 1B - Letter
 1C - Blue Fire
 1D - Bugs
-1E - Poe ???
+1E - Big Poe
 1F - Half Milk
-20 - Poe ???
+20 - Normal Poe
 
 21 - Weird Egg
 22 - Chicken
@@ -318,7 +324,7 @@ Item Ids:
 
 3B - Kokiri Sword
 3C - Master Sword
-3D - Biggoron's Sword
+3D - Giant's Knife / Biggoron's Sword
 3E - Deku Shield
 3F - Hylian Shield
 40 - Mirror Shield
@@ -329,23 +335,50 @@ Item Ids:
 45 - Iron Boots
 46 - Hover Boots
 
-47 - Bullet Bag 1
-48 - Bullet Bag 2
-49 - Bullet Bag 3
-4A - Quiver 1
-4B - Quiver 2
-4C - Quiver 3
-4D - Bomb Bag 1
-4E - Bomb Bag 2
-4F - Bomb Bag 3
+47 - Bullet Bag 30
+48 - Bullet Bag 40
+49 - Bullet Bag 50
+4A - Quiver 30
+4B - Quiver 40
+4C - Quiver 50
+4D - Bomb Bag 20
+4E - Bomb Bag 30
+4F - Bomb Bag 40
 50 - Goron Bracelet
 51 - Silver Gauntlets
 52 - Golden Gauntlets
 53 - Silver Scale
-54 - Gold Scale
-
-55 - Broken Goron's Sword???
-56 - Rupee Wallet 1???
-57 - Rupee Wallet 2???
+54 - Golden Scale
+55 - Giant's Knife (Broken)
+56 - Rupee Wallet 200
+57 - Rupee Wallet 500
 58 - Deku Seeds
 59 - Fishing Rod
+
+5A - Minuet of Forest
+5B - Bolero of Fire
+5C - Serenade of Water
+5D - Requiem of Spirit
+5E - Nocturne of Shadow
+5F - Prelude of Light
+60 - Zelda's Lullaby
+61 - Epona's Song
+62 - Saria's Song
+63 - Sun's Song
+64 - Song of Time
+65 - Song of Storms
+
+66 - Forest Medallion
+67 - Fire Medallion
+68 - Water Medallion
+69 - Spirit Medallion
+6A - Shadow Medallion
+6B - Light Medallion
+6C - Kokiri's Emerald
+6D - Goron's Ruby
+6E - Zora's Sapphire
+
+6F - Stone of Agony
+70 - Gerudo's Card
+71 - Gold Skulltula
+72 - Piece of Heart
