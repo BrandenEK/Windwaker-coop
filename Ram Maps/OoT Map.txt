@@ -86,7 +86,7 @@ Current consumables:
 11A661 (1) - Number of Deku Seeds
 
 11A667 (1) - Number of Bombchu
-
+11A668 (1) - Magic Bean Popularity
 11A669 (1) - Number of Magic Beans
 
 ============================================================
@@ -382,3 +382,44 @@ Item Ids:
 70 - Gerudo's Card
 71 - Gold Skulltula
 72 - Piece of Heart
+
+============================================================
+Scene Ids:
+============================================================
+
+0 - Inside the Deku Tree
+1 - Dodongo's Cavern
+2 - Inside Jabu Jabu's Belly
+3 - Forest Temple
+4 - Fire Temple
+5 - Water Temple
+6 - Spirit Temple
+7 - Shadow Temple
+8 - Bottom of the Well
+9 - Ice Cavern
+
+12 - Gerudo Fortress Interior
+13 - Ganon's Castle Interior
+
+17 - Gohma's Lair
+
+
+81 - Hyrule Field
+82 - Kakariko Village
+83 - Graveyard
+84 - Zora's River
+
+87 - Lake Hylia
+88 - Zora's Domain
+89 - Zora's Fountain
+90 - Gerudo Valley
+91 - Lost Woods
+92 - Desert Colossus
+93 - Gerudo Fortress Exterior
+94 - Haunted Wasteland
+95 - Hyrule Castle Exterior
+96 - Death Mountain Trail
+97 - Death Mountain Crater
+98 - Goron City
+
+100 - Ganon's Castle Exterior
