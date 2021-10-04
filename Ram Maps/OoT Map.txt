@@ -11,6 +11,7 @@ Player stats:
 
 11A5E4 (1) - Current Date
 
+11A5F4 (8) - Player Name
 11A5FC (2) - Maximum Health
 [Each heart is worth 0x10 health points]
 11A600 (1) - Current Magic
@@ -247,6 +248,28 @@ Stage Infos:
 0x18 (4?) - Visited floors bitfield
 
 ============================================================
+Current Scene Stage Info:
+============================================================
+
+1CA1C8 (4) - Current Events
+1CA1CC (4) - Current Temporary Events
+
+1CA1D8 (4) - Current Chests
+1CA1DC (4) - Current Mystery
+
+1CA1E4 (4) - Current Item Pickups
+
+============================================================
+Later Miscellaneous:
+============================================================
+
+1C8546 (1) - Current Scene ID
+
+1E4E94 (8) - Main Menu File 1 Name Text 
+1E4E9C (8) - Main Menu File 2 Name Text
+1E4EA4 (8) - Main Menu File 3 Name Text
+
+============================================================
 Unfinished:
 ============================================================
 
@@ -254,6 +277,8 @@ Unfinished:
 
 11B4A0? - 11B50F?
 Event bitfields
+
+1D8E3C - 1D8E4F? - Current Pause Menu Hover Items
 
 ============================================================
 Item Ids:
