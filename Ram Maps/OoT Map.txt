@@ -2,6 +2,58 @@ Ocarina of Time Ram Map:
 
 
 ============================================================
+Song Data:
+============================================================
+
+10227C - 102A9B? - List of Song Musics
+There are 13 songs, each song is 160 bytes, each slot is 8 bytes (20 total slots)
+Byte 0 = Pitch
+Bytes 1-2 = 0
+Byte 3 = Duration
+Byte 4 = Volume
+Bytes 5-7 = 0
+
+102EFC - 102F70? - List of Song Notes
+There are 13 songs, each song is 9 bytes
+Byte 0 = Length of song
+Bytes 1-8 = Note
+
+Note = 
+{
+  0 = A
+  1 = Down
+  2 = Right
+  3 = Left
+  4 = Up
+}
+
+Pitch = 
+{
+  0x02 = A
+  0x05 = Down
+  0x09 = Right
+  0x0B = Left
+  0x0E = Up
+  0xFF = Rest
+}
+
+Song Indexes:
+0 - Minuet of Forest
+1 - Bolero of Fire
+2 - Serenade of Water
+3 - Requiem of Spirit
+4 - Nocturne of Shadow
+5 - Prelude of Light
+6 - Saria's Song
+7 - Epona's Song
+8 - Zelda's Lullaby
+9 - Sun's Song
+10 - Song of Time
+11 - Song of Storms
+12 - Scarecrow's Song
+
+
+============================================================
 Player stats:
 ============================================================
 
