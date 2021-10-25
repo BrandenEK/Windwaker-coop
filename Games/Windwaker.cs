@@ -1,27 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System.IO;
-using Newtonsoft.Json;
 
 namespace Windwaker_coop
 {
-    class FileSaver
+    class Windwaker : Game
     {
-        public List<MemoryLocation> memoryLocations = new List<MemoryLocation>();
+        public Windwaker() : base(0, "Windwaker", "dolphin") { }
 
-        public FileSaver(string serverDirectory)
+        //Individual functions
+
+        public override void addMemoryLocations(List<MemoryLocation> memoryLocations, SyncSettings settings)
         {
-            string ss = "";
-            if (File.Exists(serverDirectory + "\\syncSettings.json"))
-                ss = File.ReadAllText(serverDirectory + "\\syncSettings.json");
-            else
-            {
-                Program.displayError("syncSettings.json does not exist");
-            }
-            //Add catch exception to make sure syncSettings.json hasn't been tampered with
-            SyncSettings settings = JsonConvert.DeserializeObject<SyncSettings>(ss);
-
             //Min & Max values are in decimal format
             ComparisonData empty = new ComparisonData();
 
@@ -107,7 +97,7 @@ namespace Windwaker_coop
 
             //More equipment items
             if (settings.equipmentItems)
-            { 
+            {
                 memoryLocations.Add(new MemoryLocation(0x803B4CBC, 1, "", "flag", 9, 0, 15, 0, 0, empty)); //sword bitfield
                 memoryLocations.Add(new MemoryLocation(0x803B4CBD, 1, "", "flag", 9, 0, 3, 0, 0, empty)); //shield bitfield
                 memoryLocations.Add(new MemoryLocation(0x803B4CBE, 1, "", "flag", 9, 0, 1, 0, 0, empty)); //bracelets bitfield
@@ -151,9 +141,9 @@ namespace Windwaker_coop
                 memoryLocations.Add(new MemoryLocation(0x803B4CE4, 4, "extra chart bitfield*9", "chart", 9, 0, uint.MaxValue, 0, 0, empty));
                 memoryLocations.Add(new MemoryLocation(0x803B4CE8, 4, "extra chart bitfield*9", "chart", 9, 0, uint.MaxValue, 0, 0, empty));
 
-                for(int i = 0; i < 4; i++)
+                for (int i = 0; i < 4; i++)
                     memoryLocations.Add(new MemoryLocation(0x803B4CEC + 4 * (uint)i, 4, "", "chart", 9, 0, uint.MaxValue, 0, 0, empty)); //opened charts bitfield
-                for(int i = 0; i < 4; i++)
+                for (int i = 0; i < 4; i++)
                     memoryLocations.Add(new MemoryLocation(0x803B4CFC + 4 * (uint)i, 4, "", "location", 9, 0, uint.MaxValue, 0, 0, empty)); //obtained sunked treasure bitfield
             }
 
@@ -178,7 +168,7 @@ namespace Windwaker_coop
             if (settings.stageInfos)
             {
                 string[] stageNames = new string[] { "the Great Sea", "the Great Sea (alt)", "the Forsaken Fortress", "Dragon Roost Cavern", "the Forbidden Woods", "the Tower of the Gods", "the Earth Temple", "the Wind Temple",
-                "Ganon's Tower", "Flooded Hyrule", "a ship", "a house/misc", "a cave", "a cave/ship", "killing a blue chu chu", "a test map" };
+                        "Ganon's Tower", "Flooded Hyrule", "a ship", "a house/misc", "a cave", "a cave/ship", "killing a blue chu chu", "a test map" };
 
                 for (uint i = 0; i < 16; i++) //loops through each stage
                 {
@@ -195,7 +185,7 @@ namespace Windwaker_coop
                         memoryLocations.Add(new MemoryLocation(stageOffset + 32, 1, "small key to " + stageNames[i] + "*1", "dungeon", 0, 0, 255, 0, 0, empty)); //number of small keys
                     memoryLocations.Add(new MemoryLocation(stageOffset + 33, 1, "important*9", "dungeon", 9, 0, 255, 0, 0,
                         new ComparisonData(new uint[] { 0, 1, 2, 3, 4 }, new string[] { "map to " + stageNames[i] + "*0", "compass to " + stageNames[i] + "*0", "big key to " + stageNames[i] + "*0",
-                        "defeated the boss of " + stageNames[i] + "*9", "heart container in " + stageNames[i] + "*0" }, true))); //important dungeon flags bitfield
+                                "defeated the boss of " + stageNames[i] + "*9", "heart container in " + stageNames[i] + "*0" }, true))); //important dungeon flags bitfield
                     memoryLocations.Add(new MemoryLocation(stageOffset + 34, 2, "changed a stageInfoBuffer - you should not see this!*9", "buffer", 0, 0, ushort.MaxValue, 0, 0, empty));
                 }
 
@@ -248,170 +238,70 @@ namespace Windwaker_coop
             //Bag items - id & number - might sync
         }
 
-        public List<byte> getDefaultValues()
+        public override Cheat[] getCheats()
         {
-            List<byte> defaults = new List<byte>();
-            foreach (MemoryLocation memLoc in memoryLocations)
+            uint baseItem = 0x803B4C44, baseOwner = 0x803B4C59;
+            return new Cheat[]
             {
-                defaults.AddRange(Player.getByteArrayFromNumber(memLoc.defaultValue, memLoc.size));
-            }
-            return defaults;
-        }
+                new Cheat("telescope", baseItem, 32, false),
+                new Cheat("telescope", baseOwner, 1, false),
+                new Cheat("sail", baseItem + 1, 120, false),
+                new Cheat("sail", baseOwner + 1, 1, false),
+                new Cheat("windwaker", baseItem + 2, 34, false),
+                new Cheat("windwaker", baseOwner + 2, 1, false),
+                new Cheat("grappling-hook", baseItem + 3, 37, false),
+                new Cheat("grappling-hook", baseOwner + 3, 1, false),
+                new Cheat("spoils-bag", baseItem + 4, 36, false),
+                new Cheat("spoils-bag", baseOwner + 4, 1, false),
+                new Cheat("boomerang", baseItem + 5, 45, false),
+                new Cheat("boomerang", baseOwner + 5, 1, false),
+                new Cheat("deku-leaf", baseItem + 6, 52, false),
+                new Cheat("deku-leaf", baseOwner + 6, 1, false),
 
-        public List<byte> readFromMemory(Player player)
-        {
-            if (!checkMemoryInitialized(player.playerNumber))
-                return null;
+                new Cheat("tingle-tuner", baseItem + 7, 33, false),
+                new Cheat("tingle-tuner", baseOwner + 7, 1, false),
+                new Cheat("picto-box", baseItem + 8, 0, true, 2, new byte[] { 35, 38 }),
+                new Cheat("picto-box", baseOwner + 8, 0, true, 2, new byte[] { 1, 3 }),
+                new Cheat("iron-boots", baseItem + 9, 41, false),
+                new Cheat("iron-boots", baseOwner + 9, 1, false),
+                new Cheat("magic-armor", baseItem + 10, 42, false),
+                new Cheat("magic-armor", baseOwner + 10, 1, false),
+                new Cheat("bait-bag", baseItem + 11, 44, false),
+                new Cheat("bait-bag", baseOwner + 11, 1, false),
+                new Cheat("bow", baseItem + 12, 0, true, 3, new byte[] { 39, 53, 54 }),
+                new Cheat("bow", baseOwner + 12, 0, true, 3, new byte[] { 1, 3, 7 }),
+                new Cheat("bombs", baseItem + 13, 49, false),
+                new Cheat("bombs", baseOwner + 13, 1, false),
 
-            List<byte> memoryList = new List<byte>();
-            IntPtr sequenceStart = memoryLocations[0].startAddress;
-            int sequenceLength = 0;
+                new Cheat("bottle-1", baseItem + 14, 0, true, 4, new byte[] { 80, 87, 85, 88 }),
+                new Cheat("bottle-2", baseItem + 15, 0, true, 4, new byte[] { 80, 87, 85, 88 }),
+                new Cheat("bottle-3", baseItem + 16, 0, true, 4, new byte[] { 80, 87, 85, 88 }),
+                new Cheat("bottle-4", baseItem + 17, 0, true, 4, new byte[] { 80, 87, 85, 88 }),
+                new Cheat("delivery-bag", baseItem + 18, 48, false),
+                new Cheat("delivery-bag", baseOwner + 18, 1, false),
+                new Cheat("hookshot", baseItem + 19, 47, false),
+                new Cheat("hookshot", baseOwner + 19, 1, false),
+                new Cheat("skull-hammer", baseItem + 20, 51, false),
+                new Cheat("skull-hammer", baseOwner + 20, 1, false),
 
-            for (int i = 0; i < memoryLocations.Count; i++)
-            {
-                MemoryLocation loc = memoryLocations[i];
-                sequenceLength += loc.size;
+                new Cheat("sword", 0x803B4C16, 0, true, 4, new byte[] { 56, 57, 58, 62 }),
+                new Cheat("sword", 0x803B4CBC, 0, true, 4, new byte[] { 1, 3, 7, 15 }),
+                new Cheat("shield", 0x803B4C17, 0, true, 2, new byte[] { 59, 60 }),
+                new Cheat("shield", 0x803B4CBD, 0, true, 2, new byte[] { 1, 3 }),
+                new Cheat("power-bracelets", 0x803B4C18, 40, false),
+                new Cheat("power-bracelets", 0x803B4CBE, 1, false),
+                new Cheat("pirates-charm", 0x803B4CBF, 1, false),
+                new Cheat("heros-charm", 0x803B4CC0, 1, false),
 
-                if (!(i < memoryLocations.Count - 1 && memoryLocations[i + 1].startAddress == loc.startAddress + loc.size))
-                {
-                    //reads the entire sequence then resets the sequence
-                    Program.displayDebug("Reading contiguous region of " + sequenceLength + " bytes", 3);
-                    byte[] value = ReadWrite.Read(player.playerNumber, sequenceStart, sequenceLength);
-                    if (value == null)
-                    {
-                        Program.displayError("Aborting \"ReadFromMemory()\" due to null byte[]");
-                        return null;
-                    }
-                    memoryList.AddRange(value);
-                    sequenceLength = 0;
-                    if (i < memoryLocations.Count - 1)
-                        sequenceStart = memoryLocations[i + 1].startAddress;
-                }
-            }
-            return memoryList;
-        }
+                new Cheat("song", 0x803B4CC5, 0, true, 6, new byte[] { 1, 3, 7, 15, 31, 63 }),
+                new Cheat("pearl", 0x803B4CC7, 0, true, 3, new byte[] { 2, 6, 7 }),
+                new Cheat("triforce-shard", 0x803B4CC6, 0, true, 8, new byte[] { 1, 3, 7, 15, 31, 63, 127, 255 }),
 
-        public List<byte> readFromMemory(Player player, uint customStartAddress, int customSize)
-        {
-            if (!checkMemoryInitialized(player.playerNumber))
-                return null;
-
-            byte[] value = ReadWrite.Read(player.playerNumber, (IntPtr)customStartAddress, customSize);
-            if (value == null)
-            {
-                Program.displayError("Aborting \"ReadFromMemory\" due to null byte[]");
-                return null;
-            }
-            return new List<byte>(value);
-        }
-
-        public void saveToMemory(Player player, List<byte> saveData)
-        {
-            //Writes each value in saveData to the player's game's memory
-            int byteListIndex = 0;
-            IntPtr sequenceStart = memoryLocations[0].startAddress;
-            int sequenceStartIndex = 0;
-
-            for (int i = 0; i < memoryLocations.Count; i++)
-            {
-                MemoryLocation loc = memoryLocations[i];
-                byteListIndex += loc.size;
-
-                if (!(i < memoryLocations.Count - 1 && memoryLocations[i + 1].startAddress == loc.startAddress + loc.size))
-                {
-                    Program.displayDebug("Writing contiguous region of " + (byteListIndex - sequenceStartIndex) + " bytes", 3);
-                    ReadWrite.Write(player.playerNumber, sequenceStart, saveData.GetRange(sequenceStartIndex, byteListIndex - sequenceStartIndex).ToArray());
-                    if (i < memoryLocations.Count - 1)
-                    {
-                        sequenceStartIndex = byteListIndex;
-                        sequenceStart = memoryLocations[i + 1].startAddress;
-                    }
-                }
-            }
-        }
-
-        public void saveToMemory(Player player, List<byte> saveData, uint customStartAddress = 0, int customSize = 0)
-        {
-            //Writes each value in saveData to the player's game's memory
-            if (!checkMemoryInitialized(player.playerNumber))
-                return;
-            ReadWrite.Write(player.playerNumber, (IntPtr)customStartAddress, saveData.ToArray());
-        }
-
-        public List<byte> readFromFile(string fileName)
-        {
-            Program.displayDebug("Reading data from " + fileName, 1);
-            int timeStart = Environment.TickCount;
-
-            if (File.Exists(fileName))
-            {
-                string[] text = File.ReadAllLines(fileName);
-                List<byte> outputData = new List<byte>();
-
-                string debugOutput = "";
-                foreach (string line in text)
-                {
-                    outputData.Add(byte.Parse(line, System.Globalization.NumberStyles.HexNumber));
-                    debugOutput += line + " ";
-                }
-                Program.displayDebug(debugOutput, 3);
-                Program.displayDebug("Time taken to read from file: " + (Environment.TickCount - timeStart) + " milliseconds", 3);
-                return outputData;
-            }
-            else
-            {
-                Program.displayError("Save file at " + fileName + " does not exist");
-                return null;
-            }
-        }
-
-        public void SaveToFile(string fileName, List<byte> saveData)
-        {
-            if (saveData == null)
-                return;
-
-            Program.displayDebug("Saving data to " + fileName, 1);
-            int timeStart = Environment.TickCount;
-
-            string outputString = "";
-            string debugOutput = "";
-            foreach (byte b in saveData)
-            {
-                outputString += b.ToString("X") + "\n";
-                debugOutput += b.ToString("X") + " ";
-            }
-            Program.displayDebug(debugOutput, 3);
-            File.WriteAllText(fileName, outputString);
-            Program.displayDebug("Time taken to write to file: " + (Environment.TickCount - timeStart) + " milliseconds", 3);
-        }
-
-        private bool checkMemoryInitialized(int playerNumber)
-        {
-            byte[] wwBase = ReadWrite.Read(playerNumber, (IntPtr)0x7FFF0000, 6);
-            string word = "";
-            if (wwBase != null)
-                word = Encoding.UTF8.GetString(wwBase);
-            //Console.WriteLine("Base: (" + word + ")");
-            if (word != "" && word != "GZLE01")
-            {
-                Program.displayError("Wind Waker memory not initialized!");
-                return false;
-            }
-            return true;
-        }
-
-        //Takes the current stageInfo & copies it onto the corresponding unchanging stageInfo or vice versa
-        public void updateCurrentStageInfo(Player player, byte stageId, bool currentToStatic)
-        {
-            Program.displayDebug("Updating stageInfo " + stageId, 2);
-            uint from, to;
-
-            if (currentToStatic) { from = 0x803B5380; to = 0x803B4F88 + (uint)stageId * 36; }
-            else { from = 0x803B4F88 + (uint)stageId * 36; to = 0x803B5380; }
-
-            List<byte> stageDataToCopy = readFromMemory(player, from, 35);
-            if (stageDataToCopy != null)
-                saveToMemory(player, stageDataToCopy, to, stageDataToCopy.Count);
+                new Cheat("wallet", 0x803B4C1A, 0, true, 3, new byte[] { 0, 1, 2 }),
+                new Cheat("magic", 0x803B4C1B, 0, true, 2, new byte[] { 16, 32 }),
+                new Cheat("quiver", 0x803B4C77, 0, true, 3, new byte[] { 30, 60, 99 }),
+                new Cheat("bomb-bag", 0x803B4C78, 0, true, 3, new byte[] { 30, 60, 99 })
+            };
         }
     }
 }

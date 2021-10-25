@@ -1,0 +1,502 @@
+Ocarina of Time Ram Map:
+
+
+============================================================
+Song Data:
+============================================================
+
+10227C - 102A9B? - List of Song Musics
+There are 13 songs, each song is 160 bytes, each slot is 8 bytes (20 total slots)
+Byte 0 = Pitch
+Bytes 1-2 = 0
+Byte 3 = Duration
+Byte 4 = Volume
+Bytes 5-7 = 0
+
+102EFC - 102F70? - List of Song Notes
+There are 13 songs, each song is 9 bytes
+Byte 0 = Length of song
+Bytes 1-8 = Note
+
+Note = 
+{
+  0 = A
+  1 = Down
+  2 = Right
+  3 = Left
+  4 = Up
+}
+
+Pitch = 
+{
+  0x02 = A
+  0x05 = Down
+  0x09 = Right
+  0x0B = Left
+  0x0E = Up
+  0xFF = Rest
+}
+
+Song Indexes:
+0 - Minuet of Forest
+1 - Bolero of Fire
+2 - Serenade of Water
+3 - Requiem of Spirit
+4 - Nocturne of Shadow
+5 - Prelude of Light
+6 - Saria's Song
+7 - Epona's Song
+8 - Zelda's Lullaby
+9 - Sun's Song
+10 - Song of Time
+11 - Song of Storms
+12 - Scarecrow's Song
+
+
+============================================================
+Player stats:
+============================================================
+
+11A5DE (2) - Current Time
+[0000 - FFFF, Day ~ 0x4550, Night ~ 0xC200]
+11A5E0 (1) - Day or Night
+
+11A5E4 (1) - Current Date
+
+11A5F4 (8) - Player Name
+11A5FC (2) - Maximum Health
+[Each heart is worth 0x10 health points]
+11A600 (1) - Current Magic
+
+11A602 (2) - Current Health
+11A606 (2) - Number of Rupees
+
+11A609 (1) - Spin Attack & Magic Meter
+
+11A60D (1) - Owns Biggoron's Sword
+11A60E (1) - Double Defense
+11A60F (1) - Enhanced Magic Meter
+
+============================================================
+Current items:
+============================================================
+
+11A638 (1) - Current C-Right item ID
+11A639 (1) - Current C-Down item ID
+11A63A (1) - Current C-Left item ID
+11A63B (1) - Current B item ID
+
+11A63D (1) - Current C-Right item Idx
+11A63E (1) - Current C-Down item Idx
+11A63F (1) - Current C-Left item Idx
+
+11A642 (1) - Current Sword & Shield
+[0d17 for Kokiri Sword & Deku Shield,
+Add 1 for each sword, add 16 for each shield]
+
+11A643 (1) - Current Tunic & Boots
+[0d17 for Kokiri Tunic & Kokiri Boots,
+Add 1 for each tunic, add 16 for each boot]
+
+============================================================
+Inventory items:
+============================================================
+
+11A644 (1) - Fairy Bow (4)
+11A645 (1) - Bombs (02)
+11A646 (1) - Deku Nuts (01)
+11A647 (1) - Deku Sticks (00)
+11A648 (1) - Ocarina (07-08)
+11A649 (1) - Fairy Slingshot (06)
+11A64A (1) - Din's Fire (05)
+11A64B (1) - Fire Arrows (04)
+11A64C (1) - Farore's Wind (0D)
+11A64D (1) - Ice Arrows (0C)
+11A64E (1) - Hookshot (0A-0B)
+11A64F (1) - Bombchus (09)
+11A650 (1) - Megaton Hammer (11)
+11A651 (1) - Magic Bean (10)
+11A652 (1) - Lens of Truth (0F)
+11A653 (1) - Boomerang (0E)
+11A654 (1) - Bottle 2
+11A655 (1) - Bottle 1
+11A656 (1) - Nayru's Love (13)
+11A657 (1) - Light Arrows (12)
+11A658 (1) - Adult Trading Item (2D-37)
+11A659 (1) - Child Trading Item (21-2C)
+11A65A (1) - Bottle 4
+11A65B (1) - Bottle 3
+
+============================================================
+Current consumables:
+============================================================
+
+11A65C (1) - Number of Arrows
+11A65D (1) - Number of Bombs
+11A65E (1) - Number of Deku Nuts
+11A65F (1) - Number of Deku Sticks
+
+11A661 (1) - Number of Deku Seeds
+
+11A667 (1) - Number of Bombchu
+11A668 (1) - Magic Bean Popularity
+11A669 (1) - Number of Magic Beans
+
+============================================================
+Equipment:
+============================================================
+
+11A66E (1) - Sword & Shield bitfield
+0 - Kokiri Sword
+1 - Master Sword
+2 - Giant's Knife
+3 - Giant's Knife (Broken)
+4 - Deku Shield
+5 - Hylian Shield
+6 - Mirror Shield
+7 - ...
+
+11A66F (1) - Tunic & Boots bitfield
+0 - Kokiri Tunic
+1 - Goron Tunic
+2 - Zora Tunic
+3 - ...
+4 - Kokiri Boots
+5 - Iron Boots
+6 - Hover Boots
+7 - ...
+
+11A670 (1) - Quiver / Bomb Bag / Strength Bitfield
+0 - Quiver 30
+1 - Quiver 40
+0 & 1 - Quiver 50
+2 - ...
+3 - Bomb Bag 20
+4 - Bomb Bag 30
+3 & 4 - Bomb Bag 40
+5 - ...
+6 - Goron's Bracelet
+7 - Silver Gauntlets
+6 & 7 - Golden Gauntlets
+
+11A671 (1) - Diving / Wallet / Bullet Bag Bitfield
+0 - ...
+1 - Silver Scale
+2 - Golden Scale
+3 - ...
+4 - Wallet 200
+5 - Wallet 500
+6 - Bullet Bag 30
+7 - Bullet Bag 40
+6 & 7 - Bullet Bag 50
+
+11A672 (1) - Sticks / Nuts Bitfield
+0 - ...
+1 - Deku Sticks 10
+2 - Deku Sticks 20
+1 & 2 - Deku Sticks 30
+3 - ...
+4 - Deku Nuts 20
+5 - Deku Nuts 30
+4 & 5 - Deku Nuts 40
+6 - ...
+7 - ...
+
+============================================================
+Quest status:
+============================================================
+
+11A674 (1) - Medallion / Song bitfield
+0 - Forest Medallion
+1 - Fire Medallion
+2 - Water Medallion
+3 - Spirit Medallion
+4 - Shadow Medallion
+5 - Light Medallion
+6 - Minuet of Forest
+7 - Bolero of Fire
+
+11A675 (1) - Song bitfield
+0 - Serenade of Water
+1 - requiem of Spirit
+2 - Nocturne of Shadow
+3 - Prelude of Light
+4 - Zelda's Lullaby
+5 - Epona's Song
+6 - Saria's Song
+7 - Sun's Song
+
+11A676 (1) - Song / Quest bitfield
+0 - Song of Time
+1 - Song of Storms
+2 - Kokiri's Emerald
+3 - Goron's Ruby
+4 - Zora's Sapphire
+5 - Stone of Agony
+6 - Gerudo's Card
+7 - Have at least 1 GS
+
+11A677 (1) - Pieces of Heart (10, 20, or 30)
+
+============================================================
+Dungeon Info:
+============================================================
+
+*Dungeon Major Items Bitfield*
+0 - Big Key, 1 - Compass, 2 - Map
+
+11A678 (1) - Forest Temple
+11A679 (1) - Jabu Jabu's Belly
+11A67A (1) - Dodongo's Cavern
+11A67B (1) - Inside the Deku Tree
+11A67C (1) - Shadow Temple
+11A67D (1) - Spirit Temple
+11A67E (1) - Water Temple
+11A67F (1) - Fire Temple
+11A680 (1) - ...
+11A681 (1) - ...
+11A682 (1) - Ice Cavern
+11A683 (1) - Bottom of the Well
+
+*Dungeon Key Counts*
+
+11A68C (1) - Forest Temple Keys
+11A68D (1) - ...
+11A68E (1) - ...
+11A68F (1) - ...
+11A690 (1) - Shadow Temple Keys
+11A691 (1) - Spirit Temple Keys
+11A692 (1) - Water Temple Keys
+11A693 (1) - Fire Temple Keys
+11A694 (1) - Gerudo Training Ground Keys
+11A695 (1) - ???
+11A696 (1) - Ice Cavern Keys
+11A697 (1) - Bottom of the Well Keys
+11A698 (1) - ???
+11A699 (1) - ???
+11A69A (1) - Ganon's Castle Keys
+11A69B (1) - Gerudo Fortress Keys
+
+============================================================
+Miscellaneous:
+============================================================
+
+11A69C (1) - # of hearts with white outline
+
+11A6A2 (1) - Gold Skulltulas
+
+============================================================
+Stage Infos:
+============================================================
+
+11A6A4 - 11B1AF
+[There are 101 stage infos.  Each stage info is 0x1C bytes long]
+0x00 (4) - Opened chests bitfield
+0x04 (4) - Events bitfield
+0x08 (4) - Mystery bitfield
+0x0C (4) - Item pickups bitfield
+0x10 (4) - ???
+0x14 (4) - Visited rooms bitfield
+0x18 (4?) - Visited floors bitfield
+
+============================================================
+Current Scene Stage Info:
+============================================================
+
+1CA1C8 (4) - Current Events
+1CA1CC (4) - Current Temporary Events
+
+1CA1D8 (4) - Current Chests
+1CA1DC (4) - Current Mystery
+
+1CA1E4 (4) - Current Item Pickups
+
+============================================================
+Later Miscellaneous:
+============================================================
+
+1C8546 (1) - Current Scene ID
+
+1E4E94 (8) - Main Menu File 1 Name Text 
+1E4E9C (8) - Main Menu File 2 Name Text
+1E4EA4 (8) - Main Menu File 3 Name Text
+
+============================================================
+Unfinished:
+============================================================
+
+11B46C (5?) - Gold Skulltulas bitfield
+
+11B4A0? - 11B50F?
+Event bitfields
+
+1D8E3C - 1D8E4F? - Current Pause Menu Hover Items
+
+============================================================
+Item Ids:
+============================================================
+
+00 - Deku Stick
+01 - Deku Nut
+02 - Bombs
+03 - Fairy Bow
+04 - Fire Arrow
+05 - Din's Fire
+06 - Fairy Slingshot
+07 - Fairy Ocarina
+08 - Ocarina of Time
+09 - Bombchus
+0A - Hookshot
+0B - Longshot
+0C - Ice Arrow
+0D - Farore's Wind
+0E - Boomerang
+0F - Lens of Truth
+10 - Magic Bean
+11 - Megaton Hammer
+12 - Light Arrow
+13 - Nayru's Love
+
+14 - Empty Bottle
+15 - Red Potion
+16 - Green Potion
+17 - Blue Potion
+18 - Fairy in a Bottle
+19 - Fish in a Bottle
+1A - Milk
+1B - Letter
+1C - Blue Fire
+1D - Bugs
+1E - Big Poe
+1F - Half Milk
+20 - Normal Poe
+
+21 - Weird Egg
+22 - Chicken
+23 - Zelda's Letter
+24 - Keaton Mask
+25 - Skull Mask
+26 - Spooky Mask
+27 - Bunny Hood
+28 - Goron Mask
+29 - Zora Mask
+2A - Gerudo Mask
+2B - Mask of Truth
+2C - Sold Out
+2D - Pocket Egg
+2E - Pocket Cucco
+2F - Cojiro
+30 - Odd Mushroom
+31 - Odd Poultice
+32 - Poacher's Saw
+33 - Broken Goron's Sword
+34 - Prescription
+35 - Eyeball Frog
+36 - World's Finest Eye Drops
+37 - Claim Check
+
+38 - Bow & Fire Arrows
+39 - Bow & Ice Arrows
+3A - Bow & Light Arrows
+
+3B - Kokiri Sword
+3C - Master Sword
+3D - Giant's Knife / Biggoron's Sword
+3E - Deku Shield
+3F - Hylian Shield
+40 - Mirror Shield
+41 - Kokiri Tunic
+42 - Goron Tunic
+43 - Zora Tunic
+44 - Kokiri Boots
+45 - Iron Boots
+46 - Hover Boots
+
+47 - Bullet Bag 30
+48 - Bullet Bag 40
+49 - Bullet Bag 50
+4A - Quiver 30
+4B - Quiver 40
+4C - Quiver 50
+4D - Bomb Bag 20
+4E - Bomb Bag 30
+4F - Bomb Bag 40
+50 - Goron Bracelet
+51 - Silver Gauntlets
+52 - Golden Gauntlets
+53 - Silver Scale
+54 - Golden Scale
+55 - Giant's Knife (Broken)
+56 - Rupee Wallet 200
+57 - Rupee Wallet 500
+58 - Deku Seeds
+59 - Fishing Rod
+
+5A - Minuet of Forest
+5B - Bolero of Fire
+5C - Serenade of Water
+5D - Requiem of Spirit
+5E - Nocturne of Shadow
+5F - Prelude of Light
+60 - Zelda's Lullaby
+61 - Epona's Song
+62 - Saria's Song
+63 - Sun's Song
+64 - Song of Time
+65 - Song of Storms
+
+66 - Forest Medallion
+67 - Fire Medallion
+68 - Water Medallion
+69 - Spirit Medallion
+6A - Shadow Medallion
+6B - Light Medallion
+6C - Kokiri's Emerald
+6D - Goron's Ruby
+6E - Zora's Sapphire
+
+6F - Stone of Agony
+70 - Gerudo's Card
+71 - Gold Skulltula
+72 - Piece of Heart
+
+============================================================
+Scene Ids:
+============================================================
+
+0 - Inside the Deku Tree
+1 - Dodongo's Cavern
+2 - Inside Jabu Jabu's Belly
+3 - Forest Temple
+4 - Fire Temple
+5 - Water Temple
+6 - Spirit Temple
+7 - Shadow Temple
+8 - Bottom of the Well
+9 - Ice Cavern
+
+12 - Gerudo Fortress Interior
+13 - Ganon's Castle Interior
+
+17 - Gohma's Lair
+
+
+81 - Hyrule Field
+82 - Kakariko Village
+83 - Graveyard
+84 - Zora's River
+
+87 - Lake Hylia
+88 - Zora's Domain
+89 - Zora's Fountain
+90 - Gerudo Valley
+91 - Lost Woods
+92 - Desert Colossus
+93 - Gerudo Fortress Exterior
+94 - Haunted Wasteland
+95 - Hyrule Castle Exterior
+96 - Death Mountain Trail
+97 - Death Mountain Crater
+98 - Goron City
+
+100 - Ganon's Castle Exterior

@@ -1,0 +1,60 @@
+Zelda 1 Ram Map:
+
+*Values taken from http://www.bwass.org/romhack/zelda1/zelda1rammap.txt*
+
+
+============================================================
+Game Info:
+============================================================
+
+630 - Death Count
+
+============================================================
+Items:
+============================================================
+
+657 - Sword Level (0 = Wooden, 1 = White, 2 = Magical)
+658 - Number of Bombs
+659 - Arrow Type (0 = None, 1 = Regular, 2 = Silver)
+65A - Bow
+65B - Candle Type (0 = None, 1 = Blue, 2 = Red)
+65C - Whistle
+65D - Food
+65E - Potion Type (0 = None/letter, 1 = Blue, 2 = Red)
+65F - Magical Rod
+660 - Raft
+661 - Magic Book
+662 - Ring Type (0 = None, 1 = Blue, 2 = Red)
+663 - Stepladder
+664 - Magical Key
+665 - Power Bracelet
+666 - Letter
+
+============================================================
+Dungeon Items:
+============================================================
+
+667 - Compass bitfield (1 bit per dungeon)
+668 - Map bitfield (1 bit per dungeon)
+669 - Dungeon 9 Compass 
+66A - Dungeon 9 Map
+
+============================================================
+Player Stats:
+============================================================
+
+66D - Rupee Count
+66E - Number of Keys
+66F - Maximum & Current Health ???
+670 - Last Heart Value
+671 - Triforce Pieces bitfield
+
+============================================================
+More Items:
+============================================================
+
+674 - Boomerang
+675 - Magical Boomerang
+676 - Magical Shield
+
+67C - Maximum Bombs

@@ -1,26 +1,27 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace Windwaker_coop
 {
     static class ReadWrite
     {
-        static IntPtr dolphinProcess = IntPtr.Zero;
+        static IntPtr gameProcess = IntPtr.Zero;
 
         //Returns whether dolphin is running or not and sets the processHandle accordingly
-        public static bool getDolphinProcess(int playerNumber)
+        public static bool getGameProcess(int playerNumber)
         {
-            Process[] dolphins = Process.GetProcessesByName("dolphin");
-            if (dolphins.Length > playerNumber - 1)
+            Process[] processes = Process.GetProcessesByName(Program.currGame.processName);
+            if (processes.Length > playerNumber - 1)
             {
-                dolphinProcess = dolphins[playerNumber - 1].Handle;
+                gameProcess = processes[playerNumber - 1].Handle;
                 return true;
             }
             else
             {
-                Program.displayError("Dolphin is not running!");
-                dolphinProcess = IntPtr.Zero;
+                Program.displayError($"{Program.currGame.processName} is not running!");
+                gameProcess = IntPtr.Zero;
                 return false;
             }
         }
@@ -32,22 +33,33 @@ namespace Windwaker_coop
 
         public static void Write(int playerNumber, IntPtr address, byte[] bytes)
         {
-            if (!getDolphinProcess(playerNumber))
+            if (!getGameProcess(playerNumber))
                 return;
             int bytesWritten = 0;
 
-            WriteProcessMemory(dolphinProcess, address, bytes, bytes.Length, out bytesWritten);
+            WriteProcessMemory(gameProcess, address, bytes, bytes.Length, out bytesWritten);
         }
 
         public static byte[] Read(int playerNumber, IntPtr address, int size)
         {
-            if (!getDolphinProcess(playerNumber))
+            if (!getGameProcess(playerNumber))
                 return null;
             int bytesWritten = 0;
             byte[] result = new byte[size];
 
-            ReadProcessMemory(dolphinProcess, address, result, size, out bytesWritten);
+            ReadProcessMemory(gameProcess, address, result, size, out bytesWritten);
             return result;
+        }
+
+        //Assumes neither are null
+        public static bool checkIfSame(List<byte> one, List<byte> two)
+        {
+            if (one.Count != two.Count)
+                return false;
+            for (int i = 0; i < one.Count; i++)
+                if (one[i] != two[i])
+                    return false;
+            return true;
         }
 
         public static bool bitSet(uint number, uint bit)

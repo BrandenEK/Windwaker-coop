@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Configuration;
 
 namespace Windwaker_coop
@@ -11,51 +10,94 @@ namespace Windwaker_coop
         public static int syncDelay = 5000;
         public static bool enableCheats = true;
 
-        private static Player currPlayer;
+        private static User currUser;
         private static Cheater currCheater;
+
+        private static Game[] games;
+        public static Game currGame;
+        public static string tempIp = "172.16.16.60";
+
 
         static void Main(string[] args)
         {
+            Console.Title = "The Legend of Zelda Coop Server/Client";
             setConsoleColor(3);
-            Console.WriteLine("-WindWaker Coop-\n");
-            string invalidCharacters = "<>:\"/\\|?*";
+            Console.WriteLine("-The Legend of Zelda Coop-\n");
             readConfigFile();
+            games = loadGames();
+            currGame = games[2];
 
-            //Ask for the server name & check for invalid characters
-            string serverName = askQuestion("Enter server name: ");
-            for (int i = 0; i < serverName.Length; i++)
+            /*string hostName = Dns.GetHostName();
+            Console.WriteLine("Host name: " + hostName);
+            string ipAd = Dns.GetHostEntry(hostName).AddressList[0].ToString();
+            Console.WriteLine("Ip address: " + ipAd);*/
+
+            //Gets the type - server or client
+            string type = askQuestion("Is this instance a server or a client? (s/c): ").ToLower();
+            string startText = "";
+
+            if (type == "s" || type == "server")
             {
-                if (invalidCharacters.Contains(serverName.Substring(i, 1)))
+                Console.Title = $"{currGame.gameName} Coop Server";
+
+                //Gets the ip address
+                string ip = askQuestion("Enter ip address of this machine: ");
+                if (ip == "x")
+                    ip = tempIp;
+
+                //Creates new server object
+                currUser = new Server(ip, 25565);
+                startText = "Wait until everybody is ready, then press any key to start the server...";
+            }
+            else if (type == "c" || type == "client")
+            {
+                Console.Title = $"{currGame.gameName} Coop Client";
+
+                //gets the ip address
+                string ip = askQuestion("Enter ip address of the server: ");
+                if (ip == "x")
+                    ip = tempIp;
+
+                //gets the player name
+                string playerName = askQuestion("Enter player name: ").Trim();
+                if (playerName.Length < 1 || playerName.Contains('~'))
                 {
-                    displayError("These characters can not be used in the server name: " + invalidCharacters);
+                    displayError("That player name is invalid");
                     EndProgram();
                 }
-            }
-            string serverDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\WW-coop\\servers\\" + serverName;
 
-            //Create the server directory if it doesn't already exist
-            setConsoleColor(4);
-            if (File.Exists(serverDirectory + "\\host.txt") && File.Exists(serverDirectory + "\\messageLog.txt") && File.Exists(serverDirectory + "\\syncSettings.json"))
-                Console.WriteLine("Joining a pre-existing server...");
+                //Creates new client & cheater object
+                currUser = new Client(ip, 25565, playerName);
+                currCheater = new Cheater((Client)currUser);
+                startText = "Wait until your game is started, then press any key to connect to the server...";
+            }
             else
             {
-                Console.WriteLine("Creating a brand new server...");
-                Directory.CreateDirectory(serverDirectory);
-
-                File.WriteAllText(serverDirectory + "\\messageLog.txt", "");
-                File.WriteAllText(serverDirectory + "\\syncSettings.json", SyncSettings.getDefaultSettings());
-                FileSaver fs = new FileSaver(serverDirectory);
-                fs.SaveToFile(serverDirectory + "\\host.txt", fs.getDefaultValues());
-            }
-
-            //Ask for the player name & make sure it is valid
-            string playerName = askQuestion("Enter player name: ").Trim();
-            if (playerName.Length < 1)
-            {
-                displayError("That player name is invalid");
+                displayError("The given input was neither 's' nor 'c'");
                 EndProgram();
             }
 
+            //Begin host/client and start command loop
+            setConsoleColor(3);
+            Console.WriteLine(startText);
+            Console.ReadKey();
+            Console.Clear();
+            setConsoleColor(3);
+            Console.WriteLine($"-{currGame.gameName} Coop-\n");
+
+            if (currUser != null)
+            {
+                currUser.Begin();
+                commandLoop();
+            }
+            else
+            {
+                displayError("Something has gone terribly wrong");
+            }
+
+            EndProgram();
+
+            /*
             //Ask for the player number & make sure it is valid
             string num = askQuestion("Enter player number (Which instance of dolphin is this?): ");
             if (!(num.Length == 1 && "1234".Contains(num)))  //Change for max number of players
@@ -64,24 +106,7 @@ namespace Windwaker_coop
                 EndProgram();
             }
             int playerNumber = int.Parse(num);
-
-            currPlayer = new Player(playerName, playerNumber, serverName, serverDirectory);
-            currCheater = new Cheater(currPlayer);
-
-            //Begin looping and saving to a file
-            setConsoleColor(3);
-            Console.WriteLine("Wait until your game is started, then press any key to start syncing...");
-            Console.ReadKey();
-            Console.Clear();
-            setConsoleColor(3);
-            Console.WriteLine("-WindWaker Coop-\n");
-
-            currPlayer.nm.SendNotifications(playerName + " has joined the game!", 1);
-            currPlayer.beginSyncing();
-            commandLoop();
-            currPlayer.nm.SendNotifications(playerName + " has left the game!", 1);
-
-            EndProgram();
+            */
         }
 
         static void commandLoop()
@@ -90,10 +115,135 @@ namespace Windwaker_coop
             while (lastCommand != "stop")
             {
                 setConsoleColor(5);
+                bool validCommand = true;
                 lastCommand = Console.ReadLine().ToLower().Trim();
+                string[] words = lastCommand.Split(' ');
+
+                //Displaying debug output
+                string debugOuput = "Processing command:";
+                foreach (string word in words)
+                    debugOuput += " \"" + word + "\"";
+                displayDebug(debugOuput, 2);
+
+                //Processes multiword command
+                if (words.Length > 1)
+                {
+                    lastCommand = words[0];
+                    foreach (string word in words)
+                    {
+                        if (word == "")
+                        {
+                            validCommand = false;
+                            break;
+                        }
+                    }
+                }
                 setConsoleColor(4);
 
-                if (lastCommand == "pause")
+                //If the command is valid, check which one and use it
+                if (validCommand)
+                {
+                    if (currUser.GetType() == typeof(Client))
+                    {
+                        //Client commands
+                        Client client = (Client)currUser;
+
+                        if (lastCommand == "help")
+                        {
+                            Console.WriteLine("Available commands:\npause - temporarily disables syncing to and from the host\nunpause - resumes syncing to and from the host\n" +
+                                "stop - ends syncing and closes the application\nsay [message] - sends a message to everyone in the server\n" +
+                                "give [item] [number] - gives player the specified item (If cheats are enabled)\nhelp - lists available commands\n");
+                        }
+                        else if (lastCommand == "pause")
+                        {
+                            //command not implemented yet
+                        }
+                        else if (lastCommand == "unpause")
+                        {
+                            //command not implemented yet
+                        }
+                        else if (lastCommand == "say")
+                        {
+                            //takes in a message and sends it to everyone else in the game
+                            if (words.Length > 1)
+                            {
+                                string text = "";
+                                for (int i = 1; i < words.Length; i++)
+                                    text += words[i] + " ";
+                                client.sendTextMessage(text);
+                            }
+                            else
+                                Console.WriteLine("Command 'say' takes at least 1 argument!\n");
+                        }
+                        else if (lastCommand == "give")
+                        {
+                            //gives the player a specified item
+                            if (currCheater != null)
+                            {
+                                string result = currCheater.processCommand(words);
+                                setConsoleColor(4);
+                                Console.WriteLine(result + "\n");
+                            }
+                            else
+                                displayError("Cheater object has not been initialized");
+                        }
+                        else if (lastCommand == "ping")
+                        {
+                            //sends a test to the server to determine the delay
+                            Console.WriteLine("Sending delay test!\n");
+                            client.sendDelayTest();
+                        }
+                        else if (lastCommand != "stop")
+                        {
+                            Console.WriteLine("Command '" + lastCommand + "' not valid.\n");
+                        }
+                    }
+                    else if (currUser.GetType() == typeof(Server))
+                    {
+                        //server commands
+                        Server server = (Server)currUser;
+
+                        if (lastCommand == "reset")
+                        {
+                            //resets the values stored in the host file - do this while not currently in a game
+                            server.setServerToDefault();
+                            Console.WriteLine("Server data has been reset to default!\n");
+                            server.sendNotification("Server data has been reset to default!", true);
+                        }
+                        else if (lastCommand == "kick")
+                        {
+                            //kicks the inputted player ip address from the game
+                            if (words.Length == 2)
+                            {
+                                server.kickPlayer(words[1]);
+                                Console.WriteLine("Ip '" + words[1] + "' has been kicked from the game!\n");
+                            }
+                            else
+                                Console.WriteLine("Command 'kick' takes 1 argument!\n");
+                        }
+                        else if (lastCommand == "ban")
+                        {
+                            //command not implemented yet
+                        }
+                        else if (lastCommand == "help")
+                        {
+                            Console.WriteLine("Available server commands:\nreset - resets the host to default values\nhelp - lists available commands\n");
+                        }
+                        else if (lastCommand != "stop")
+                        {
+                            Console.WriteLine("Command '" + lastCommand + "' not valid.\n");
+                        }
+                    }
+                    else
+                    {
+                        displayError("User is neither a server nor a client.  Wth");
+                        EndProgram();
+                    }
+                }
+                else
+                    Console.WriteLine("Syntax error with inputted command.\n");
+                
+                /*if (lastCommand == "pause")
                 {
                     //stops sync loop until unpause is typed if sync is running
                     if (!programStopped)
@@ -117,40 +267,15 @@ namespace Windwaker_coop
                     }
                     else
                         Console.WriteLine("Sync is already active!\n");
-                }
-                else if (lastCommand == "reset")
-                {
-                    //resets the values stored in the host file - do this while not currently in a game
-                    Console.WriteLine("Server values have been reset to default.\n");
-                    currPlayer.fs.SaveToFile(currPlayer.serverDirectory + "\\host.txt", currPlayer.fs.getDefaultValues());
-                    currPlayer.nm.SendNotifications(currPlayer.playerName + " has reset the server to default values!", 1);
-                }
-                else if (lastCommand == "help")
-                {
-                    Console.WriteLine("Available commands:\npause - temporarily disables syncing to and from the host\nunpause - resumes syncing to and from the host\n" +
-                        "reset - resets the host to default values\nstop - ends syncing and closes the application\ngive [item] [number] - gives player the specified item (If cheats are enabled)\nhelp - lists available commands\n");
-
-                }
-                else if (lastCommand.Length >= 4 && lastCommand.Substring(0, 4) == "give")
-                {
-                    //send this data to the cheats object & lets it process the command
-                    setConsoleColor(4);
-                    if (enableCheats)
-                        Console.WriteLine(currCheater.processCommand(lastCommand));
-                    else
-                        Console.WriteLine("Cheats are disabled!");
-                }
-                else if (lastCommand != "stop")
-                {
-                    Console.WriteLine("Command '" + lastCommand + "' not valid.\n");
-                }
+                }*/
             }
             Console.WriteLine();
+            
         }
 
+        //Ends the program
         public static void EndProgram()
         {
-            //End program
             setConsoleColor(0);
             Console.WriteLine("Applcation terminated.  Press any key to exit...");
             programStopped = true;
@@ -181,6 +306,18 @@ namespace Windwaker_coop
             }
         }
 
+        private static Game[] loadGames()
+        {
+            Game[] games = new Game[]
+            {
+                new Windwaker(),
+                new OcarinaOfTime(),
+                new Zelda1()
+            };
+            displayDebug("Loading " + games.Length + " games", 2);
+            return games;
+        }
+
         public static void setConsoleColor(int colorId)
         {
             if (colorId == 0)
@@ -199,6 +336,8 @@ namespace Windwaker_coop
                 Console.ForegroundColor = ConsoleColor.Magenta;
             else if (colorId == 7)
                 Console.ForegroundColor = ConsoleColor.DarkMagenta;
+            else if (colorId == 8)
+                Console.ForegroundColor = ConsoleColor.Blue;
         }
 
         public static void displayDebug(string message, int level)
