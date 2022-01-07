@@ -1,5 +1,5 @@
 # Windwaker-coop
-A co-op program for The Legend of Zelda: The Wind Waker that syncs player progress throughout the game
+A 2-player program for The Legend of Zelda: The Wind Waker that syncs player progress throughout the game
 
 Progress board:
 https://trello.com/b/eBKLJlX5/windwaker-coop
