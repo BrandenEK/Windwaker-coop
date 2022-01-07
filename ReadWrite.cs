@@ -62,9 +62,37 @@ namespace Windwaker_coop
             return true;
         }
 
+        //Checks if a given bit in the number is set
         public static bool bitSet(uint number, uint bit)
         {
             return (number & (1 << (int)bit)) != 0;
+        }
+
+        //Converts a byte list to a number from bit to little endian format
+        public static uint bigToLittleEndian(List<byte> byteList, int startIndex, int length)
+        {
+            byte[] bytes = new byte[4];
+            string debugOuput = "Converting byte[] { ";
+            for (int i = 0; i < length; i++)
+            {
+                bytes[length - 1 - i] = byteList[startIndex + i];
+                debugOuput += byteList[startIndex + i].ToString("X") + " ";
+            }
+            Program.displayDebug(debugOuput + "} to integer: " + BitConverter.ToUInt32(bytes), 4);
+            return BitConverter.ToUInt32(bytes);
+        }
+
+        //Converts a number to a byte[] from little to big endian format
+        public static byte[] littleToBigEndian(uint number, int length)
+        {
+            byte[] fourByte = BitConverter.GetBytes(number);
+            byte[] result = new byte[length];
+
+            for (int i = 0; i < length; i++)
+            {
+                result[length - 1 - i] = fourByte[i];
+            }
+            return result;
         }
     }
 }
