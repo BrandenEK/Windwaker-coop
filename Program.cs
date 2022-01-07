@@ -289,7 +289,8 @@ namespace Windwaker_coop
             string cheats = ConfigurationManager.AppSettings["enableCheats"];
             string watcher = ConfigurationManager.AppSettings["runInWatcherMode"];
 
-            if (!int.TryParse(debug, out debugLevel) || !int.TryParse(syncTime, out syncDelay) || !bool.TryParse(cheats, out enableCheats) || !bool.TryParse(watcher, out runInWatcherMode))
+            if (!int.TryParse(debug, out debugLevel) || !int.TryParse(syncTime, out syncDelay) || 
+                !bool.TryParse(cheats, out enableCheats) || !bool.TryParse(watcher, out runInWatcherMode))
             {
                 displayError("Configuration file unable to be parsed");
                 EndProgram();

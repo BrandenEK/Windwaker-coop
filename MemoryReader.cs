@@ -14,12 +14,12 @@ namespace Windwaker_coop
             Program.currGame.addMemoryLocations(memoryLocations);
         }
 
-        public List<byte> getDefaultValues(User user)
+        public List<byte> getDefaultValues()
         {
             List<byte> defaults = new List<byte>();
             foreach (MemoryLocation memLoc in memoryLocations)
             {
-                defaults.AddRange(user.getByteArrayFromNumber(memLoc.defaultValue, memLoc.size));
+                defaults.AddRange(ReadWrite.littleToBigEndian(memLoc.defaultValue, memLoc.size));
             }
             return defaults;
         }

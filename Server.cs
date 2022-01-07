@@ -38,8 +38,8 @@ namespace Windwaker_coop
             for (int locationListIndex = 0; locationListIndex < mr.memoryLocations.Count; locationListIndex++)
             {
                 MemoryLocation memLoc = mr.memoryLocations[locationListIndex];
-                uint hostNumber = getNumberFromByteList(hostdata, byteListIndex, memLoc.size);
-                uint playerNumber = getNumberFromByteList(playerData, byteListIndex, memLoc.size);
+                uint hostNumber = ReadWrite.bigToLittleEndian(hostdata, byteListIndex, memLoc.size);
+                uint playerNumber = ReadWrite.bigToLittleEndian(playerData, byteListIndex, memLoc.size);
                 uint newNumber = 0;
 
                 if (playerNumber != hostNumber)
@@ -127,12 +127,12 @@ namespace Windwaker_coop
                             }
 
                             //Convert new number to byte[] and store/send it
-                            byte[] newValue = getByteArrayFromNumber(newNumber, memLoc.size);
+                            byte[] newValue = ReadWrite.littleToBigEndian(newNumber, memLoc.size);
                             for (int i = 0; i < memLoc.size; i++)
                             {
                                 hostdata[byteListIndex + i] = newValue[i];
                             }
-                            sendNewMemoryLocation((short)locationListIndex, newNumber, true);
+                            sendNewMemoryLocation((short)locationListIndex, newValue, true);
                             calculateNotification(playerName, newNumber, hostNumber, memLoc);
                         }
                     }
@@ -196,9 +196,39 @@ namespace Windwaker_coop
                 Program.displayError("Notification was unable to be calculated");
         }
 
+        private string getNotificationText(string playerName, string itemText, bool yourself)
+        {
+            string[] strings = itemText.Split('*', 2);
+            itemText = strings[0]; int formatId = -1;
+            int.TryParse(strings[1], out formatId);
+            string output = "";
+
+            if (formatId == 0)
+                output = "obtained the " + itemText;
+            else if (formatId == 1)
+                output = "obtained a " + itemText;
+            else if (formatId == 2)
+                output = "obtained " + itemText;
+            else if (formatId == 3)
+                output = "learned " + itemText;
+            else if (formatId == 4)
+                output = "deciphered " + itemText;
+            else if (formatId == 5)
+                output = "placed " + itemText;
+            else if (formatId == 9)
+                output = itemText;
+            else
+                output = "format id was wrong lol";
+
+            if (yourself)
+                return "You have " + output;
+            else
+                return playerName + " has " + output;
+        }
+
         public void setServerToDefault()
         {
-            hostdata = mr.getDefaultValues(this);
+            hostdata = mr.getDefaultValues();
         }
 
         public void kickPlayer(string ipPort)
@@ -223,11 +253,11 @@ namespace Windwaker_coop
             }
         }
 
-        public override void sendNewMemoryLocation(short memLocIndex, uint newValue, bool sendToAllButThis)
+        public override void sendNewMemoryLocation(short memLocIndex, byte[] newValue, bool sendToAllButThis)
         {
             List<byte> toSend = new List<byte>();
             toSend.AddRange(BitConverter.GetBytes(memLocIndex));
-            toSend.AddRange(getByteArrayFromNumber(newValue, mr.memoryLocations[memLocIndex].size));
+            toSend.AddRange(newValue);
             toSend.AddRange(new byte[] { 126, 126, 118 });
             byte[] toSendArray = toSend.ToArray();
 
