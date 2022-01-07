@@ -134,7 +134,7 @@ namespace Windwaker_coop
             else if (formatId == 2)
                 output = "obtained " + itemText;
             else if (formatId == 3)
-                output = "learned the " + itemText;
+                output = "learned " + itemText;
             else if (formatId == 4)
                 output = "deciphered " + itemText;
             else if (formatId == 5)

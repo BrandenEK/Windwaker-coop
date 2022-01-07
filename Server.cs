@@ -85,6 +85,13 @@ namespace Windwaker_coop
                                     gotNewItem = true;
                                 }
                                 break;
+                            case 8:
+                                if (playerNumber != hostNumber)
+                                {
+                                    newNumber = playerNumber;
+                                    gotNewItem = true;
+                                }
+                                break;
                             case 9:
                                 if ((playerNumber & (playerNumber ^ hostNumber)) > 0)
                                 {
@@ -99,6 +106,27 @@ namespace Windwaker_coop
                         //If player has gotten a new item, send out new memoryLocation to everyone else along with notification
                         if (gotNewItem)
                         {
+                            //Reset individual bits and don't send new memory location if only idv bits changed
+                            /*uint idvNumber = newNumber;
+                            if (memLoc.individualBits != 0 && (memLoc.individualBits != 255 || memLoc.individualBits == 255 && playerNumber != 255)) //used for windwaker bottles
+                            {
+                                for (int i = 0; i < 32; i++) //for every bit...
+                                {
+                                    uint mask = (uint)1 << i;
+                                    if ((memLoc.individualBits & mask) != 0) //if this bit should not be synced...
+                                    {
+                                        idvNumber = (idvNumber & ~mask) | (playerNumber & mask);
+                                    }
+                                }
+                                Program.displayDebug("Kept the item " + memLoc.name.Substring(0, memLoc.name.Length - 2) + " as 0d" + idvNumber + " instead of 0d" + newNumber, 2);
+                            }*/
+                            if (memLoc.type == "test")  // Just for testing to see value changes
+                            {
+                                Program.setConsoleColor(3);
+                                Console.WriteLine("Address 0x" + memLoc.startAddress.ToInt64().ToString("X") + " changed from " + Convert.ToString(hostNumber, 2).PadLeft(32, '0') + " (host) to " + Convert.ToString(newNumber, 2).PadLeft(32, '0'));
+                            }
+
+                            //Convert new number to byte[] and store/send it
                             byte[] newValue = getByteArrayFromNumber(newNumber, memLoc.size);
                             for (int i = 0; i < memLoc.size; i++)
                             {

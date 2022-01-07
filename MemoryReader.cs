@@ -11,8 +11,7 @@ namespace Windwaker_coop
         public MemoryReader()
         {
             memoryLocations = new List<MemoryLocation>();
-            SyncSettings settings = SyncSettings.getDefaultSettings();
-            Program.currGame.addMemoryLocations(memoryLocations, settings);
+            Program.currGame.addMemoryLocations(memoryLocations);
         }
 
         public List<byte> getDefaultValues(User user)
@@ -114,7 +113,7 @@ namespace Windwaker_coop
             string word = Encoding.UTF8.GetString(wwBase);
             if (word != "" && word != "GZLE01")
             {
-                Program.displayError("Wind Waker memory not initialized!");
+                Program.displayError($"{Program.currGame.gameName} memory not initialized!");
                 return false;
             }
             return true;
