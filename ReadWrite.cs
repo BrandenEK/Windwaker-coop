@@ -9,7 +9,7 @@ namespace Windwaker_coop
     {
         static IntPtr gameProcess = IntPtr.Zero;
 
-        //Returns whether dolphin is running or not and sets the processHandle accordingly
+        //Returns whether the game is running or not and sets the processHandle accordingly
         public static bool getGameProcess(int playerNumber)
         {
             Process[] processes = Process.GetProcessesByName(Program.currGame.processName);

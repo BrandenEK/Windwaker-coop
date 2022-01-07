@@ -10,6 +10,7 @@ namespace Windwaker_coop
         private static int debugLevel = 0;
         public static int syncDelay = 2500;
         public static bool enableCheats = true;
+        private static bool runInWatcherMode = false;
 
         private static User currUser;
         private static Cheater currCheater;
@@ -39,6 +40,21 @@ namespace Windwaker_coop
             readConfigFile();
             games = loadGames();
             currGame = games[0];
+
+            //Run in memory watcher mode
+            if (runInWatcherMode)
+            {
+                Console.Title = $"{currGame.gameName} Memory Watcher";
+                setConsoleColor(1);
+                Console.WriteLine("Beginning in memory watcher mode!");
+                Watcher watcher = new Watcher();
+                watcher.beginWatching(syncDelay);
+
+                string input = "";
+                while (input != "stop")
+                    input = Console.ReadLine().ToLower();
+                EndProgram();
+            }
 
             //Gets the type - server or client
             string type = askQuestion("Is this instance a server or a client? (s/c): ").ToLower();
@@ -271,8 +287,9 @@ namespace Windwaker_coop
             string debug = ConfigurationManager.AppSettings["debugLevel"];
             string syncTime = ConfigurationManager.AppSettings["syncDelay"];
             string cheats = ConfigurationManager.AppSettings["enableCheats"];
+            string watcher = ConfigurationManager.AppSettings["runInWatcherMode"];
 
-            if (!int.TryParse(debug, out debugLevel) || !int.TryParse(syncTime, out syncDelay) || !bool.TryParse(cheats, out enableCheats))
+            if (!int.TryParse(debug, out debugLevel) || !int.TryParse(syncTime, out syncDelay) || !bool.TryParse(cheats, out enableCheats) || !bool.TryParse(watcher, out runInWatcherMode))
             {
                 displayError("Configuration file unable to be parsed");
                 EndProgram();
