@@ -16,7 +16,16 @@ namespace Windwaker_coop
             IpAddress = ip;
             this.port = port;
             this.playerName = playerName;
-            client = new SimpleTcpClient(IpAddress, port);
+            try
+            {
+                client = new SimpleTcpClient(IpAddress, port);
+            }
+            catch (System.Net.Sockets.SocketException)
+            {
+                Program.displayError(IpAddress + " is not a valid ip address");
+                Program.EndProgram();
+            }
+
             client.Events.Connected += Events_Connected;
             client.Events.Disconnected += Events_Disconnected;
             client.Events.DataReceived += Events_DataReceived;
@@ -61,8 +70,15 @@ namespace Windwaker_coop
         //Connects to the server
         public void Connect()
         {
-            //add exception handling
-            client.Connect();
+            try
+            {
+                client.Connect();
+            }
+            catch (System.Net.Sockets.SocketException)
+            {
+                Program.displayError("Failed to connect to a server at " + IpAddress);
+                Program.EndProgram();
+            }
         }
 
         #region Send functions

@@ -207,6 +207,7 @@ namespace Windwaker_coop
                                 else
                                     displayError("Cheater object has not been initialized");
                                 break;
+                            case "stop": break;
                             default:
                                 Console.WriteLine("Command '" + lastCommand + "' not valid.\n");
                                 break;
@@ -245,6 +246,7 @@ namespace Windwaker_coop
                                 //command not implemented yet
                                 Console.WriteLine("command not implemented yet\n");
                                 break;
+                            case "stop": break;
                             default:
                                 Console.WriteLine("Command '" + lastCommand + "' not valid.\n");
                                 break;

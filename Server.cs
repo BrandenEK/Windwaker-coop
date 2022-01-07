@@ -15,7 +15,16 @@ namespace Windwaker_coop
         {
             IpAddress = ip;
             this.port = port;
-            server = new SimpleTcpServer(ip, port);
+            try
+            {
+                server = new SimpleTcpServer(ip, port);
+            }
+            catch (System.Net.Sockets.SocketException)
+            {
+                Program.displayError(IpAddress + " is not a valid ip address");
+                Program.EndProgram();
+            }
+
             server.Events.ClientConnected += Events_ClientConnected;
             server.Events.ClientDisconnected += Events_ClientDisconnected;
             server.Events.DataReceived += Events_DataReceived;
@@ -238,7 +247,15 @@ namespace Windwaker_coop
 
         public void Start()
         {
-            server.Start();
+            try
+            {
+                server.Start();
+            }
+            catch (System.Net.Sockets.SocketException)
+            {
+                Program.displayError("Failed to start the server at " + IpAddress);
+                Program.EndProgram();
+            }
             Program.setConsoleColor(1);
             Console.WriteLine("Server started at " + IpAddress);
         }
