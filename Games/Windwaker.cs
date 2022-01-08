@@ -8,24 +8,54 @@ namespace Windwaker_coop
     {
         public Windwaker() : base(0, "Windwaker", "dolphin") { }
 
-        //Individual functions
+        public override void beginningFunctions(Client client)
+        {
+            updateCurrentStageInfo(client, true);
+        }
 
-        public override void addMemoryLocations(List<MemoryLocation> memoryLocations, SyncSettings settings)
+        public override void endingFunctions(Client client)
+        {
+            updateCurrentStageInfo(client, false);
+        }
+
+        public override void onReceiveFunctions(Client client, List<byte> data, MemoryLocation memLoc)
+        {
+            //Check for an event that sets the time
+        }
+
+        //Takes the current stageInfo & copies it onto the corresponding unchanging stageInfo or vice versa
+        private void updateCurrentStageInfo(Client client, bool currentToStatic)
+        {
+            List<byte> stageIdList = client.mr.readFromMemory((IntPtr)0x803B53A4, 1);
+            if (stageIdList == null || stageIdList.Count < 1)
+                return;
+
+            byte stageId = stageIdList[0];
+            Program.displayDebug("Updating stageInfo " + stageId, 2);
+            uint from, to;
+
+            if (currentToStatic) { from = 0x803B5380; to = 0x803B4F88 + (uint)stageId * 36; }
+            else { from = 0x803B4F88 + (uint)stageId * 36; to = 0x803B5380; }
+
+            List<byte> stageDataToCopy = client.mr.readFromMemory((IntPtr)from, 35);
+            if (stageDataToCopy != null)
+                client.mr.saveToMemory(stageDataToCopy, (IntPtr)to);
+        }
+
+        public override void addMemoryLocations(List<MemoryLocation> memoryLocations)
         {
             //Min & Max values are in decimal format
             ComparisonData empty = new ComparisonData();
 
             //Stat upgrades
-            if (settings.maxHealth)
-                memoryLocations.Add(new MemoryLocation(0x803B4C08, 2, "more health*2", "stat", 0, 12, 80, 12, 0, empty));
-
-            if (settings.stats)
+            if (syncSettings["Player Stats"])
             {
+                memoryLocations.Add(new MemoryLocation(0x803B4C08, 2, "more health*2", "stat", 0, 12, 80, 12, 0, empty));
                 //memoryLocations.Add(new MemoryLocation(0x803B4DA8, 1, "began the Hero's Quest*9", "stat", 0, 0, 255, 0, 0, empty));
             }
 
             //Inventory items
-            if (settings.inventoryItems)
+            if (syncSettings["Inventory Items"])
             {
                 memoryLocations.Add(new MemoryLocation(0x803B4C44, 1, "Telescope*0", "item", 1, 32, 255, 255, 0, empty));
                 memoryLocations.Add(new MemoryLocation(0x803B4C45, 1, "Sail*0", "item", 1, 120, 255, 255, 0, empty));
@@ -45,7 +75,7 @@ namespace Windwaker_coop
                     new ComparisonData(new uint[] { 39, 53, 54 }, new string[] { "Hero's Bow*0", "Fire & Ice Arrows*0", "Light Arrows*0" }, false))); //Doesn't represent items accurately
                 memoryLocations.Add(new MemoryLocation(0x803B4C51, 1, "Bombs*2", "item", 1, 49, 255, 255, 0, empty));
 
-                if (settings.bottles)
+                if (true)
                 {
                     memoryLocations.Add(new MemoryLocation(0x803B4C52, 1, "Bottle #1*2", "item", 3, 80, 255, 255, 255, empty));
                     memoryLocations.Add(new MemoryLocation(0x803B4C53, 1, "Bottle #2*2", "item", 3, 80, 255, 255, 255, empty));
@@ -72,7 +102,7 @@ namespace Windwaker_coop
             }
 
             //Equipment items
-            if (settings.equipmentItems)
+            if (syncSettings["Equipment Items"])
             {
                 memoryLocations.Add(new MemoryLocation(0x803B4C16, 1, "sword*1", "item", 2, 56, 255, 255, 0,
                     new ComparisonData(new uint[] { 56, 57, 58, 62 }, new string[] { "Hero's Sword*0", "Master Sword (Unpowered)*0", "Master Sword (Half power)*0", "Master Sword (Fully powered)*0" }, false))); //sword level
@@ -83,7 +113,7 @@ namespace Windwaker_coop
             }
 
             //Capacity upgrades
-            if (settings.capacities)
+            if (syncSettings["Capacity Upgrades"])
             {
                 memoryLocations.Add(new MemoryLocation(0x803B4C1A, 1, "wallet*1", "capacity", 0, 0, 2, 0, 0,
                     new ComparisonData(new uint[] { 1, 2 }, new string[] { "1000 rupee wallet*0", "5000 rupee wallet*0" }, false)));
@@ -96,7 +126,7 @@ namespace Windwaker_coop
             }
 
             //More equipment items
-            if (settings.equipmentItems)
+            if (syncSettings["Equipment Items"])
             {
                 memoryLocations.Add(new MemoryLocation(0x803B4CBC, 1, "", "flag", 9, 0, 15, 0, 0, empty)); //sword bitfield
                 memoryLocations.Add(new MemoryLocation(0x803B4CBD, 1, "", "flag", 9, 0, 3, 0, 0, empty)); //shield bitfield
@@ -108,10 +138,10 @@ namespace Windwaker_coop
             }
 
             //Progression items
-            if (settings.storyItems)
+            if (syncSettings["Story Items"])
             {
                 memoryLocations.Add(new MemoryLocation(0x803B4CC5, 1, "song*1", "item", 9, 0, 63, 0, 0, new ComparisonData(new uint[] { 0, 1, 2, 3, 4, 5 },
-                    new string[] { "Wind's Requiem*3", "Ballad of Gales*3", "Command Melody*3", "Earth God's Lyric*3", "Wind God's Aria*3", "Song of Passing*3" }, true))); //songs bitfield
+                    new string[] { "the Wind's Requiem*3", "the Ballad of Gales*3", "the Command Melody*3", "the Earth God's Lyric*3", "the Wind God's Aria*3", "the Song of Passing*3" }, true))); //songs bitfield
                 memoryLocations.Add(new MemoryLocation(0x803B4CC6, 1, "triforce shard*1", "story", 9, 0, 255, 0, 0, new ComparisonData(new uint[] { 0, 1, 2, 3, 4, 5, 6, 7 },
                     new string[] { "Triforce Shard #1*2", "Triforce Shard #2*2", "Triforce Shard #3*2", "Triforce Shard #4*2", "Triforce Shard #5*2", "Triforce Shard #6*2",
                     "Triforce Shard #7*2", "Triforce Shard #8*2", }, true))); //triforce shards bitfield
@@ -120,7 +150,7 @@ namespace Windwaker_coop
             }
 
             //Charts
-            if (settings.charts)
+            if (syncSettings["Charts"])
             {
                 string[] chartsOne = new string[] { "Triforce Chart 1*2", "Triforce Chart 2*2", "Triforce Chart 3*2", "Triforce Chart 4*2", "Triforce Chart 5*2", "Triforce Chart 6*2", "Triforce Chart 7*2", "Triforce Chart 8*2",
                 "Treasure Chart 11*2", "Treasure Chart 15*2", "Treasure Chart 30*2", "Treasure Chart 20*2", "Treasure Chart 5*2", "Treasure Chart 23*2", "Treasure Chart 31*2", "Treasure Chart 33*2",
@@ -148,7 +178,7 @@ namespace Windwaker_coop
             }
 
             //Sectors
-            if (settings.seaMap)
+            if (syncSettings["Sea Map"])
             {
                 for (uint i = 0; i < 49; i++)
                 {
@@ -160,12 +190,12 @@ namespace Windwaker_coop
                         new ComparisonData(new uint[] { 1, 0 }, new string[] { "visited sector " + sectorName + " for the first time*9", "mapped out sector " + sectorName + "*9" }, true)));
                 }
             }
-            if (settings.charts)
+            if (syncSettings["Charts"])
                 memoryLocations.Add(new MemoryLocation(0x803B4D4D, 1, "deciphered a new triforce chart*9", "chart", 9, 0, 255, 0, 0, new ComparisonData(new uint[] { 0, 1, 2, 3, 4, 5, 6, 7 },
                     new string[] { "Triforce Chart 1*4", "Triforce Chart 2*4", "Triforce Chart 3*4", "Triforce Chart 4*4", "Triforce Chart 5*4", "Triforce Chart 6*4", "Triforce Chart 7*4", "Triforce Chart 8*4" }, true))); //deciphered charts bitfield
 
             //Stage infos
-            if (settings.stageInfos)
+            if (syncSettings["Stage Info"])
             {
                 string[] stageNames = new string[] { "the Great Sea", "the Great Sea (alt)", "the Forsaken Fortress", "Dragon Roost Cavern", "the Forbidden Woods", "the Tower of the Gods", "the Earth Temple", "the Wind Temple",
                         "Ganon's Tower", "Flooded Hyrule", "a ship", "a house/misc", "a cave", "a cave/ship", "killing a blue chu chu", "a test map" };
@@ -181,7 +211,7 @@ namespace Windwaker_coop
                     memoryLocations.Add(new MemoryLocation(stageOffset + 24, 4, "visited a new room in " + stageNames[i] + "*9", "dungeon", 9, 0, uint.MaxValue, 0, 0, empty)); //visited room bitfields
                     memoryLocations.Add(new MemoryLocation(stageOffset + 28, 4, "visited a new room in " + stageNames[i] + "*9", "dungeon", 9, 0, uint.MaxValue, 0, 0, empty));
 
-                    if (settings.smallKeys)
+                    if (true)
                         memoryLocations.Add(new MemoryLocation(stageOffset + 32, 1, "small key to " + stageNames[i] + "*1", "dungeon", 0, 0, 255, 0, 0, empty)); //number of small keys
                     memoryLocations.Add(new MemoryLocation(stageOffset + 33, 1, "important*9", "dungeon", 9, 0, 255, 0, 0,
                         new ComparisonData(new uint[] { 0, 1, 2, 3, 4 }, new string[] { "map to " + stageNames[i] + "*0", "compass to " + stageNames[i] + "*0", "big key to " + stageNames[i] + "*0",
@@ -199,10 +229,10 @@ namespace Windwaker_coop
             }
 
             //Event bitfields
-            if (settings.events)
+            if (syncSettings["Events"])
             {
                 memoryLocations.Add(new MemoryLocation(0x803B522C, 4, "", "event", 9, 0, uint.MaxValue, 0, 0,
-                    new ComparisonData(new uint[] { 24, 16 }, new string[] { "saw Tetra fall into the Forest of Fairies*9", "rescued Tetra from the Forest of Fairies*9" }, true))); //event field 20
+                    new ComparisonData(new uint[] { 24, 16 }, new string[] { "witnessed Tetra fall into the Forest of Fairies*9", "rescued Tetra from the Forest of Fairies*9" }, true))); //event field 20
                 memoryLocations.Add(new MemoryLocation(0x803B5230, 4, "", "event", 9, 0, uint.MaxValue, 0, 0, empty)); //event field 30
                 memoryLocations.Add(new MemoryLocation(0x803B5234, 4, "", "eventtime", 9, 0, uint.MaxValue, 0, 0, new ComparisonData(new uint[] { 24, 25, 27, 7 },
                     new string[] { "activated a spawn in the Forsaken Fortress (Do not leave through the door on the Pirate Ship)*9", "finished speaking to Tetra after rescuing her on Ouset*9",
@@ -301,6 +331,24 @@ namespace Windwaker_coop
                 new Cheat("magic", 0x803B4C1B, 0, true, 2, new byte[] { 16, 32 }),
                 new Cheat("quiver", 0x803B4C77, 0, true, 3, new byte[] { 30, 60, 99 }),
                 new Cheat("bomb-bag", 0x803B4C78, 0, true, 3, new byte[] { 30, 60, 99 })
+            };
+        }
+
+        public override void setDefaultSyncSettings()
+        {
+            syncSettings = new Dictionary<string, bool>
+            {
+                { "Inventory Items", true },
+                { "Equipment Items", true },
+                { "Story Items", true },
+
+                { "Player Stats", true },
+                { "Capacity Upgrades", true },
+                { "Charts", true },
+                { "Sea Map", true },
+
+                { "Stage Info", true },
+                { "Events", true }
             };
         }
     }
