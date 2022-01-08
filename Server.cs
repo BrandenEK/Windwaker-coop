@@ -189,7 +189,7 @@ namespace Windwaker_coop
 
         public void kickPlayer(string ipPort)
         {
-            
+            server.DisconnectClient(ipPort);
         }
 
         public void Start()

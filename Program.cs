@@ -224,7 +224,8 @@ namespace Windwaker_coop
                             case "help":
                                 //Displays the available server commands
                                 Console.WriteLine("Available server commands:\nreset - resets the host to default values\n" +
-                                    "stop - ends syncing and closes the application\nhelp - lists available commands\n");
+                                    "kick [IpPort] - kicks the speciifed IpPort from the game\nstop - ends syncing and closes the application\n" +
+                                    "help - lists available commands\n");
                                 break;
                             case "reset":
                                 //resets the server to default values
@@ -234,14 +235,14 @@ namespace Windwaker_coop
                                 break;
 
                             case "kick":
-                                /*kicks the inputted player's ip address from the game
+                                //kicks the inputted player's ipPort from the game
                                 if (words.Length == 2)
                                 {
                                     server.kickPlayer(words[1]);
-                                    Console.WriteLine("Ip '" + words[1] + "' has been kicked from the game!\n");
+                                    Console.WriteLine("IpPort " + words[1] + " has been kicked from the game!\n");
                                 }
                                 else
-                                    Console.WriteLine("Command 'kick' takes 1 argument!\n");*/
+                                    Console.WriteLine("Command 'kick' takes 1 argument!\n");
                                 break;
                             case "ban":
                                 //command not implemented yet
