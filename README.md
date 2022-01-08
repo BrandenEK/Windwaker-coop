@@ -7,6 +7,7 @@ https://trello.com/b/eBKLJlX5/windwaker-coop
 ## How to use:
 - Each computer that you are playing on must be running one instance of Dolphin and the Windwaker-coop application.
 - The server can be running on any computer on the local network, even if it is already running a client application.
+- Specifying a port is optional, simply add ":xxx" after the ip address.
 
 - Server side
   - Open the Windwaker-coop application and type 's'.
