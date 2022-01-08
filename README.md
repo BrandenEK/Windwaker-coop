@@ -9,12 +9,13 @@ https://trello.com/b/eBKLJlX5/windwaker-coop
 - The server can be running on any computer on the local network, even if it is already running a client application.
 
 - Server side
-  - Open the Windwaker-coop application and enter the local ip address of this machine.
-  - For the player name, input "host".
+  - Open the Windwaker-coop application and type 's'.
+  - Enter the local ip address of this machine.
 
 - Client side
-  - Open the Windwaker-coop application and enter the ip address of the server machine.
-  - For the player name, enter anything.
+  - Open the Windwaker-coop application and type 'c'.
+  - Enter the ip address of the server machine.
+  - Enter this player's name.
 
 ## Requirements:
 - Dolphin 5.0 Stable Build (https://dolphin-emu.org/download)
