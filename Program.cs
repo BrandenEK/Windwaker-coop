@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Configuration;
 using System.Collections.Generic;
-
 using System.Net;
 
 namespace Windwaker_coop
@@ -67,17 +66,13 @@ namespace Windwaker_coop
             {
                 Console.Title = $"{currGame.gameName} Coop Server";
 
-                //IP Test
+                /*IP Test
                 string strHostName = Dns.GetHostName();
                 Console.WriteLine("Local Machine's Host Name: " + strHostName);
                 IPHostEntry ipEntry = Dns.GetHostEntry(strHostName);
                 IPAddress[] addr = ipEntry.AddressList;
-
                 for (int i = 0; i < addr.Length; i++)
-                {
-                    Console.WriteLine("IP Address {0}: {1} ", i, addr[i].ToString());
-                }
-                Console.ReadLine();
+                    Console.WriteLine("IP Address {0}: {1} ", i, addr[i].ToString());*/
 
                 //Gets the ip address
                 string ip = askQuestion("Enter ip address of this machine: ");
