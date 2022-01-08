@@ -10,18 +10,19 @@ namespace Windwaker_coop
         private SimpleTcpServer server;
         private List<string> clientIps;
         private List<byte> hostdata;
+        private bool newServer;
 
-        public Server(string ip, int port)
+        public Server(string ip) : base(ip)
         {
-            IpAddress = ip;
-            this.port = port;
+            newServer = true;
+
             try
             {
-                server = new SimpleTcpServer(ip, port);
+                server = new SimpleTcpServer(IpAddress, port);
             }
             catch (System.Net.Sockets.SocketException)
             {
-                Program.displayError(IpAddress + " is not a valid ip address");
+                Program.displayError($"{IpAddress}:{port} is not a valid ip address");
                 Program.EndProgram();
             }
 
@@ -67,11 +68,8 @@ namespace Windwaker_coop
                                 if (playerNumber != hostNumber) gotNewItem = true;
                                 break;
                             case 9: //bitfields - just to make sure bits aren't unset
-                                if ((playerNumber & (playerNumber ^ hostNumber)) > 0)
-                                {
-                                    playerNumber |= hostNumber;
-                                    gotNewItem = true;
-                                }
+                                if ((playerNumber & (playerNumber ^ hostNumber)) > 0) gotNewItem = true;
+                                //Maybe bitwise or the playernumber
                                 break;
                             default:
                                 Program.displayError("Invalid compareId");
@@ -202,11 +200,11 @@ namespace Windwaker_coop
             }
             catch (System.Net.Sockets.SocketException)
             {
-                Program.displayError("Failed to start the server at " + IpAddress);
+                Program.displayError($"Failed to start the server at {IpAddress}:{port}");
                 Program.EndProgram();
             }
             Program.setConsoleColor(1);
-            Console.WriteLine("Server started at " + IpAddress);
+            Console.WriteLine($"Server successfully started at {IpAddress}:{port}");
         }
 
         #region Send functions
@@ -278,7 +276,7 @@ namespace Windwaker_coop
                     //save to host list, save to player memory, update Stage info, send notifications
                 }
                 else
-                    Program.displayDebug("No difference between host and this player", 1);
+                    Program.displayDebug("No differences between host and " + playerName, 1);
             }
             else
                 Program.displayError("Host data & player data are different sizes");

@@ -11,10 +11,8 @@ namespace Windwaker_coop
         public string playerName;
         private SimpleTcpClient client;
 
-        public Client(string ip, int port, string playerName)
+        public Client(string ip, string playerName) : base(ip)
         {
-            IpAddress = ip;
-            this.port = port;
             this.playerName = playerName;
             try
             {
@@ -22,7 +20,7 @@ namespace Windwaker_coop
             }
             catch (System.Net.Sockets.SocketException)
             {
-                Program.displayError(IpAddress + " is not a valid ip address");
+                Program.displayError($"{IpAddress}:{port} is not a valid ip address");
                 Program.EndProgram();
             }
 
@@ -52,13 +50,13 @@ namespace Windwaker_coop
                 int timeStart = Environment.TickCount;
 
                 //syncLoop stuff
-                Program.currGame.beginningFunctions();
+                Program.currGame.beginningFunctions(this);
                 List<byte> memory = mr.readFromMemory();
                 if (memory != null)
                 {
                     sendMemoryList(memory);
                 }
-                Program.currGame.endingFunctions();
+                Program.currGame.endingFunctions(this);
 
                 Program.displayDebug("Time taken to complete entire sync loop: " + (Environment.TickCount - timeStart) + " milliseconds", 1);
                 Program.setConsoleColor(5);
@@ -76,7 +74,7 @@ namespace Windwaker_coop
             }
             catch (System.Net.Sockets.SocketException)
             {
-                Program.displayError("Failed to connect to a server at " + IpAddress);
+                Program.displayError($"Failed to connect to a server at {IpAddress}:{port}");
                 Program.EndProgram();
             }
         }
@@ -128,8 +126,9 @@ namespace Windwaker_coop
             }
 
             short memLocIdx = BitConverter.ToInt16(data.GetRange(0, 2).ToArray());
-            mr.saveToMemory(data.GetRange(2, data.Count - 2), mr.memoryLocations[memLocIdx].startAddress);
-            Program.currGame.onReceiveFunctions();
+            List<byte> newValue = data.GetRange(2, data.Count - 2);
+            mr.saveToMemory(newValue, mr.memoryLocations[memLocIdx].startAddress);
+            Program.currGame.onReceiveFunctions(this, newValue, mr.memoryLocations[memLocIdx]);
         }
 
         //type 'n' - displays the notification in the console
@@ -150,8 +149,9 @@ namespace Windwaker_coop
         private void Events_Disconnected(object sender, ClientDisconnectedEventArgs e)
         {
             Program.setConsoleColor(1);
-            Console.WriteLine("Disconnected from the server at " + e.IpPort);
+            Console.WriteLine("Disconnected from the server at " + e.IpPort + "\n");
             sendNotification(playerName + " has left the game!", true);
+            Program.EndProgram();
         }
 
         private void Events_Connected(object sender, ClientConnectedEventArgs e)
