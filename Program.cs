@@ -9,6 +9,7 @@ namespace Windwaker_coop
         public static bool programStopped = false;
         private static int debugLevel = 0;
         public static int syncDelay = 2500;
+        public static int defaultPort = 25565;
         public static bool enableCheats = true;
         private static bool runInWatcherMode = false;
 
@@ -70,7 +71,7 @@ namespace Windwaker_coop
                     ip = tempIp;
 
                 //Creates new server object
-                currUser = new Server(ip, 25565);
+                currUser = new Server(ip);
                 startText = "Wait until everybody is ready, then press any key to start the server...";
             }
             else if (type == "c" || type == "client")
@@ -91,7 +92,7 @@ namespace Windwaker_coop
                 }
 
                 //Creates new client & cheater object
-                currUser = new Client(ip, 25565, playerName);
+                currUser = new Client(ip, playerName);
                 currCheater = new Cheater((Client)currUser);
                 startText = "Wait until your game is started, then press any key to connect to the server...";
             }
@@ -290,8 +291,9 @@ namespace Windwaker_coop
             string syncTime = ConfigurationManager.AppSettings["syncDelay"];
             string cheats = ConfigurationManager.AppSettings["enableCheats"];
             string watcher = ConfigurationManager.AppSettings["runInWatcherMode"];
+            string defPort = ConfigurationManager.AppSettings["defaultPort"];
 
-            if (!int.TryParse(debug, out debugLevel) || !int.TryParse(syncTime, out syncDelay) || 
+            if (!int.TryParse(debug, out debugLevel) || !int.TryParse(syncTime, out syncDelay) || !int.TryParse(defPort, out defaultPort) ||
                 !bool.TryParse(cheats, out enableCheats) || !bool.TryParse(watcher, out runInWatcherMode))
             {
                 displayError("Configuration file unable to be parsed");

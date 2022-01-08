@@ -12,6 +12,22 @@ namespace Windwaker_coop
         public MemoryReader mr { get; protected set; }
         protected string currIp = "";
 
+        public User(string ip)
+        {
+            //sets the ipAddress and port variables - separates them if combined
+            int colon = ip.IndexOf(':');
+            if (colon >= 0)
+            {
+                IpAddress = ip.Substring(0, colon);
+                port = int.Parse(ip.Substring(colon + 1));
+            }
+            else
+            {
+                IpAddress = ip;
+                port = Program.defaultPort;
+            }
+        }
+
         protected virtual void Events_DataReceived(object sender, DataReceivedEventArgs e)
         {
             Program.displayDebug("Bytes received: " + e.Data.Length, 2);

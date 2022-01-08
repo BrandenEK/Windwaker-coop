@@ -19,17 +19,17 @@ namespace Windwaker_coop
             setDefaultSyncSettings();
         }
 
-        public virtual void beginningFunctions()
+        public virtual void beginningFunctions(Client client)
         {
             //Called at beginning of the sync loop
         }
 
-        public virtual void endingFunctions()
+        public virtual void endingFunctions(Client client)
         {
             //Called at end of the sync loop
         }
 
-        public virtual void onReceiveFunctions()
+        public virtual void onReceiveFunctions(Client client, List<byte> data, MemoryLocation memLoc)
         {
             //Called when client receives a new memory location
         }

@@ -11,7 +11,7 @@ namespace Windwaker_coop
         public string type;
 
         public int compareId;
-        //0 - greater than, 1 - less than, 2 - greater than (excluding 255)
+        //0 - greater than, 1 - less than, 2 - greater than (excluding 255), 3 - bottles, 8 - different, 9 - bitfields
         public uint lowerValue;
         public uint higherValue;
         public byte defaultValue;
@@ -53,6 +53,13 @@ namespace Windwaker_coop
         public byte bit;
         public float newTime;
         //If newtime == -1, then this will actually endTimeZone
+
+        public TimeFlag(IntPtr address, byte bit, float newTime)
+        {
+            this.address = address;
+            this.bit = bit;
+            this.newTime = newTime;
+        }
     }
 
     struct Cheat
