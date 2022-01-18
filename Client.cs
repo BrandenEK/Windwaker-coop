@@ -131,6 +131,12 @@ namespace Windwaker_coop
             Program.currGame.onReceiveFunctions(this, newValue, mr.memoryLocations[memLocIdx]);
         }
 
+        //type 'm' - received when first joining an existing server, save the list to memory
+        protected override void receiveMemoryList(List<byte> data)
+        {
+            mr.saveToMemory(data);
+        }
+
         //type 'n' - displays the notification in the console
         protected override void receiveNotification(List<byte> data)
         {
