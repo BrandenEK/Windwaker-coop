@@ -8,8 +8,9 @@ namespace Windwaker_coop
     class Server : User
     {
         private SimpleTcpServer server;
-        private List<string> clientIps;
+        public Dictionary<string, bool> clientIps;
         private List<byte> hostdata;
+
         private bool newServer;
 
         public Server(string ip) : base(ip)
@@ -29,7 +30,7 @@ namespace Windwaker_coop
             server.Events.ClientConnected += Events_ClientConnected;
             server.Events.ClientDisconnected += Events_ClientDisconnected;
             server.Events.DataReceived += Events_DataReceived;
-            clientIps = new List<string>();
+            clientIps = new Dictionary<string, bool>();
             mr = new MemoryReader();
             setServerToDefault();
         }
@@ -217,6 +218,13 @@ namespace Windwaker_coop
             }
         }
 
+        public override void sendMemoryList(List<byte> memory)
+        {
+            List<byte> toSend = new List<byte>(memory);
+            toSend.AddRange(new byte[] { 126, 126, 109 });
+            Send(currIp, toSend.ToArray());
+        }
+
         public override void sendNewMemoryLocation(short memLocIndex, byte[] newValue, bool sendToAllButThis)
         {
             List<byte> toSend = new List<byte>();
@@ -227,7 +235,7 @@ namespace Windwaker_coop
 
             if (sendToAllButThis)
             {
-                foreach (string ip in clientIps)
+                foreach (string ip in clientIps.Keys)
                     if (ip != currIp)
                         Send(ip, toSendArray);
             }
@@ -241,7 +249,7 @@ namespace Windwaker_coop
         {
             if (sendToAllButThis)
             {
-                foreach (string ip in clientIps)
+                foreach (string ip in clientIps.Keys)
                     if (ip != currIp)
                         Send(ip, Encoding.UTF8.GetBytes(notification + "~~n"));
             }
@@ -253,7 +261,7 @@ namespace Windwaker_coop
 
         public override void sendTextMessage(string message)
         {
-            foreach (string ip in clientIps)
+            foreach (string ip in clientIps.Keys)
                 if (ip != currIp)
                     Send(ip, Encoding.UTF8.GetBytes(message + "~~t"));
         }
@@ -270,10 +278,23 @@ namespace Windwaker_coop
 
             if (playerData.Count == hostdata.Count)
             {
-                if (!ReadWrite.checkIfSame(playerData, hostdata))
+                if (newServer)
                 {
+                    //If this is the first player to join, copy their memory to the host
+                    hostdata = playerData;
+                    newServer = false;
+                    clientIps[currIp] = true;
+                }
+                else if (!clientIps[currIp])
+                {
+                    //If this player is just now syncing with the server, send them the hostData to copy
+                    sendMemoryList(hostdata);
+                    clientIps[currIp] = true;
+                }
+                else if (!ReadWrite.checkIfSame(playerData, hostdata))
+                {
+                    //Otherwise, if they're different, do these - save to host list, save to player memory, update Stage info, send notifications
                     compareHostAndPlayer(playerData, playerName);
-                    //save to host list, save to player memory, update Stage info, send notifications
                 }
                 else
                     Program.displayDebug("No differences between host and " + playerName, 1);
@@ -316,7 +337,7 @@ namespace Windwaker_coop
         {
             Program.setConsoleColor(1);
             Console.WriteLine("Client connected at " + e.IpPort);
-            clientIps.Add(e.IpPort);
+            clientIps.Add(e.IpPort, false);
         }
     }
 }

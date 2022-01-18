@@ -19,7 +19,7 @@ namespace Windwaker_coop
 
         private static Game[] games;
         public static Game currGame;
-        public static string tempIp = "192.168.0.133";
+        public static string tempIp = "172.16.16.83";
 
         private static Dictionary<byte, ConsoleColor> colorIDs = new Dictionary<byte, ConsoleColor>()
         {
@@ -232,9 +232,19 @@ namespace Windwaker_coop
                         {
                             case "help":
                                 //Displays the available server commands
-                                Console.WriteLine("Available server commands:\nreset - resets the host to default values\n" +
+                                Console.WriteLine("Available server commands:\nlist - lists all of the currently connected players\n" +
+                                    "reset - resets the host to default values\n" +
                                     "kick [IpPort] - kicks the speciifed IpPort from the game\nstop - ends syncing and closes the application\n" +
                                     "help - lists available commands\n");
+                                break;
+                            case "list":
+                                //List the ip addresses in the server
+                                Console.WriteLine("Connected players:");
+                                foreach (string player in server.clientIps.Keys)
+                                {
+                                    Console.WriteLine(player);
+                                }
+                                Console.WriteLine();
                                 break;
                             case "reset":
                                 //resets the server to default values
