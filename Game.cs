@@ -9,13 +9,17 @@ namespace Windwaker_coop
         public int gameId;
         public string gameName;
         public string processName;
+        public uint identityAddress;
+        public string identityText;
         public Dictionary<string, bool> syncSettings;
 
-        public Game(int gameId, string gameName, string processName)
+        public Game(int gameId, string gameName, string processName, uint identityAddress, string identityText)
         {
             this.gameId = gameId;
             this.gameName = gameName;
             this.processName = processName;
+            this.identityAddress = identityAddress;
+            this.identityText = identityText;
             setDefaultSyncSettings();
         }
 

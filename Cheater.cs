@@ -19,7 +19,7 @@ namespace Windwaker_coop
             int number = -1;
             bool foundItem = false;
 
-            if (!Program.enableCheats)
+            if (!Program.config.enableCheats)
                 return "Cheats are disabled!";
             if (arguments.Length < 2 || arguments.Length > 3)
                 return "Command 'give' takes either 1 or 2 arguments!";

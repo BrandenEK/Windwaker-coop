@@ -33,7 +33,7 @@ namespace Windwaker_coop
         public override void Begin()
         {
             Connect();
-            beginSyncing(Program.syncDelay);
+            beginSyncing(Program.config.syncDelay);
         }
 
         //Once the player is ready, starts the syncLoop
@@ -80,38 +80,39 @@ namespace Windwaker_coop
         }
 
         #region Send functions
-        private void Send(byte[] data)
+        private void Send(List<byte> data, char dataType)
         {
-            if (client.IsConnected && data != null && data.Length > 0)
+            if (client.IsConnected && data != null && data.Count > 0)
             {
-                client.Send(data);
-                Program.displayDebug("Sending " + data.Length + " bytes", 2);
+                data.AddRange(new byte[] { 126, 126, Convert.ToByte(dataType) });
+                client.Send(data.ToArray());
+                Program.displayDebug("Sending " + data.Count + " bytes", 2);
             }
         }
 
         public override void sendMemoryList(List<byte> data)
         {
-            List<byte> toSend = new List<byte>();
-            toSend.AddRange(Encoding.UTF8.GetBytes(playerName + "~"));
+            List<byte> toSend = new List<byte>(Encoding.UTF8.GetBytes(playerName + "~"));
             toSend.AddRange(data);
-            toSend.AddRange(new byte[] { 126, 126, 109 });
-
-            Send(toSend.ToArray());
+            Send(toSend, 'm');
         }
 
         public override void sendTextMessage(string message)
         {
-            Send(Encoding.UTF8.GetBytes(playerName + ": " + message + "~~t"));
+            List<byte> toSend = new List<byte>(Encoding.UTF8.GetBytes(playerName + ": " + message));
+            Send(toSend, 't');
         }
 
         public override void sendNotification(string notification, bool useless)
         {
-            Send(Encoding.UTF8.GetBytes(notification + "~~n"));
+            List<byte> toSend = new List<byte>(Encoding.UTF8.GetBytes(notification));
+            Send(toSend, 'n');
         }
 
         public override void sendDelayTest()
         {
-            Send(Encoding.UTF8.GetBytes(DateTime.Now.Ticks.ToString() + "~~d"));
+            List<byte> toSend = new List<byte>(BitConverter.GetBytes(DateTime.Now.Ticks));
+            Send(toSend, 'd');
         }
         #endregion
 

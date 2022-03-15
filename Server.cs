@@ -90,7 +90,7 @@ namespace Windwaker_coop
                         {
                             hostdata[byteListIndex + i] = newValue[i];
                         }
-                        sendNewMemoryLocation((short)locationListIndex, newValue, true);
+                        sendNewMemoryLocation((short)locationListIndex, playerNumber, newValue, true);
                         calculateNotification(playerName, playerNumber, hostNumber, memLoc); 
                     }
                 }
@@ -209,61 +209,61 @@ namespace Windwaker_coop
         }
 
         #region Send functions
-        private void Send(string ip, byte[] data)
+        private void Send(string ip, List<byte> data, char dataType)
         {
             if (server.IsListening)
             {
-                server.Send(ip, data);
-                Program.displayDebug("Sending " + data.Length + " bytes", 2);
+                data.AddRange(new byte[] { 126, 126, Convert.ToByte(dataType) });
+                server.Send(ip, data.ToArray());
+                Program.displayDebug("Sending " + data.Count + " bytes", 2);
             }
         }
 
         public override void sendMemoryList(List<byte> memory)
         {
-            List<byte> toSend = new List<byte>(memory);
-            toSend.AddRange(new byte[] { 126, 126, 109 });
-            Send(currIp, toSend.ToArray());
+            Send(currIp, memory, 'm');
         }
 
-        public override void sendNewMemoryLocation(short memLocIndex, byte[] newValue, bool sendToAllButThis)
+        public override void sendNewMemoryLocation(short memLocIndex, uint previousValue, byte[] newValue, bool sendToAllButThis)
         {
             List<byte> toSend = new List<byte>();
             toSend.AddRange(BitConverter.GetBytes(memLocIndex));
+            //toSend.AddRange(BitConverter.GetBytes(previousValue));
             toSend.AddRange(newValue);
-            toSend.AddRange(new byte[] { 126, 126, 118 });
-            byte[] toSendArray = toSend.ToArray();
 
             if (sendToAllButThis)
             {
                 foreach (string ip in clientIps.Keys)
                     if (ip != currIp)
-                        Send(ip, toSendArray);
+                        Send(ip, toSend, 'v');
             }
             else
             {
-                Send(currIp, toSendArray);
+                Send(currIp, toSend, 'v');
             }
         }
 
         public override void sendNotification(string notification, bool sendToAllButThis)
         {
+            List<byte> toSend = new List<byte>(Encoding.UTF8.GetBytes(notification));
             if (sendToAllButThis)
             {
                 foreach (string ip in clientIps.Keys)
                     if (ip != currIp)
-                        Send(ip, Encoding.UTF8.GetBytes(notification + "~~n"));
+                        Send(ip, toSend, 'n');
             }
             else
             {
-                Send(currIp, Encoding.UTF8.GetBytes(notification + "~~n"));
+                Send(currIp, toSend, 'n');
             }
         }
 
         public override void sendTextMessage(string message)
         {
+            List<byte> toSend = new List<byte>(Encoding.UTF8.GetBytes(message));
             foreach (string ip in clientIps.Keys)
                 if (ip != currIp)
-                    Send(ip, Encoding.UTF8.GetBytes(message + "~~t"));
+                    Send(ip, toSend, 't');
         }
         #endregion
 
@@ -319,8 +319,8 @@ namespace Windwaker_coop
         //type 'd' - reads the string and converts it to a long & displays it
         protected override void receiveDelayTest(List<byte> data)
         {
-            string str = Encoding.UTF8.GetString(data.ToArray());
-            long timeDelta = DateTime.Now.Ticks - long.Parse(str);
+            long sendTime = BitConverter.ToInt64(data.ToArray());
+            long timeDelta = DateTime.Now.Ticks - sendTime;
             Program.setConsoleColor(4);
             Console.WriteLine("Byte[] received from " + currIp + " came with a delay of " + (timeDelta / 10000) + " milliseconds");
         }

@@ -26,8 +26,8 @@ namespace Windwaker_coop
 
         public List<byte> readFromMemory()
         {
-           // if (!checkMemoryInitialized(1))
-            //    return null;
+            if (!checkMemoryInitialized(1))
+                return null;
 
             List<byte> memoryList = new List<byte>();
             IntPtr sequenceStart = memoryLocations[0].startAddress;
@@ -59,8 +59,8 @@ namespace Windwaker_coop
 
         public List<byte> readFromMemory(IntPtr customStartAddress, int customSize)
         {
-            //if (!checkMemoryInitialized(1))
-               // return null;
+            if (!checkMemoryInitialized(1))
+                return null;
 
             byte[] value = ReadWrite.Read(1, customStartAddress, customSize);
             if (value == null)
@@ -74,6 +74,9 @@ namespace Windwaker_coop
         public void saveToMemory(List<byte> saveData)
         {
             //Writes each value in saveData to the player's game's memory
+            if (!checkMemoryInitialized(1))
+                return;
+
             int byteListIndex = 0;
             IntPtr sequenceStart = memoryLocations[0].startAddress;
             int sequenceStartIndex = 0;
@@ -99,19 +102,19 @@ namespace Windwaker_coop
         public void saveToMemory(List<byte> saveData, IntPtr customStartAddress)
         {
             //Writes each value in saveData to the player's game's memory
-           // if (!checkMemoryInitialized(1))
-              //  return;
+            if (!checkMemoryInitialized(1))
+                return;
             ReadWrite.Write(1, customStartAddress, saveData.ToArray());
         }
 
         private bool checkMemoryInitialized(int playerNumber)
         {
-            byte[] wwBase = ReadWrite.Read(playerNumber, (IntPtr)0x7FFF0000, 6);
-            if (wwBase == null)
+            byte[] identityValue = ReadWrite.Read(playerNumber, (IntPtr)Program.currGame.identityAddress, Program.currGame.identityText.Length);
+            if (identityValue == null)
                 return false;
 
-            string word = Encoding.UTF8.GetString(wwBase);
-            if (word != "" && word != "GZLE01")
+            string word = Encoding.UTF8.GetString(identityValue);
+            if (word != "" && word != Program.currGame.identityText)
             {
                 Program.displayError($"{Program.currGame.gameName} memory not initialized!");
                 return false;

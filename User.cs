@@ -24,7 +24,7 @@ namespace Windwaker_coop
             else
             {
                 IpAddress = ip;
-                port = Program.defaultPort;
+                port = Program.config.defaultPort;
             }
         }
 
@@ -71,7 +71,7 @@ namespace Windwaker_coop
         {
             Program.displayError("sendMemoryList() not implemented here");
         }
-        public virtual void sendNewMemoryLocation(short memLocIndex, byte[] newValue, bool sendToAllButThis)
+        public virtual void sendNewMemoryLocation(short memLocIndex, uint previousValue, byte[] newValue, bool sendToAllButThis)
         {
             Program.displayError("sendNewMemoryLocation() not implemented here");
         }
@@ -112,18 +112,10 @@ namespace Windwaker_coop
 
         public abstract void Begin();
 
-        //Returns the player name from the messsage & removes it from the list leaving only the data
+        //~Returns the player name from the messsage & removes it from the list leaving only the data
         protected string seperatePlayerAndData(List<byte> data)
         {
-            int sepChar = -1;
-            for (int i = 0; i < data.Count; i++)
-            {
-                if (data[i] == 126) //~
-                {
-                    sepChar = i;
-                    break;
-                }
-            }
+            int sepChar = data.IndexOf(126);
 
             if (sepChar < 1)
             {

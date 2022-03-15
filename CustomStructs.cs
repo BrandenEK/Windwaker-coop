@@ -82,6 +82,26 @@ namespace Windwaker_coop
             this.valuesToWrite = valuesToWrite;
         }
     }
+
+    [Serializable]
+    struct Config
+    {
+        public int debugLevel;//0
+        public int syncDelay;//2500
+        public int defaultPort;//25565
+        public bool enableCheats;//true
+        public bool runInWatcherMode;//false
+
+        public Config(int dl, int sd, int dp, bool ec, bool wm)
+        {
+            debugLevel = dl;
+            syncDelay = sd;
+            defaultPort = dp;
+            enableCheats = ec;
+            runInWatcherMode = wm;
+        }
+    }
+
     /*
     [Serializable]
     struct SyncSettings

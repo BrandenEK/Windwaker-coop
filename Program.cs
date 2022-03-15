@@ -2,23 +2,21 @@
 using System.Configuration;
 using System.Collections.Generic;
 using System.Net;
+using System.IO;
+using Newtonsoft.Json;
 
 namespace Windwaker_coop
 {
     class Program
     {
         public static bool programStopped = false;
-        private static int debugLevel = 0;
-        public static int syncDelay = 2500;
-        public static int defaultPort = 25565;
-        public static bool enableCheats = true;
-        private static bool runInWatcherMode = false;
 
         private static User currUser;
         private static Cheater currCheater;
 
         private static Game[] games;
         public static Game currGame;
+        public static Config config;
         public static string tempIp = "172.16.16.83";
 
         private static Dictionary<byte, ConsoleColor> colorIDs = new Dictionary<byte, ConsoleColor>()
@@ -39,18 +37,18 @@ namespace Windwaker_coop
             Console.Title = "The Legend of Zelda Coop Server/Client";
             setConsoleColor(3);
             Console.WriteLine("-The Legend of Zelda Coop-\n");
-            readConfigFile();
+            config = readConfigFile();
             games = loadGames();
             currGame = games[0];
 
             //Run in memory watcher mode
-            if (runInWatcherMode)
+            if (config.runInWatcherMode)
             {
                 Console.Title = $"{currGame.gameName} Memory Watcher";
                 setConsoleColor(1);
                 Console.WriteLine("Beginning in memory watcher mode!");
                 Watcher watcher = new Watcher();
-                watcher.beginWatching(syncDelay);
+                watcher.beginWatching(config.syncDelay);
 
                 string input = "";
                 while (input != "stop")
@@ -305,20 +303,21 @@ namespace Windwaker_coop
             return output;
         }
 
-        private static void readConfigFile() //change to for loop once I add a new setting
+        //~Reads from config.json and returns the config object
+        private static Config readConfigFile()
         {
-            string debug = ConfigurationManager.AppSettings["debugLevel"];
-            string syncTime = ConfigurationManager.AppSettings["syncDelay"];
-            string cheats = ConfigurationManager.AppSettings["enableCheats"];
-            string watcher = ConfigurationManager.AppSettings["runInWatcherMode"];
-            string defPort = ConfigurationManager.AppSettings["defaultPort"];
-
-            if (!int.TryParse(debug, out debugLevel) || !int.TryParse(syncTime, out syncDelay) || !int.TryParse(defPort, out defaultPort) ||
-                !bool.TryParse(cheats, out enableCheats) || !bool.TryParse(watcher, out runInWatcherMode))
+            string path = Environment.CurrentDirectory + "/config.json";
+            if (File.Exists(path))
             {
-                displayError("Configuration file unable to be parsed");
-                EndProgram();
+                string configString = File.ReadAllText(path);
+                config = JsonConvert.DeserializeObject<Config>(configString);
             }
+            else
+            {
+                config = new Config(0, 2500, 25565, true, false);
+                File.WriteAllText(path, JsonConvert.SerializeObject(config, Formatting.Indented));
+            }
+            return config;
         }
 
         private static Game[] loadGames()
@@ -340,7 +339,7 @@ namespace Windwaker_coop
 
         public static void displayDebug(string message, int level)
         {
-            if (level <= debugLevel)
+            if (level <= config.debugLevel)
             {
                 if (level > 2)
                     setConsoleColor(7);
