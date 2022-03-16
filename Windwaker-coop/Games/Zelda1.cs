@@ -6,11 +6,11 @@ namespace Windwaker_coop
 {
     class Zelda1 : Game
     {
-        public Zelda1() : base(2, "Zelda 1", "fceu") { }
+        public Zelda1() : base(2, "Zelda 1", "fceu", 0, "idk yet") { }
 
         //Individual functions
 
-        public override void addMemoryLocations(List<MemoryLocation> memoryLocations, SyncSettings settings)
+        public override void addMemoryLocations(List<MemoryLocation> memoryLocations)
         {
             ComparisonData empty = new ComparisonData();
 
@@ -40,6 +40,7 @@ namespace Windwaker_coop
             memoryLocations.Add(new MemoryLocation(0x59FE7A, 1, "map to Dungeon 9*0", "item", 0, 0, 1, 0, 0, empty));
 
             //hearts
+            //keys
 
             memoryLocations.Add(new MemoryLocation(0x59FE81, 1, "triforce*0", "item", 9, 0, 255, 0, 0,
                 new ComparisonData(new uint[] { 0, 1, 2, 3, 4, 5, 6, 7 }, new string[] { "Triforce piece from Dungeon 1*0", "Triforce piece from Dungeon 2*0", "Triforce piece from Dungeon 3*0", "Triforce piece from Dungeon 4*0",
@@ -58,6 +59,16 @@ namespace Windwaker_coop
             { 
                 new Cheat("health", 0x59FE7F, 0, true, 16, new byte[] { 0, 17, 34, 51, 68, 85, 102, 119, 136, 153, 170, 187, 204, 221, 238, 255 }),
                 new Cheat("sword", 0x59FE67, 0, true, 3, new byte[] { 1, 2, 3 })
+            };
+        }
+
+        public override void setDefaultSyncSettings()
+        {
+            syncSettings = new Dictionary<string, bool>
+            {
+                { "Inventory Items", true },
+                { "Equipment Items", true },
+                { "Dungeon Data", true }
             };
         }
     }

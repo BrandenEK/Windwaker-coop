@@ -9,7 +9,7 @@ namespace Windwaker_coop
     {
         static IntPtr gameProcess = IntPtr.Zero;
 
-        //Returns whether the game is running or not and sets the processHandle accordingly
+        //Returns whether dolphin is running or not and sets the processHandle accordingly
         public static bool getGameProcess(int playerNumber)
         {
             Process[] processes = Process.GetProcessesByName(Program.currGame.processName);
@@ -65,6 +65,29 @@ namespace Windwaker_coop
         public static bool bitSet(uint number, uint bit)
         {
             return (number & (1 << (int)bit)) != 0;
+        }
+
+        //Test function - is only temporary
+        public static void testProcessData()
+        {
+            if (!getGameProcess(1))
+                return;
+            Process[] processes = Process.GetProcessesByName(Program.currGame.processName);
+            Process p = processes[0];
+
+            Console.WriteLine("Name: " + p.ProcessName);
+            Console.WriteLine("File name: " + p.MainModule.FileName);
+            Console.WriteLine("Base Address: 0x" + p.MainModule.BaseAddress.ToInt64().ToString("X"));
+            Console.WriteLine("Memory size: " + p.MainModule.ModuleMemorySize);
+
+            //0x100A837D - oot
+            //0x635A2BFF - sm64
+            uint idAddress = 0x100A837D;
+
+            idAddress = (uint)p.MainModule.BaseAddress + 0xFCA837D;
+
+            byte[] word = Read(1, (IntPtr)idAddress, 8);
+            Console.WriteLine(System.Text.Encoding.UTF8.GetString(word));
         }
     }
 }

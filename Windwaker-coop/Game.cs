@@ -21,17 +21,17 @@ namespace Windwaker_coop
 
         public virtual void beginningFunctions()
         {
-            //Called at beginning of the sync loop
+            //Beginning of the sync loop
         }
 
         public virtual void endingFunctions()
         {
-            //Called at end of the sync loop
+            //End of the sync loop
         }
 
         public virtual void onReceiveFunctions()
         {
-            //Called when client receives a new memory location
+            //When client receives a new memory location
         }
 
         public abstract void addMemoryLocations(List<MemoryLocation> memoryLocations);
