@@ -11,7 +11,7 @@ namespace Windwaker_coop
         public string processName;
         public uint identityAddress;
         public string identityText;
-        public Dictionary<string, bool> syncSettings;
+        public SyncSettings syncSettings;
 
         public Game(int gameId, string gameName, string processName, uint identityAddress, string identityText)
         {

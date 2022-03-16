@@ -48,14 +48,14 @@ namespace Windwaker_coop
             ComparisonData empty = new ComparisonData();
 
             //Stat upgrades
-            if (syncSettings["Player Stats"])
+            if (syncSettings.getSetting("Player Stats"))
             {
                 memoryLocations.Add(new MemoryLocation(0x803B4C08, 2, "more health*2", "stat", 0, 12, 80, 12, 0, empty));
                 //memoryLocations.Add(new MemoryLocation(0x803B4DA8, 1, "began the Hero's Quest*9", "stat", 0, 0, 255, 0, 0, empty));
             }
 
             //Inventory items
-            if (syncSettings["Inventory Items"])
+            if (syncSettings.getSetting("Inventory Items"))
             {
                 memoryLocations.Add(new MemoryLocation(0x803B4C44, 1, "Telescope*0", "item", 1, 32, 255, 255, 0, empty));
                 memoryLocations.Add(new MemoryLocation(0x803B4C45, 1, "Sail*0", "item", 1, 120, 255, 255, 0, empty));
@@ -102,7 +102,7 @@ namespace Windwaker_coop
             }
 
             //Equipment items
-            if (syncSettings["Equipment Items"])
+            if (syncSettings.getSetting("Equipment Items"))
             {
                 memoryLocations.Add(new MemoryLocation(0x803B4C16, 1, "sword*1", "item", 2, 56, 255, 255, 0,
                     new ComparisonData(new uint[] { 56, 57, 58, 62 }, new string[] { "Hero's Sword*0", "Master Sword (Unpowered)*0", "Master Sword (Half power)*0", "Master Sword (Fully powered)*0" }, false))); //sword level
@@ -113,7 +113,7 @@ namespace Windwaker_coop
             }
 
             //Capacity upgrades
-            if (syncSettings["Capacity Upgrades"])
+            if (syncSettings.getSetting("Capacity Upgrades"))
             {
                 memoryLocations.Add(new MemoryLocation(0x803B4C1A, 1, "wallet*1", "capacity", 0, 0, 2, 0, 0,
                     new ComparisonData(new uint[] { 1, 2 }, new string[] { "1000 rupee wallet*0", "5000 rupee wallet*0" }, false)));
@@ -126,7 +126,7 @@ namespace Windwaker_coop
             }
 
             //More equipment items
-            if (syncSettings["Equipment Items"])
+            if (syncSettings.getSetting("Equipment Items"))
             {
                 memoryLocations.Add(new MemoryLocation(0x803B4CBC, 1, "", "flag", 9, 0, 15, 0, 0, empty)); //sword bitfield
                 memoryLocations.Add(new MemoryLocation(0x803B4CBD, 1, "", "flag", 9, 0, 3, 0, 0, empty)); //shield bitfield
@@ -138,7 +138,7 @@ namespace Windwaker_coop
             }
 
             //Progression items
-            if (syncSettings["Story Items"])
+            if (syncSettings.getSetting("Story Items"))
             {
                 memoryLocations.Add(new MemoryLocation(0x803B4CC5, 1, "song*1", "item", 9, 0, 63, 0, 0, new ComparisonData(new uint[] { 0, 1, 2, 3, 4, 5 },
                     new string[] { "the Wind's Requiem*3", "the Ballad of Gales*3", "the Command Melody*3", "the Earth God's Lyric*3", "the Wind God's Aria*3", "the Song of Passing*3" }, true))); //songs bitfield
@@ -150,7 +150,7 @@ namespace Windwaker_coop
             }
 
             //Charts
-            if (syncSettings["Charts"])
+            if (syncSettings.getSetting("Charts"))
             {
                 string[] chartsOne = new string[] { "Triforce Chart 1*2", "Triforce Chart 2*2", "Triforce Chart 3*2", "Triforce Chart 4*2", "Triforce Chart 5*2", "Triforce Chart 6*2", "Triforce Chart 7*2", "Triforce Chart 8*2",
                 "Treasure Chart 11*2", "Treasure Chart 15*2", "Treasure Chart 30*2", "Treasure Chart 20*2", "Treasure Chart 5*2", "Treasure Chart 23*2", "Treasure Chart 31*2", "Treasure Chart 33*2",
@@ -178,7 +178,7 @@ namespace Windwaker_coop
             }
 
             //Sectors
-            if (syncSettings["Sea Map"])
+            if (syncSettings.getSetting("Sea Map"))
             {
                 for (uint i = 0; i < 49; i++)
                 {
@@ -190,12 +190,12 @@ namespace Windwaker_coop
                         new ComparisonData(new uint[] { 1, 0 }, new string[] { "visited sector " + sectorName + " for the first time*9", "mapped out sector " + sectorName + "*9" }, true)));
                 }
             }
-            if (syncSettings["Charts"])
+            if (syncSettings.getSetting("Charts"))
                 memoryLocations.Add(new MemoryLocation(0x803B4D4D, 1, "deciphered a new triforce chart*9", "chart", 9, 0, 255, 0, 0, new ComparisonData(new uint[] { 0, 1, 2, 3, 4, 5, 6, 7 },
                     new string[] { "Triforce Chart 1*4", "Triforce Chart 2*4", "Triforce Chart 3*4", "Triforce Chart 4*4", "Triforce Chart 5*4", "Triforce Chart 6*4", "Triforce Chart 7*4", "Triforce Chart 8*4" }, true))); //deciphered charts bitfield
 
             //Stage infos
-            if (syncSettings["Stage Info"])
+            if (syncSettings.getSetting("Stage Info"))
             {
                 string[] stageNames = new string[] { "the Great Sea", "the Great Sea (alt)", "the Forsaken Fortress", "Dragon Roost Cavern", "the Forbidden Woods", "the Tower of the Gods", "the Earth Temple", "the Wind Temple",
                         "Ganon's Tower", "Flooded Hyrule", "a ship", "a house/misc", "a cave", "a cave/ship", "killing a blue chu chu", "a test map" };
@@ -229,7 +229,7 @@ namespace Windwaker_coop
             }
 
             //Event bitfields
-            if (syncSettings["Events"])
+            if (syncSettings.getSetting("Events"))
             {
                 memoryLocations.Add(new MemoryLocation(0x803B522C, 4, "", "event", 9, 0, uint.MaxValue, 0, 0,
                     new ComparisonData(new uint[] { 24, 16 }, new string[] { "witnessed Tetra fall into the Forest of Fairies*9", "rescued Tetra from the Forest of Fairies*9" }, true))); //event field 20
@@ -336,20 +336,8 @@ namespace Windwaker_coop
 
         public override void setDefaultSyncSettings()
         {
-            syncSettings = new Dictionary<string, bool>
-            {
-                { "Inventory Items", true },
-                { "Equipment Items", true },
-                { "Story Items", true },
-
-                { "Player Stats", true },
-                { "Capacity Upgrades", true },
-                { "Charts", true },
-                { "Sea Map", true },
-
-                { "Stage Info", true },
-                { "Events", true }
-            };
+            syncSettings = new SyncSettings(new string[] { "Inventory Items", "Equipment Items", "Story Items", "Player Stats", "Capacity Upgrades",
+                "Charts", "Sea Map", "Stage Info", "Events" }, new bool[] { true, true, true, true, true, true, true, true, true });
         }
     }
 }

@@ -102,44 +102,26 @@ namespace Windwaker_coop
         }
     }
 
-    /*
     [Serializable]
     struct SyncSettings
     {
-        public bool inventoryItems;
-        public bool equipmentItems;
-        public bool storyItems;
+        public string[] keys;
+        public bool[] values;
 
-        public bool stats;
-        public bool capacities;
-        public bool charts;
-        public bool seaMap;
-
-        public bool stageInfos;
-        public bool events;
-
-        //Experimental
-        public bool maxHealth;
-        public bool bottles;
-        public bool smallKeys;
-
-        public static SyncSettings getDefaultSettings()
+        public SyncSettings(string[] keys, bool[] values)
         {
-            SyncSettings ss = new SyncSettings();
-            ss.inventoryItems = true;
-            ss.equipmentItems = true;
-            ss.storyItems = true;
-            ss.stats = true;
-            ss.capacities = true;
-            ss.charts = true;
-            ss.seaMap = true;
-            ss.stageInfos = true;
-            ss.events = true;
-
-            ss.maxHealth = true;
-            ss.bottles = true;
-            ss.smallKeys = true;
-            return ss;
+            this.keys = keys;
+            this.values = values;
         }
-    }*/
+
+        public bool getSetting(string setting)
+        {
+            for (int i = 0; i < keys.Length; i++)
+            {
+                if (keys[i] == setting)
+                    return values[i];
+            }
+            return false;
+        }
+    }
 }

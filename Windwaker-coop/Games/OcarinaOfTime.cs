@@ -102,10 +102,7 @@ namespace Windwaker_coop
 
         public override void setDefaultSyncSettings()
         {
-            syncSettings = new Dictionary<string, bool>
-            {
-
-            };
+            syncSettings = new SyncSettings();
         }
     }
 }
