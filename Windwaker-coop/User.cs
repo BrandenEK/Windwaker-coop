@@ -62,6 +62,8 @@ namespace Windwaker_coop
                 receiveTextMessage(data);
             else if (type == 118) //v
                 receiveNewMemoryLocation(data);
+            else if (type == 105) //i
+                receiveIntroData(data);
             else
                 Program.displayError("Unrecognized data type (d, m, n, t, v)");
         }
@@ -87,6 +89,10 @@ namespace Windwaker_coop
         {
             Program.displayError("sendDelayTest() not implemented here");
         }
+        public virtual void sendIntroData() //add params
+        {
+            Program.displayError("sendIntroData() not implemented here");
+        }
 
         //Receive new data functions
         protected virtual void receiveMemoryList(List<byte> data)
@@ -108,6 +114,10 @@ namespace Windwaker_coop
         protected virtual void receiveDelayTest(List<byte> data)
         {
             Program.displayError("receiveDelayTest() not implemented here");
+        }
+        protected virtual void receiveIntroData(List<byte> data)
+        {
+            Program.displayError("receiveIntroData() not implemented here");
         }
 
         public abstract void Begin();
