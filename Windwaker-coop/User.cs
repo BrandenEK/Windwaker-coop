@@ -12,6 +12,22 @@ namespace Windwaker_coop
         public MemoryReader mr { get; protected set; }
         protected string currIp = "";
 
+        public User(string ip)
+        {
+            //sets the ipAddress and port variables - separates them if combined
+            int colon = ip.IndexOf(':');
+            if (colon >= 0)
+            {
+                IpAddress = ip.Substring(0, colon);
+                port = int.Parse(ip.Substring(colon + 1));
+            }
+            else
+            {
+                IpAddress = ip;
+                port = Program.config.defaultPort;
+            }
+        }
+
         protected virtual void Events_DataReceived(object sender, DataReceivedEventArgs e)
         {
             Program.displayDebug("Bytes received: " + e.Data.Length, 2);
@@ -55,7 +71,7 @@ namespace Windwaker_coop
         {
             Program.displayError("sendMemoryList() not implemented here");
         }
-        public virtual void sendNewMemoryLocation(short memLocIndex, uint newValue, bool sendToAllButThis)
+        public virtual void sendNewMemoryLocation(short memLocIndex, uint previousValue, byte[] newValue, bool sendToAllButThis)
         {
             Program.displayError("sendNewMemoryLocation() not implemented here");
         }
@@ -96,18 +112,10 @@ namespace Windwaker_coop
 
         public abstract void Begin();
 
-        //Returns the player name from the messsage & removes it from the list leaving only the data
+        //~Returns the player name from the messsage & removes it from the list leaving only the data
         protected string seperatePlayerAndData(List<byte> data)
         {
-            int sepChar = -1;
-            for (int i = 0; i < data.Count; i++)
-            {
-                if (data[i] == 126) //~
-                {
-                    sepChar = i;
-                    break;
-                }
-            }
+            int sepChar = data.IndexOf(126);
 
             if (sepChar < 1)
             {
@@ -118,61 +126,6 @@ namespace Windwaker_coop
             byte[] nameArray = data.GetRange(0, sepChar).ToArray();
             data.RemoveRange(0, sepChar + 1);
             return Encoding.UTF8.GetString(nameArray);
-        }
-
-        protected string getNotificationText(string playerName, string itemText, bool yourself)
-        {
-            string[] strings = itemText.Split('*', 2);
-            itemText = strings[0]; int formatId = -1;
-            int.TryParse(strings[1], out formatId);
-            string output = "";
-
-            if (formatId == 0)
-                output = "obtained the " + itemText;
-            else if (formatId == 1)
-                output = "obtained a " + itemText;
-            else if (formatId == 2)
-                output = "obtained " + itemText;
-            else if (formatId == 3)
-                output = "learned " + itemText;
-            else if (formatId == 4)
-                output = "deciphered " + itemText;
-            else if (formatId == 5)
-                output = "placed " + itemText;
-            else if (formatId == 9)
-                output = itemText;
-            else
-                output = "format id was wrong lol";
-
-            if (yourself)
-                return "You have " + output;
-            else
-                return playerName + " has " + output;
-        }
-
-        public uint getNumberFromByteList(List<byte> list, int startIndex, int length)
-        {
-            byte[] bytes = new byte[4];
-            string debugOuput = "Converting byte[] { ";
-            for (int i = 0; i < length; i++)
-            {
-                bytes[length - 1 - i] = list[startIndex + i];
-                debugOuput += list[startIndex + i].ToString("X") + " ";
-            }
-            Program.displayDebug(debugOuput + "} to integer: " + BitConverter.ToUInt32(bytes), 4);
-            return BitConverter.ToUInt32(bytes);
-        }
-
-        public byte[] getByteArrayFromNumber(uint number, int length)
-        {
-            byte[] fourByte = BitConverter.GetBytes(number);
-            byte[] result = new byte[length];
-
-            for (int i = 0; i < length; i++)
-            {
-                result[length - 1 - i] = fourByte[i];
-            }
-            return result;
         }
     }
 }
