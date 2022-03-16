@@ -9,14 +9,13 @@
     <Description>A coop program for The Legend of Zelda: The Wind Waker that syncs player progress throughout the game</Description>
     <PackageProjectUrl>https://github.com/BrandenEK/Windwaker-coop</PackageProjectUrl>
     <PackageIcon>mirrorshield.png</PackageIcon>
-    <Version>0.1.0</Version>
+    <Version>0.3.0</Version>
     <AssemblyName>Windwaker-coop</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="SuperSimpleTcp" Version="2.4.0.1" />
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="5.0.0" />
   </ItemGroup>
 
 </Project>
