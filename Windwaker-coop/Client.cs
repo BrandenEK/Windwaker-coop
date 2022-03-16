@@ -11,12 +11,19 @@ namespace Windwaker_coop
         public string playerName;
         private SimpleTcpClient client;
 
-        public Client(string ip, int port, string playerName)
+        public Client(string ip, string playerName) : base(ip)
         {
-            IpAddress = ip;
-            this.port = port;
             this.playerName = playerName;
-            client = new SimpleTcpClient(IpAddress, port);
+            try
+            {
+                client = new SimpleTcpClient(IpAddress, port);
+            }
+            catch (System.Net.Sockets.SocketException)
+            {
+                Program.displayError($"{IpAddress}:{port} is not a valid ip address");
+                Program.EndProgram();
+            }
+
             client.Events.Connected += Events_Connected;
             client.Events.Disconnected += Events_Disconnected;
             client.Events.DataReceived += Events_DataReceived;
@@ -26,7 +33,7 @@ namespace Windwaker_coop
         public override void Begin()
         {
             Connect();
-            beginSyncing(Program.syncDelay);
+            beginSyncing(Program.config.syncDelay);
         }
 
         //Once the player is ready, starts the syncLoop
@@ -43,13 +50,13 @@ namespace Windwaker_coop
                 int timeStart = Environment.TickCount;
 
                 //syncLoop stuff
-                Program.currGame.beginningFunctions();
+                Program.currGame.beginningFunctions(this);
                 List<byte> memory = mr.readFromMemory();
                 if (memory != null)
                 {
                     sendMemoryList(memory);
                 }
-                Program.currGame.endingFunctions();
+                Program.currGame.endingFunctions(this);
 
                 Program.displayDebug("Time taken to complete entire sync loop: " + (Environment.TickCount - timeStart) + " milliseconds", 1);
                 Program.setConsoleColor(5);
@@ -61,43 +68,51 @@ namespace Windwaker_coop
         //Connects to the server
         public void Connect()
         {
-            //add exception handling
-            client.Connect();
+            try
+            {
+                client.Connect();
+            }
+            catch (System.Net.Sockets.SocketException)
+            {
+                Program.displayError($"Failed to connect to a server at {IpAddress}:{port}");
+                Program.EndProgram();
+            }
         }
 
         #region Send functions
-        private void Send(byte[] data)
+        private void Send(List<byte> data, char dataType)
         {
-            if (client.IsConnected && data != null && data.Length > 0)
+            if (client.IsConnected && data != null && data.Count > 0)
             {
-                client.Send(data);
-                Program.displayDebug("Sending " + data.Length + " bytes", 2);
+                data.AddRange(new byte[] { 126, 126, Convert.ToByte(dataType) });
+                client.Send(data.ToArray());
+                Program.displayDebug("Sending " + data.Count + " bytes", 2);
             }
         }
 
         public override void sendMemoryList(List<byte> data)
         {
-            List<byte> toSend = new List<byte>();
-            toSend.AddRange(Encoding.UTF8.GetBytes(playerName + "~"));
+            List<byte> toSend = new List<byte>(Encoding.UTF8.GetBytes(playerName + "~"));
             toSend.AddRange(data);
-            toSend.AddRange(new byte[] { 126, 126, 109 });
-
-            Send(toSend.ToArray());
+            Send(toSend, 'm');
         }
 
         public override void sendTextMessage(string message)
         {
-            Send(Encoding.UTF8.GetBytes(playerName + ": " + message + "~~t"));
+            List<byte> toSend = new List<byte>(Encoding.UTF8.GetBytes(playerName + ": " + message));
+            Send(toSend, 't');
         }
 
         public override void sendNotification(string notification, bool useless)
         {
-            Send(Encoding.UTF8.GetBytes(notification + "~~n"));
+            List<byte> toSend = new List<byte>(Encoding.UTF8.GetBytes(notification));
+            Send(toSend, 'n');
         }
 
         public override void sendDelayTest()
         {
-            Send(Encoding.UTF8.GetBytes(DateTime.Now.Ticks.ToString() + "~~d"));
+            List<byte> toSend = new List<byte>(BitConverter.GetBytes(DateTime.Now.Ticks));
+            Send(toSend, 'd');
         }
         #endregion
 
@@ -112,8 +127,15 @@ namespace Windwaker_coop
             }
 
             short memLocIdx = BitConverter.ToInt16(data.GetRange(0, 2).ToArray());
-            mr.saveToMemory(data.GetRange(2, data.Count - 2), mr.memoryLocations[memLocIdx].startAddress);
-            Program.currGame.onReceiveFunctions();
+            List<byte> newValue = data.GetRange(2, data.Count - 2);
+            mr.saveToMemory(newValue, mr.memoryLocations[memLocIdx].startAddress);
+            Program.currGame.onReceiveFunctions(this, newValue, mr.memoryLocations[memLocIdx]);
+        }
+
+        //type 'm' - received when first joining an existing server, save the list to memory
+        protected override void receiveMemoryList(List<byte> data)
+        {
+            mr.saveToMemory(data);
         }
 
         //type 'n' - displays the notification in the console
@@ -134,8 +156,9 @@ namespace Windwaker_coop
         private void Events_Disconnected(object sender, ClientDisconnectedEventArgs e)
         {
             Program.setConsoleColor(1);
-            Console.WriteLine("Disconnected from the server at " + e.IpPort);
+            Console.WriteLine("Disconnected from the server at " + e.IpPort + "\n");
             sendNotification(playerName + " has left the game!", true);
+            Program.EndProgram();
         }
 
         private void Events_Connected(object sender, ClientConnectedEventArgs e)

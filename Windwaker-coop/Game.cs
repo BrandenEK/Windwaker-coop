@@ -9,29 +9,33 @@ namespace Windwaker_coop
         public int gameId;
         public string gameName;
         public string processName;
+        public uint identityAddress;
+        public string identityText;
         public Dictionary<string, bool> syncSettings;
 
-        public Game(int gameId, string gameName, string processName)
+        public Game(int gameId, string gameName, string processName, uint identityAddress, string identityText)
         {
             this.gameId = gameId;
             this.gameName = gameName;
             this.processName = processName;
+            this.identityAddress = identityAddress;
+            this.identityText = identityText;
             setDefaultSyncSettings();
         }
 
-        public virtual void beginningFunctions()
+        public virtual void beginningFunctions(Client client)
         {
-            //Beginning of the sync loop
+            //Called at beginning of the sync loop
         }
 
-        public virtual void endingFunctions()
+        public virtual void endingFunctions(Client client)
         {
-            //End of the sync loop
+            //Called at end of the sync loop
         }
 
-        public virtual void onReceiveFunctions()
+        public virtual void onReceiveFunctions(Client client, List<byte> data, MemoryLocation memLoc)
         {
-            //When client receives a new memory location
+            //Called when client receives a new memory location
         }
 
         public abstract void addMemoryLocations(List<MemoryLocation> memoryLocations);
