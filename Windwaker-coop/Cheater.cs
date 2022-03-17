@@ -16,6 +16,8 @@ namespace Windwaker_coop
 
         public string processCommand(string[] arguments)
         {
+            if (!Program.programSyncing) return "";
+
             int number = -1;
             bool foundItem = false;
 

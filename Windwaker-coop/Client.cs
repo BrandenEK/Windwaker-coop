@@ -20,19 +20,22 @@ namespace Windwaker_coop
             }
             catch (System.Net.Sockets.SocketException)
             {
-                Program.displayError($"{IpAddress}:{port} is not a valid ip address");
+                Output.error($"{IpAddress}:{port} is not a valid ip address");
                 Program.EndProgram();
             }
 
             client.Events.Connected += Events_Connected;
             client.Events.Disconnected += Events_Disconnected;
             client.Events.DataReceived += Events_DataReceived;
-            mr = new MemoryReader();
+
+            Connect();
+            sendIntroData();
         }
 
-        public override void Begin()
+        public void Begin()
         {
-            Connect();
+            mr = new MemoryReader();
+            Program.programSyncing = true;
             beginSyncing(Program.config.syncDelay);
         }
 
@@ -44,9 +47,8 @@ namespace Windwaker_coop
 
         private async Task syncLoop(int loopTime)
         {
-            while (!Program.programStopped)
+            while (Program.programSyncing)
             {
-                Program.setConsoleColor(5);
                 int timeStart = Environment.TickCount;
 
                 //syncLoop stuff
@@ -58,10 +60,8 @@ namespace Windwaker_coop
                 }
                 Program.currGame.endingFunctions(this);
 
-                Program.displayDebug("Time taken to complete entire sync loop: " + (Environment.TickCount - timeStart) + " milliseconds", 1);
-                Program.setConsoleColor(5);
+                Output.debug("Time taken to complete entire sync loop: " + (Environment.TickCount - timeStart) + " milliseconds", 1);
                 await Task.Delay(loopTime);
-                Program.displayDebug("", 1);
             }
         }
 
@@ -74,7 +74,7 @@ namespace Windwaker_coop
             }
             catch (System.Net.Sockets.SocketException)
             {
-                Program.displayError($"Failed to connect to a server at {IpAddress}:{port}");
+                Output.error($"Failed to connect to a server at {IpAddress}:{port}");
                 Program.EndProgram();
             }
         }
@@ -86,14 +86,13 @@ namespace Windwaker_coop
             {
                 data.AddRange(new byte[] { 126, 126, Convert.ToByte(dataType) });
                 client.Send(data.ToArray());
-                Program.displayDebug("Sending " + data.Count + " bytes", 2);
+                Output.debug("Sending " + data.Count + " bytes", 2);
             }
         }
 
         public override void sendMemoryList(List<byte> data)
         {
-            List<byte> toSend = new List<byte>(Encoding.UTF8.GetBytes(playerName + "~"));
-            toSend.AddRange(data);
+            List<byte> toSend = new List<byte>(data);
             Send(toSend, 'm');
         }
 
@@ -114,15 +113,22 @@ namespace Windwaker_coop
             List<byte> toSend = new List<byte>(BitConverter.GetBytes(DateTime.Now.Ticks));
             Send(toSend, 'd');
         }
+        public override void sendIntroData()
+        {
+            List<byte> toSend = new List<byte>(Encoding.UTF8.GetBytes(playerName));
+            Send(toSend, 'i');
+        }
         #endregion
 
         #region Receive functions
         //type 'v' - locates the updated memoryLocation and writes the newValue to memory
         protected override void receiveNewMemoryLocation(List<byte> data)
         {
+            if (!Program.programSyncing) return;
+
             if (data.Count < 3 || data.Count > 6)
             {
-                Program.displayError("New memoryLocation received from server has an invalid size");
+                Output.error("New memoryLocation received from server has an invalid size");
                 return;
             }
 
@@ -141,30 +147,33 @@ namespace Windwaker_coop
         //type 'n' - displays the notification in the console
         protected override void receiveNotification(List<byte> data)
         {
-            Program.setConsoleColor(3);
-            Console.WriteLine(Encoding.UTF8.GetString(data.ToArray()));
+            Output.text(Encoding.UTF8.GetString(data.ToArray()), ConsoleColor.Green);
         }
 
         //type 't' - displays the text message in the console
         protected override void receiveTextMessage(List<byte> data)
         {
-            Program.setConsoleColor(8);
-            Console.WriteLine(Encoding.UTF8.GetString(data.ToArray()) + "\n");
+            Output.text(Encoding.UTF8.GetString(data.ToArray()), ConsoleColor.Blue);
+        }
+        //type 'i' - sets the syncSettings and allows to start syncing
+        protected override void receiveIntroData(List<byte> data)
+        {
+            string jsonObject = Encoding.UTF8.GetString(data.ToArray());
+            Program.currGame.setSyncSettings(jsonObject);
+            Begin();
         }
         #endregion
 
         private void Events_Disconnected(object sender, ClientDisconnectedEventArgs e)
         {
-            Program.setConsoleColor(1);
-            Console.WriteLine("Disconnected from the server at " + e.IpPort + "\n");
+            Output.text("Disconnected from the server at " + e.IpPort); //new line
             sendNotification(playerName + " has left the game!", true);
             Program.EndProgram();
         }
 
         private void Events_Connected(object sender, ClientConnectedEventArgs e)
         {
-            Program.setConsoleColor(1);
-            Console.WriteLine("Successfully connected to the server at " + e.IpPort);
+            Output.text("Successfully connected to the server at " + e.IpPort);
             sendNotification(playerName + " has joined the game!", true);
         }
     }

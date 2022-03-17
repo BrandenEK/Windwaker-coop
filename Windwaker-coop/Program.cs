@@ -8,7 +8,7 @@ namespace Windwaker_coop
 {
     class Program
     {
-        public static bool programStopped = false;
+        public static bool programSyncing = false;
 
         private static User currUser;
         private static Cheater currCheater;
@@ -16,26 +16,12 @@ namespace Windwaker_coop
         private static Game[] games;
         public static Game currGame;
         public static Config config;
-        public static string tempIp = "172.16.16.83";
-
-        private static Dictionary<byte, ConsoleColor> colorIDs = new Dictionary<byte, ConsoleColor>()
-        {
-            { 0, ConsoleColor.Gray },
-            { 1, ConsoleColor.White },
-            { 2, ConsoleColor.Red },
-            { 3, ConsoleColor.Green },
-            { 4, ConsoleColor.Yellow },
-            { 5, ConsoleColor.Cyan },
-            { 6, ConsoleColor.Magenta },
-            { 7, ConsoleColor.DarkMagenta },
-            { 8, ConsoleColor.Blue }
-        };
+        public static string tempIp = "192.168.0.133";//"172.16.16.83";
 
         static void Main(string[] args)
         {
             Console.Title = "The Legend of Zelda Coop Server/Client";
-            setConsoleColor(3);
-            Console.WriteLine("-The Legend of Zelda Coop-\n");
+            Output.text("-The Legend of Zelda Coop-\n", ConsoleColor.Green);
             config = readConfigFile();
             games = loadGames();
             currGame = games[0];
@@ -44,8 +30,7 @@ namespace Windwaker_coop
             if (config.runInWatcherMode)
             {
                 Console.Title = $"{currGame.gameName} Memory Watcher";
-                setConsoleColor(1);
-                Console.WriteLine("Beginning in memory watcher mode!");
+                Output.text("Beginning in memory watcher mode!");
                 Watcher watcher = new Watcher();
                 watcher.beginWatching(config.syncDelay);
 
@@ -57,28 +42,22 @@ namespace Windwaker_coop
 
             //Gets the type - server or client
             string type = askQuestion("Is this instance a server or a client? (s/c): ").ToLower();
-            string startText = "";
 
             if (type == "s" || type == "server")
             {
                 Console.Title = $"{currGame.gameName} Coop Server";
-
-                /*IP Test
-                string strHostName = Dns.GetHostName();
-                Console.WriteLine("Local Machine's Host Name: " + strHostName);
-                IPHostEntry ipEntry = Dns.GetHostEntry(strHostName);
-                IPAddress[] addr = ipEntry.AddressList;
-                for (int i = 0; i < addr.Length; i++)
-                    Console.WriteLine("IP Address {0}: {1} ", i, addr[i].ToString());*/
 
                 //Gets the ip address
                 string ip = askQuestion("Enter ip address of this machine: ");
                 if (ip == "x")
                     ip = tempIp;
 
+                //Reset console
+                Output.clear();
+                Output.text($"-{currGame.gameName} Coop-\n", ConsoleColor.Green);
+
                 //Creates new server object
                 currUser = new Server(ip);
-                startText = "Wait until everybody is ready, then press any key to start the server...";
             }
             else if (type == "c" || type == "client")
             {
@@ -91,39 +70,35 @@ namespace Windwaker_coop
 
                 //gets the player name
                 string playerName = askQuestion("Enter player name: ").Trim();
-                if (playerName.Length < 1 || playerName.Contains('~'))
+                if (playerName.Length < 1 || playerName.Length > 20 || playerName.Contains('~') || playerName.Contains(' '))
                 {
-                    displayError("That player name is invalid");
+                    Output.error("That player name is invalid - Must be between 1 and 20 characters and can not contain spaces or '~'");
                     EndProgram();
                 }
 
-                //Creates new client & cheater object
-                currUser = new Client(ip, playerName);
-                currCheater = new Cheater((Client)currUser);
-                startText = "Wait until your game is started, then press any key to connect to the server...";
+                //Reset console
+                Output.clear();
+                Output.text($"-{currGame.gameName} Coop-\n", ConsoleColor.Green);
+
+                //Creates new client & cheater objects
+                Client c = new Client(ip, playerName);
+                currUser = c;
+                currCheater = new Cheater(c);
             }
             else
             {
-                displayError("The given input was neither 's' nor 'c'");
+                Output.error("The given input was neither 's' nor 'c'");
                 EndProgram();
             }
 
-            //Begin host/client and start command loop
-            setConsoleColor(3);
-            Console.WriteLine(startText);
-            Console.ReadKey();
-            Console.Clear();
-            setConsoleColor(3);
-            Console.WriteLine($"-{currGame.gameName} Coop-\n");
-
+            //Server is already started & client is already connected - start command loop
             if (currUser != null)
             {
-                currUser.Begin();
                 commandLoop();
             }
             else
             {
-                displayError("Something has gone terribly wrong");
+                Output.error("Something has gone terribly wrong");
             }
 
             EndProgram();
@@ -134,16 +109,15 @@ namespace Windwaker_coop
             string lastCommand = "";
             while (lastCommand != "stop")
             {
-                setConsoleColor(5);
                 bool validCommand = true;
-                lastCommand = Console.ReadLine().ToLower().Trim();
+                lastCommand = Console.ReadLine().Trim();
                 string[] words = lastCommand.Split(' ');
 
                 //Displaying debug output
                 string debugOuput = "Processing command:";
                 foreach (string word in words)
-                    debugOuput += " \"" + word + "\"";
-                displayDebug(debugOuput, 2);
+                    debugOuput += $" '{word}'";
+                Output.debug(debugOuput, 2);
 
                 //Processes multiword command
                 if (words.Length > 1)
@@ -158,11 +132,12 @@ namespace Windwaker_coop
                         }
                     }
                 }
-                setConsoleColor(4);
 
                 //If the command is valid, check which one and use it
                 if (validCommand)
                 {
+                    string response = "";
+
                     if (currUser.GetType() == typeof(Client))
                     {
                         //Client commands
@@ -172,18 +147,18 @@ namespace Windwaker_coop
                         {
                             case "help":
                                 //Displays the available client commands
-                                Console.WriteLine("Available client commands:\npause - temporarily disables syncing to and from the host\nunpause - resumes syncing to and from the host\n" +
+                                response = "Available client commands:\npause - temporarily disables syncing to and from the host\nunpause - resumes syncing to and from the host\n" +
                                     "stop - ends syncing and closes the application\nsay [message] - sends a message to everyone in the server\n" +
                                     "give [item] [number] - gives player the specified item (If cheats are enabled)\nping - tests the delay between client and server\n" +
-                                    "help - lists available commands\n");
+                                    "help - lists available commands";
                                 break;
                             case "pause":
                                 //command not implemented yet
-                                Console.WriteLine("command not implemented yet\n");
+                                response = "command not implemented yet";
                                 break;
                             case "unpause":
                                 //command not implemented yet
-                                Console.WriteLine("command not implemented yet\n");
+                                response = "command not implemented yet";
                                 break;
 
                             case "say":
@@ -194,29 +169,28 @@ namespace Windwaker_coop
                                     for (int i = 1; i < words.Length; i++)
                                         text += words[i] + " ";
                                     client.sendTextMessage(text);
+                                    response = "Message sent";
                                 }
                                 else
-                                    Console.WriteLine("Command 'say' takes at least 1 argument!\n");
+                                    response = "Command 'say' takes at least 1 argument!";
                                 break;
                             case "ping":
                                 //Sends a test to the server to determine the delay
-                                Console.WriteLine("Sending delay test!\n");
+                                response = "Sending delay test!";
                                 client.sendDelayTest();
                                 break;
                             case "give":
                                 //Gives the player a specified item
                                 if (currCheater != null)
                                 {
-                                    string result = currCheater.processCommand(words);
-                                    setConsoleColor(4);
-                                    Console.WriteLine(result + "\n");
+                                    response = currCheater.processCommand(words);
                                 }
                                 else
-                                    displayError("Cheater object has not been initialized");
+                                    Output.error("Cheater object has not been initialized");
                                 break;
                             case "stop": break;
                             default:
-                                Console.WriteLine("Command '" + lastCommand + "' not valid.\n");
+                                response = "Command '" + lastCommand + "' not valid.";
                                 break;
                         }
                     }
@@ -229,94 +203,122 @@ namespace Windwaker_coop
                         {
                             case "help":
                                 //Displays the available server commands
-                                Console.WriteLine("Available server commands:\nlist - lists all of the currently connected players\n" +
+                                response = "Available server commands:\nlist - lists all of the currently connected players\n" +
                                     "reset - resets the host to default values\n" +
-                                    "kick [IpPort] - kicks the speciifed IpPort from the game\nstop - ends syncing and closes the application\n" +
-                                    "help - lists available commands\n");
+                                    "kick [type] [Name or IpPort] - kicks the speciifed Name or IpPort from the game\nstop - ends syncing and closes the application\n" +
+                                    "help - lists available commands";
                                 break;
                             case "list":
                                 //List the ip addresses in the server
-                                Console.WriteLine("Connected players:");
-                                foreach (string player in server.clientIps.Keys)
+                                response = "Connected players:\n";
+                                foreach (string ip in server.clientIps.Keys)
                                 {
-                                    Console.WriteLine(player);
+                                    response += $"{server.clientIps[ip].name} ({ip})\n";
                                 }
-                                Console.WriteLine();
+                                if (server.clientIps.Count < 1)
+                                    response += "none\n";
+                                response = response.Substring(0, response.Length - 1);
                                 break;
                             case "reset":
                                 //resets the server to default values
                                 server.setServerToDefault();
-                                Console.WriteLine("Server data has been reset to default!\n");
+                                response = "Server data has been reset to default!";
                                 server.sendNotification("Server data has been reset to default!", true);
                                 break;
-
                             case "kick":
-                                //kicks the inputted player's ipPort from the game
-                                if (words.Length == 2)
+                                //kicks the inputted player's ipPort or name from the game
+                                if (words.Length == 3)
                                 {
-                                    server.kickPlayer(words[1]);
-                                    Console.WriteLine("IpPort " + words[1] + " has been kicked from the game!\n");
+                                    if (words[1] == "name" || words[1] == "n")
+                                    {
+                                        //Change to simple lookup once names are individualized
+                                        int numFound = 0;
+                                        foreach (string ip in server.clientIps.Keys)
+                                        {
+                                            if (server.clientIps[ip].name == words[2])
+                                            {
+                                                server.kickPlayer(ip);
+                                                response += "Player '" + words[2] + "' has been kicked from the game!";
+                                                numFound++;
+                                            }
+                                        }
+                                        if (numFound == 0)
+                                            response = "Player '" + words[2] + "' does not exist in the game!";
+                                    }
+                                    else if (words[1] == "ip" || words[1] == "i")
+                                    {
+                                        if (server.clientIps.ContainsKey(words[2]))
+                                        {
+                                            server.kickPlayer(words[2]);
+                                            response = "IpPort '" + words[2] + "' has been kicked from the game!";
+                                        }
+                                        else
+                                            response = "IpPort '" + words[2] + "' does not exist in the game!";
+                                    }
+                                    else
+                                    {
+                                        response =  "Invalid type.  Must be either 'name' or 'ip'";
+                                    }
                                 }
                                 else
-                                    Console.WriteLine("Command 'kick' takes 1 argument!\n");
+                                    response =  "Command 'kick' takes 2 arguments!";
                                 break;
                             case "ban":
                                 //command not implemented yet
-                                Console.WriteLine("command not implemented yet\n");
+                                response =  "command not implemented yet";
                                 break;
                             case "stop": break;
                             default:
-                                Console.WriteLine("Command '" + lastCommand + "' not valid.\n");
+                                response =  "Command '" + lastCommand + "' not valid.";
                                 break;
                         }
                     }
                     else
                     {
-                        displayError("User is neither a server nor a client.  WTH");
+                        Output.error("User is neither a server nor a client.  WTH");
                         EndProgram();
                     }
+
+                    if (response != "")
+                        Output.text(response, ConsoleColor.Yellow);
                 }
                 else
-                    Console.WriteLine("Syntax error with inputted command.\n");
+                    Output.text("Syntax error with inputted command.", ConsoleColor.Yellow);
             }
-            Console.WriteLine();
         }
 
         //Ends the program
         public static void EndProgram()
         {
-            setConsoleColor(0);
-            Console.WriteLine("Applcation terminated.  Press any key to exit...");
-            programStopped = true;
+            Output.text("\nApplcation terminated.  Press any key to exit...", ConsoleColor.Gray);
+            programSyncing = false;
             Console.ReadKey();
             Environment.Exit(0);
         }
 
         static string askQuestion(string question)
         {
-            setConsoleColor(1);
-            Console.Write(question);
-            setConsoleColor(5);
-            string output = Console.ReadLine();
-            Console.WriteLine();
-            return output;
+            Output.text(question, ConsoleColor.White, false);
+            return Console.ReadLine();
         }
 
         //~Reads from config.json and returns the config object
         private static Config readConfigFile()
         {
             string path = Environment.CurrentDirectory + "/config.json";
+            Config c;
+
             if (File.Exists(path))
             {
                 string configString = File.ReadAllText(path);
-                config = JsonConvert.DeserializeObject<Config>(configString);
+                c = JsonConvert.DeserializeObject<Config>(configString);
             }
             else
             {
-                config = new Config(0, 2500, 25565, true, false);
-                File.WriteAllText(path, JsonConvert.SerializeObject(config, Formatting.Indented));
+                c = new Config(0, 2500, 25565, true, false);
+                File.WriteAllText(path, JsonConvert.SerializeObject(c, Formatting.Indented));
             }
-            return config;
+            return c;
         }
 
         private static Game[] loadGames()
@@ -327,33 +329,8 @@ namespace Windwaker_coop
                 new OcarinaOfTime(),
                 new Zelda1()
             };
-            displayDebug("Loading " + games.Length + " games", 2);
+            Output.debug("Loading " + games.Length + " games", 2);
             return games;
-        }
-
-        public static void setConsoleColor(byte colorId)
-        {
-            Console.ForegroundColor = colorIDs[colorId];
-        }
-
-        public static void displayDebug(string message, int level)
-        {
-            if (level <= config.debugLevel)
-            {
-                if (level > 2)
-                    setConsoleColor(7);
-                else if (level > 1)
-                    setConsoleColor(6);
-                else
-                    setConsoleColor(1);
-                Console.WriteLine(message);
-            }
-        }
-
-        public static void displayError(string message)
-        {
-            setConsoleColor(2);
-            Console.WriteLine("Error: {0}\n", message);
         }
     }
 }

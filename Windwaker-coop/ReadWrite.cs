@@ -20,7 +20,7 @@ namespace Windwaker_coop
             }
             else
             {
-                Program.displayError($"{Program.currGame.processName} is not running!");
+                Output.error($"{Program.currGame.processName} is not running!");
                 gameProcess = IntPtr.Zero;
                 return false;
             }
@@ -78,7 +78,7 @@ namespace Windwaker_coop
                 bytes[length - 1 - i] = byteList[startIndex + i];
                 debugOuput += byteList[startIndex + i].ToString("X") + " ";
             }
-            Program.displayDebug(debugOuput + "} to integer: " + BitConverter.ToUInt32(bytes), 4);
+            Output.debug(debugOuput + "} to integer: " + BitConverter.ToUInt32(bytes), 4);
             return BitConverter.ToUInt32(bytes);
         }
 

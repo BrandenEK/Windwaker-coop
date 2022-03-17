@@ -21,8 +21,6 @@ namespace Windwaker_coop
 
         private void createArrays()
         {
-            Program.setConsoleColor(4);
-
             //Windwaker event bitfields
             addressStarts = new uint[] { 0x803B522C };
             addressLengths = new int[] { 64 };
@@ -31,7 +29,7 @@ namespace Windwaker_coop
             for (int i = 0; i < addressStarts.Length; i++)
             {
                 totalLength += addressLengths[i];
-                Console.WriteLine($"Watching addresses 0x{addressStarts[i].ToString("X")} - 0x{(addressStarts[i] + addressLengths[i] - 1).ToString("X")}");
+                Output.text($"Watching addresses 0x{addressStarts[i].ToString("X")} - 0x{(addressStarts[i] + addressLengths[i] - 1).ToString("X")}", ConsoleColor.Yellow);
             }
 
             previousValues = new byte[totalLength];
@@ -44,7 +42,7 @@ namespace Windwaker_coop
 
         private async Task watchLoop(int loopTime)
         {
-            while (!Program.programStopped)
+            while (Program.programSyncing)
             {
                 //Gets the list of all bytes that are being watched
                 List<byte> memory = new List<byte>();
@@ -63,16 +61,14 @@ namespace Windwaker_coop
                         //Compare each byte to its previous value
                         if (memory[i] != previousValues[i])
                         {
-                            Program.setConsoleColor(3);
-                            Console.WriteLine($"Address: 0x{getAddressFromIdx(i).ToString("X")} has changed from {previousValues[i]} to {memory[i]}");
+                            Output.text($"Address: 0x{getAddressFromIdx(i).ToString("X")} has changed from {previousValues[i]} to {memory[i]}", ConsoleColor.Green);
                         }
                     }
                 }
 
                 previousValues = memory.ToArray();
                 firstTime = false;
-                Program.setConsoleColor(4);
-                Console.WriteLine("...");
+                Output.text("...", ConsoleColor.Yellow);
                 await Task.Delay(loopTime);
             }
         }
@@ -91,7 +87,7 @@ namespace Windwaker_coop
                     return addressStarts[i] + (uint)targetIdx - (uint)currIdx;
                 }
             }
-            Program.displayError("Address not found in watcher list");
+            Output.error("Address not found in watcher list");
             return 0;
         }
     }
