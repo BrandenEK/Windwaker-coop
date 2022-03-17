@@ -27,13 +27,15 @@ namespace Windwaker_coop
             client.Events.Connected += Events_Connected;
             client.Events.Disconnected += Events_Disconnected;
             client.Events.DataReceived += Events_DataReceived;
-            mr = new MemoryReader();
-        }
 
-        public override void Begin()
-        {
             Connect();
             sendIntroData();
+        }
+
+        public void Begin()
+        {
+            mr = new MemoryReader();
+            Program.programSyncing = true;
             beginSyncing(Program.config.syncDelay);
         }
 
@@ -45,7 +47,7 @@ namespace Windwaker_coop
 
         private async Task syncLoop(int loopTime)
         {
-            while (!Program.programStopped)
+            while (Program.programSyncing)
             {
                 Program.setConsoleColor(5);
                 int timeStart = Environment.TickCount;
@@ -125,6 +127,8 @@ namespace Windwaker_coop
         //type 'v' - locates the updated memoryLocation and writes the newValue to memory
         protected override void receiveNewMemoryLocation(List<byte> data)
         {
+            if (!Program.programSyncing) return;
+
             if (data.Count < 3 || data.Count > 6)
             {
                 Program.displayError("New memoryLocation received from server has an invalid size");

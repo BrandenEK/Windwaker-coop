@@ -44,7 +44,7 @@ namespace Windwaker_coop
 
         private async Task watchLoop(int loopTime)
         {
-            while (!Program.programStopped)
+            while (Program.programSyncing)
             {
                 //Gets the list of all bytes that are being watched
                 List<byte> memory = new List<byte>();

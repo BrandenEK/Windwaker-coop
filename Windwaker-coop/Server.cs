@@ -33,6 +33,8 @@ namespace Windwaker_coop
             clientIps = new Dictionary<string, PlayerInfo>();
             mr = new MemoryReader();
             setServerToDefault();
+
+            Start();
         }
 
         private void compareHostAndPlayer(List<byte> playerData)
@@ -176,11 +178,6 @@ namespace Windwaker_coop
                 return "You have " + output;
             else
                 return clientIps[currIp].name + " has " + output;
-        }
-
-        public override void Begin()
-        {
-            Start();
         }
 
         public void setServerToDefault()

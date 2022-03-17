@@ -119,7 +119,5 @@ namespace Windwaker_coop
         {
             Program.displayError("receiveIntroData() not implemented here");
         }
-
-        public abstract void Begin();
     }
 }

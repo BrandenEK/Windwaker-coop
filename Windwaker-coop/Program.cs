@@ -8,7 +8,7 @@ namespace Windwaker_coop
 {
     class Program
     {
-        public static bool programStopped = false;
+        public static bool programSyncing = false;
 
         private static User currUser;
         private static Cheater currCheater;
@@ -57,28 +57,23 @@ namespace Windwaker_coop
 
             //Gets the type - server or client
             string type = askQuestion("Is this instance a server or a client? (s/c): ").ToLower();
-            string startText = "";
 
             if (type == "s" || type == "server")
             {
                 Console.Title = $"{currGame.gameName} Coop Server";
-
-                /*IP Test
-                string strHostName = Dns.GetHostName();
-                Console.WriteLine("Local Machine's Host Name: " + strHostName);
-                IPHostEntry ipEntry = Dns.GetHostEntry(strHostName);
-                IPAddress[] addr = ipEntry.AddressList;
-                for (int i = 0; i < addr.Length; i++)
-                    Console.WriteLine("IP Address {0}: {1} ", i, addr[i].ToString());*/
 
                 //Gets the ip address
                 string ip = askQuestion("Enter ip address of this machine: ");
                 if (ip == "x")
                     ip = tempIp;
 
+                //Reset console
+                Console.Clear();
+                setConsoleColor(3);
+                Console.WriteLine($"-{currGame.gameName} Coop-\n");
+
                 //Creates new server object
                 currUser = new Server(ip);
-                startText = "Wait until everybody is ready, then press any key to start the server...";
             }
             else if (type == "c" || type == "client")
             {
@@ -97,10 +92,22 @@ namespace Windwaker_coop
                     EndProgram();
                 }
 
-                //Creates new client & cheater object
-                currUser = new Client(ip, playerName);
-                currCheater = new Cheater((Client)currUser);
-                startText = "Wait until your game is started, then press any key to connect to the server...";
+                //Creates new client & cheater objects
+                Client c = new Client(ip, playerName);
+                currUser = c;
+                currCheater = new Cheater(c);
+
+                //Wait for confirmation before beginning
+                setConsoleColor(3);
+                Console.WriteLine("Wait until your game is started, then press any key to begin syncing...");
+                Console.ReadKey();
+
+                //Reset console
+                Console.Clear();
+                setConsoleColor(3);
+                Console.WriteLine($"-{currGame.gameName} Coop-\n");
+
+                c.Begin();
             }
             else
             {
@@ -108,17 +115,9 @@ namespace Windwaker_coop
                 EndProgram();
             }
 
-            //Begin host/client and start command loop
-            setConsoleColor(3);
-            Console.WriteLine(startText);
-            Console.ReadKey();
-            Console.Clear();
-            setConsoleColor(3);
-            Console.WriteLine($"-{currGame.gameName} Coop-\n");
-
+            //Server is already started & client is already connected - start command loop
             if (currUser != null)
             {
-                currUser.Begin();
                 commandLoop();
             }
             else
@@ -316,7 +315,7 @@ namespace Windwaker_coop
         {
             setConsoleColor(0);
             Console.WriteLine("Applcation terminated.  Press any key to exit...");
-            programStopped = true;
+            programSyncing = false;
             Console.ReadKey();
             Environment.Exit(0);
         }
