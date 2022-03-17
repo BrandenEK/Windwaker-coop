@@ -334,17 +334,19 @@ namespace Windwaker_coop
         private static Config readConfigFile()
         {
             string path = Environment.CurrentDirectory + "/config.json";
+            Config c;
+
             if (File.Exists(path))
             {
                 string configString = File.ReadAllText(path);
-                config = JsonConvert.DeserializeObject<Config>(configString);
+                c = JsonConvert.DeserializeObject<Config>(configString);
             }
             else
             {
-                config = new Config(0, 2500, 25565, true, false);
-                File.WriteAllText(path, JsonConvert.SerializeObject(config, Formatting.Indented));
+                c = new Config(0, 2500, 25565, true, false);
+                File.WriteAllText(path, JsonConvert.SerializeObject(c, Formatting.Indented));
             }
-            return config;
+            return c;
         }
 
         private static Game[] loadGames()

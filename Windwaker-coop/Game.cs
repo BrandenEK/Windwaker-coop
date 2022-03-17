@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.IO;
 using Newtonsoft.Json;
 
 namespace Windwaker_coop
@@ -21,7 +22,7 @@ namespace Windwaker_coop
             this.processName = processName;
             this.identityAddress = identityAddress;
             this.identityText = identityText;
-            setDefaultSyncSettings();
+            syncSettings = getDefaultSyncSettings();
         }
 
         public virtual void beginningFunctions(Client client)
@@ -43,7 +44,7 @@ namespace Windwaker_coop
 
         public abstract Cheat[] getCheats();
 
-        public abstract void setDefaultSyncSettings();
+        public abstract SyncSettings getDefaultSyncSettings();
 
         public void setSyncSettings(string jsonObject)
         {
@@ -53,6 +54,25 @@ namespace Windwaker_coop
         public string getSyncSettings()
         {
             return JsonConvert.SerializeObject(syncSettings);
+        }
+
+        //Reads the syncSettings from json file
+        public SyncSettings GetSyncSettingsFromFile()
+        {
+            string path = Environment.CurrentDirectory + "/syncSettings.json";
+            SyncSettings s;
+
+            if (File.Exists(path))
+            {
+                string syncString = File.ReadAllText(path);
+                s = JsonConvert.DeserializeObject<SyncSettings>(syncString);
+            }
+            else
+            {
+                s = getDefaultSyncSettings();
+                File.WriteAllText(path, JsonConvert.SerializeObject(s, Formatting.Indented));
+            }
+            return s;
         }
     }
 }

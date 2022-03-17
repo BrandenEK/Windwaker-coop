@@ -62,9 +62,9 @@ namespace Windwaker_coop
             };
         }
 
-        public override void setDefaultSyncSettings()
+        public override SyncSettings getDefaultSyncSettings()
         {
-            syncSettings = new SyncSettings(new string[] { "Inventory Items", "Equipment Items", "Dungeon Data" }, new bool[] { true, true, true });
+            return new SyncSettings(new string[] { "Inventory Items", "Equipment Items", "Dungeon Data" }, new bool[] { true, true, true });
         }
     }
 }

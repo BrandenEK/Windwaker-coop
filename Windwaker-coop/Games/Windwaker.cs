@@ -334,9 +334,9 @@ namespace Windwaker_coop
             };
         }
 
-        public override void setDefaultSyncSettings()
+        public override SyncSettings getDefaultSyncSettings()
         {
-            syncSettings = new SyncSettings(new string[] { "Inventory Items", "Equipment Items", "Story Items", "Player Stats", "Capacity Upgrades",
+            return new SyncSettings(new string[] { "Inventory Items", "Equipment Items", "Story Items", "Player Stats", "Capacity Upgrades",
                 "Charts", "Sea Map", "Stage Info", "Events" }, new bool[] { true, true, true, true, true, true, true, true, true });
         }
     }

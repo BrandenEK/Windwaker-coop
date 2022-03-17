@@ -100,9 +100,9 @@ namespace Windwaker_coop
             };
         }
 
-        public override void setDefaultSyncSettings()
+        public override SyncSettings getDefaultSyncSettings()
         {
-            syncSettings = new SyncSettings();
+            return new SyncSettings();
         }
     }
 }

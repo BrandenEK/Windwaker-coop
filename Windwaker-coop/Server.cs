@@ -31,6 +31,9 @@ namespace Windwaker_coop
             server.Events.ClientDisconnected += Events_ClientDisconnected;
             server.Events.DataReceived += Events_DataReceived;
             clientIps = new Dictionary<string, PlayerInfo>();
+
+            //Set sync settings, create memory locations, and then start server
+            Program.currGame.syncSettings = Program.currGame.GetSyncSettingsFromFile();
             mr = new MemoryReader();
             setServerToDefault();
 
