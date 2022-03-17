@@ -35,7 +35,7 @@ namespace Windwaker_coop
             setServerToDefault();
         }
 
-        private void compareHostAndPlayer(List<byte> playerData, string playerName)
+        private void compareHostAndPlayer(List<byte> playerData)
         {
             int byteListIndex = 0;
             for (int locationListIndex = 0; locationListIndex < mr.memoryLocations.Count; locationListIndex++)
@@ -91,7 +91,7 @@ namespace Windwaker_coop
                             hostdata[byteListIndex + i] = newValue[i];
                         }
                         sendNewMemoryLocation((short)locationListIndex, playerNumber, newValue, true);
-                        calculateNotification(playerName, playerNumber, hostNumber, memLoc); 
+                        calculateNotification(playerNumber, hostNumber, memLoc); 
                     }
                 }
 
@@ -100,7 +100,7 @@ namespace Windwaker_coop
         }
 
         //Determines whether or not to send a notification & calculates what it should be
-        private void calculateNotification(string playerName, uint playerNumber, uint hostNumber, MemoryLocation memLoc)
+        private void calculateNotification(uint playerNumber, uint hostNumber, MemoryLocation memLoc)
         {
             if (memLoc.cd.bitfield)
             {
@@ -109,7 +109,7 @@ namespace Windwaker_coop
                 {
                     if (ReadWrite.bitSet(playerNumber, memLoc.cd.values[i]) && !ReadWrite.bitSet(hostNumber, memLoc.cd.values[i]))
                     {
-                        processNotification(playerName, memLoc.cd.text[i]);
+                        processNotification(memLoc.cd.text[i]);
                     }
                 }
                 return;
@@ -119,7 +119,7 @@ namespace Windwaker_coop
             {
                 //If the memoryLocation only has one possible value
                 if (memLoc.name != "")
-                    processNotification(playerName, memLoc.name);
+                    processNotification(memLoc.name);
             }
             else
             {
@@ -128,7 +128,7 @@ namespace Windwaker_coop
                 {
                     if (playerNumber == memLoc.cd.values[i])
                     {
-                        processNotification(playerName, memLoc.cd.text[i]);
+                        processNotification(memLoc.cd.text[i]);
                         return;
                     }
                 }
@@ -136,19 +136,19 @@ namespace Windwaker_coop
         }
 
         //Uses the itemText to actually send the notification
-        private void processNotification(string playerName, string itemText)
+        private void processNotification(string itemText)
         {
             if (itemText != "")
             {
-                sendNotification(getNotificationText(playerName, itemText, true), false);
-                sendNotification(getNotificationText(playerName, itemText, false), true);
+                sendNotification(getNotificationText(itemText, true), false);
+                sendNotification(getNotificationText(itemText, false), true);
             }
             else
                 Program.displayError("Notification was unable to be calculated");
         }
 
         //Takes in the text stored in the memoryLocation and converts it to a full notification
-        private string getNotificationText(string playerName, string itemText, bool yourself)
+        private string getNotificationText(string itemText, bool yourself)
         {
             string[] strings = itemText.Split('*', 2);
             itemText = strings[0]; int formatId = -1;
@@ -175,7 +175,7 @@ namespace Windwaker_coop
             if (yourself)
                 return "You have " + output;
             else
-                return playerName + " has " + output;
+                return clientIps[currIp].name + " has " + output;
         }
 
         public override void Begin()
@@ -280,8 +280,6 @@ namespace Windwaker_coop
             if (playerData == null || playerData.Count < 1)
                 Program.displayError("byte[] received from client is null or empty");
 
-            string playerName = seperatePlayerAndData(playerData);
-
             if (playerData.Count == hostdata.Count)
             {
                 if (newServer)
@@ -300,10 +298,10 @@ namespace Windwaker_coop
                 else if (!ReadWrite.checkIfSame(playerData, hostdata))
                 {
                     //Otherwise, if they're different, do these - save to host list, save to player memory, update Stage info, send notifications
-                    compareHostAndPlayer(playerData, playerName);
+                    compareHostAndPlayer(playerData);
                 }
                 else
-                    Program.displayDebug("No differences between host and " + playerName, 1);
+                    Program.displayDebug("No differences between host and " + clientIps[currIp].name, 1);
             }
             else
                 Program.displayError("Host data & player data are different sizes");

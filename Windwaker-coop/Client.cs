@@ -33,6 +33,7 @@ namespace Windwaker_coop
         public override void Begin()
         {
             Connect();
+            sendIntroData();
             beginSyncing(Program.config.syncDelay);
         }
 
@@ -92,9 +93,7 @@ namespace Windwaker_coop
 
         public override void sendMemoryList(List<byte> data)
         {
-            List<byte> toSend = new List<byte>(Encoding.UTF8.GetBytes(playerName + "~"));
-            toSend.AddRange(data);
-            Send(toSend, 'm');
+            Send(data, 'm');
         }
 
         public override void sendTextMessage(string message)

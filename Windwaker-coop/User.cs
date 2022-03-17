@@ -121,21 +121,5 @@ namespace Windwaker_coop
         }
 
         public abstract void Begin();
-
-        //~Returns the player name from the messsage & removes it from the list leaving only the data
-        protected string seperatePlayerAndData(List<byte> data)
-        {
-            int sepChar = data.IndexOf(126);
-
-            if (sepChar < 1)
-            {
-                Program.displayError("Received data was not formatted correctly");
-                return null;
-            }
-
-            byte[] nameArray = data.GetRange(0, sepChar).ToArray();
-            data.RemoveRange(0, sepChar + 1);
-            return Encoding.UTF8.GetString(nameArray);
-        }
     }
 }
