@@ -114,6 +114,11 @@ namespace Windwaker_coop
             List<byte> toSend = new List<byte>(BitConverter.GetBytes(DateTime.Now.Ticks));
             Send(toSend, 'd');
         }
+        public override void sendIntroData()
+        {
+            List<byte> toSend = new List<byte>(Encoding.UTF8.GetBytes(playerName));
+            Send(toSend, 'i');
+        }
         #endregion
 
         #region Receive functions
@@ -150,6 +155,13 @@ namespace Windwaker_coop
         {
             Program.setConsoleColor(8);
             Console.WriteLine(Encoding.UTF8.GetString(data.ToArray()) + "\n");
+        }
+        //type 'i' - sets the syncSettings and allows to start syncing
+        protected override void receiveIntroData(List<byte> data)
+        {
+            string jsonObject = Encoding.UTF8.GetString(data.ToArray());
+            Program.currGame.setSyncSettings(jsonObject);
+            //now create memory reader and start syncing
         }
         #endregion
 

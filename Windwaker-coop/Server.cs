@@ -8,7 +8,7 @@ namespace Windwaker_coop
     class Server : User
     {
         private SimpleTcpServer server;
-        public Dictionary<string, bool> clientIps;
+        public Dictionary<string, PlayerInfo> clientIps;
         private List<byte> hostdata;
 
         private bool newServer;
@@ -30,7 +30,7 @@ namespace Windwaker_coop
             server.Events.ClientConnected += Events_ClientConnected;
             server.Events.ClientDisconnected += Events_ClientDisconnected;
             server.Events.DataReceived += Events_DataReceived;
-            clientIps = new Dictionary<string, bool>();
+            clientIps = new Dictionary<string, PlayerInfo>();
             mr = new MemoryReader();
             setServerToDefault();
         }
@@ -265,6 +265,12 @@ namespace Windwaker_coop
                 if (ip != currIp)
                     Send(ip, toSend, 't');
         }
+
+        public override void sendIntroData()
+        {
+            List<byte> toSend = new List<byte>(Encoding.UTF8.GetBytes(Program.currGame.getSyncSettings()));
+            Send(currIp, toSend, 'i');
+        }
         #endregion
 
         #region Receive functions
@@ -283,13 +289,13 @@ namespace Windwaker_coop
                     //If this is the first player to join, copy their memory to the host
                     hostdata = playerData;
                     newServer = false;
-                    clientIps[currIp] = true;
+                    clientIps[currIp].repeat = true;
                 }
-                else if (!clientIps[currIp])
+                else if (!clientIps[currIp].repeat)
                 {
                     //If this player is just now syncing with the server, send them the hostData to copy
                     sendMemoryList(hostdata);
-                    clientIps[currIp] = true;
+                    clientIps[currIp].repeat = true;
                 }
                 else if (!ReadWrite.checkIfSame(playerData, hostdata))
                 {
@@ -324,6 +330,13 @@ namespace Windwaker_coop
             Program.setConsoleColor(4);
             Console.WriteLine("Byte[] received from " + currIp + " came with a delay of " + (timeDelta / 10000) + " milliseconds");
         }
+        //type 'i' - reads the player name and sets it in the dictionary, then sends the sync settings
+        protected override void receiveIntroData(List<byte> data)
+        {
+            string name = Encoding.UTF8.GetString(data.ToArray());
+            clientIps[currIp].name = name;
+            sendIntroData();
+        }
         #endregion
 
         private void Events_ClientDisconnected(object sender, ClientDisconnectedEventArgs e)
@@ -337,7 +350,19 @@ namespace Windwaker_coop
         {
             Program.setConsoleColor(1);
             Console.WriteLine("Client connected at " + e.IpPort);
-            clientIps.Add(e.IpPort, false);
+            clientIps.Add(e.IpPort, new PlayerInfo("unknown", false));
+        }
+    }
+
+    class PlayerInfo
+    {
+        public string name;
+        public bool repeat;
+
+        public PlayerInfo(string name, bool repeat)
+        {
+            this.name = name;
+            this.repeat = repeat;
         }
     }
 }

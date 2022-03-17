@@ -12,6 +12,7 @@ namespace Windwaker_coop
         {
             memoryLocations = new List<MemoryLocation>();
             Program.currGame.addMemoryLocations(memoryLocations);
+            //Change this to only fill up when syncSettings are received (client) or when syncSettings are read (server)
         }
 
         public List<byte> getDefaultValues()

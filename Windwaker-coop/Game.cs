@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace Windwaker_coop
 {
@@ -43,5 +44,15 @@ namespace Windwaker_coop
         public abstract Cheat[] getCheats();
 
         public abstract void setDefaultSyncSettings();
+
+        public void setSyncSettings(string jsonObject)
+        {
+            syncSettings = JsonConvert.DeserializeObject<SyncSettings>(jsonObject);
+        }
+
+        public string getSyncSettings()
+        {
+            return JsonConvert.SerializeObject(syncSettings);
+        }
     }
 }
