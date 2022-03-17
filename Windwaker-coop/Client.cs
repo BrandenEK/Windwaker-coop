@@ -93,7 +93,8 @@ namespace Windwaker_coop
 
         public override void sendMemoryList(List<byte> data)
         {
-            Send(data, 'm');
+            List<byte> toSend = new List<byte>(data);
+            Send(toSend, 'm');
         }
 
         public override void sendTextMessage(string message)

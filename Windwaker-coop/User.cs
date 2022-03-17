@@ -65,7 +65,7 @@ namespace Windwaker_coop
             else if (type == 105) //i
                 receiveIntroData(data);
             else
-                Program.displayError("Unrecognized data type (d, m, n, t, v)");
+                Program.displayError("Unrecognized data type (d, m, n, t, v, i)");
         }
 
         //Send new data functions

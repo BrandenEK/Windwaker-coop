@@ -221,7 +221,8 @@ namespace Windwaker_coop
 
         public override void sendMemoryList(List<byte> memory)
         {
-            Send(currIp, memory, 'm');
+            List<byte> toSend = new List<byte>(memory);
+            Send(currIp, toSend, 'm');
         }
 
         public override void sendNewMemoryLocation(short memLocIndex, uint previousValue, byte[] newValue, bool sendToAllButThis)
@@ -274,11 +275,12 @@ namespace Windwaker_coop
         #endregion
 
         #region Receive functions
-        //type 'm' - reads player name & memory list and compares this to host data
+        //type 'm' - reads player memory list and compares this to host data
         protected override void receiveMemoryList(List<byte> playerData)
         {
             if (playerData == null || playerData.Count < 1)
                 Program.displayError("byte[] received from client is null or empty");
+            Console.WriteLine("playerlength: " + playerData.Count + ", hostlength: " + hostdata.Count);
 
             if (playerData.Count == hostdata.Count)
             {

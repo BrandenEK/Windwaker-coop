@@ -16,7 +16,7 @@ namespace Windwaker_coop
         private static Game[] games;
         public static Game currGame;
         public static Config config;
-        public static string tempIp = "172.16.16.83";
+        public static string tempIp = "192.168.0.133";//"172.16.16.83";
 
         private static Dictionary<byte, ConsoleColor> colorIDs = new Dictionary<byte, ConsoleColor>()
         {
@@ -237,10 +237,12 @@ namespace Windwaker_coop
                             case "list":
                                 //List the ip addresses in the server
                                 Console.WriteLine("Connected players:");
-                                foreach (string player in server.clientIps.Keys)
+                                foreach (string ip in server.clientIps.Keys)
                                 {
-                                    Console.WriteLine(player);
+                                    Console.WriteLine($"{server.clientIps[ip].name} ({ip})");
                                 }
+                                if (server.clientIps.Count < 1)
+                                    Console.WriteLine("none");
                                 Console.WriteLine();
                                 break;
                             case "reset":
