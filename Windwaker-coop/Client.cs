@@ -165,7 +165,7 @@ namespace Windwaker_coop
         {
             string jsonObject = Encoding.UTF8.GetString(data.ToArray());
             Program.currGame.setSyncSettings(jsonObject);
-            //now create memory reader and start syncing
+            Begin();
         }
         #endregion
 

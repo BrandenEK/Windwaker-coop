@@ -92,22 +92,15 @@ namespace Windwaker_coop
                     EndProgram();
                 }
 
-                //Creates new client & cheater objects
-                Client c = new Client(ip, playerName);
-                currUser = c;
-                currCheater = new Cheater(c);
-
-                //Wait for confirmation before beginning
-                setConsoleColor(3);
-                Console.WriteLine("Wait until your game is started, then press any key to begin syncing...");
-                Console.ReadKey();
-
                 //Reset console
                 Console.Clear();
                 setConsoleColor(3);
                 Console.WriteLine($"-{currGame.gameName} Coop-\n");
 
-                c.Begin();
+                //Creates new client & cheater objects
+                Client c = new Client(ip, playerName);
+                currUser = c;
+                currCheater = new Cheater(c);
             }
             else
             {
