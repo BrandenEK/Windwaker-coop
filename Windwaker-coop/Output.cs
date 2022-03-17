@@ -11,13 +11,13 @@ namespace Windwaker_coop
             Console.ForegroundColor = color;
         }
 
-        public static void error(string message) //new line
+        public static void error(string message)
         {
             setColor(ConsoleColor.Red);
             Console.WriteLine("Error: " + message);
         }
 
-        public static void debug(string message, byte level) //no new line
+        public static void debug(string message, byte level)
         {
             if (level <= Program.config.debugLevel)
             {
