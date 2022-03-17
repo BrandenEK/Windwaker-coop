@@ -280,7 +280,6 @@ namespace Windwaker_coop
         {
             if (playerData == null || playerData.Count < 1)
                 Program.displayError("byte[] received from client is null or empty");
-            Console.WriteLine("playerlength: " + playerData.Count + ", hostlength: " + hostdata.Count);
 
             if (playerData.Count == hostdata.Count)
             {

@@ -91,9 +91,9 @@ namespace Windwaker_coop
 
                 //gets the player name
                 string playerName = askQuestion("Enter player name: ").Trim();
-                if (playerName.Length < 1 || playerName.Contains('~'))
+                if (playerName.Length < 1 || playerName.Length > 20 || playerName.Contains('~') || playerName.Contains(' '))
                 {
-                    displayError("That player name is invalid");
+                    displayError("That player name is invalid - Must be between 1 and 20 characters and can not contain spaces or '~'");
                     EndProgram();
                 }
 
@@ -136,7 +136,7 @@ namespace Windwaker_coop
             {
                 setConsoleColor(5);
                 bool validCommand = true;
-                lastCommand = Console.ReadLine().ToLower().Trim();
+                lastCommand = Console.ReadLine().Trim();
                 string[] words = lastCommand.Split(' ');
 
                 //Displaying debug output
@@ -231,7 +231,7 @@ namespace Windwaker_coop
                                 //Displays the available server commands
                                 Console.WriteLine("Available server commands:\nlist - lists all of the currently connected players\n" +
                                     "reset - resets the host to default values\n" +
-                                    "kick [IpPort] - kicks the speciifed IpPort from the game\nstop - ends syncing and closes the application\n" +
+                                    "kick [type] [Name or IpPort] - kicks the speciifed Name or IpPort from the game\nstop - ends syncing and closes the application\n" +
                                     "help - lists available commands\n");
                                 break;
                             case "list":
@@ -251,16 +251,43 @@ namespace Windwaker_coop
                                 Console.WriteLine("Server data has been reset to default!\n");
                                 server.sendNotification("Server data has been reset to default!", true);
                                 break;
-
                             case "kick":
-                                //kicks the inputted player's ipPort from the game
-                                if (words.Length == 2)
+                                //kicks the inputted player's ipPort or name from the game
+                                if (words.Length == 3)
                                 {
-                                    server.kickPlayer(words[1]);
-                                    Console.WriteLine("IpPort " + words[1] + " has been kicked from the game!\n");
+                                    if (words[1] == "name" || words[1] == "n")
+                                    {
+                                        //Change to simple lookup once names are individualized
+                                        int numFound = 0;
+                                        foreach (string ip in server.clientIps.Keys)
+                                        {
+                                            if (server.clientIps[ip].name == words[2])
+                                            {
+                                                server.kickPlayer(ip);
+                                                Console.WriteLine("Player '" + words[2] + "' has been kicked from the game!\n");
+                                                numFound++;
+                                            }
+                                        }
+                                        if (numFound == 0)
+                                            Console.WriteLine("Player '" + words[2] + "' does not exist in the game!\n");
+                                    }
+                                    else if (words[1] == "ip" || words[1] == "i")
+                                    {
+                                        if (server.clientIps.ContainsKey(words[2]))
+                                        {
+                                            server.kickPlayer(words[2]);
+                                            Console.WriteLine("IpPort '" + words[2] + "' has been kicked from the game!\n");
+                                        }
+                                        else
+                                            Console.WriteLine("IpPort '" + words[2] + "' does not exist in the game!\n");
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("Invalid type.  Must be either 'name' or 'ip'\n");
+                                    }
                                 }
                                 else
-                                    Console.WriteLine("Command 'kick' takes 1 argument!\n");
+                                    Console.WriteLine("Command 'kick' takes 2 arguments!\n");
                                 break;
                             case "ban":
                                 //command not implemented yet
