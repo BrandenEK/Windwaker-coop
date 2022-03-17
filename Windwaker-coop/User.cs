@@ -30,7 +30,7 @@ namespace Windwaker_coop
 
         protected virtual void Events_DataReceived(object sender, DataReceivedEventArgs e)
         {
-            Program.displayDebug("Bytes received: " + e.Data.Length, 2);
+            Output.debug("Bytes received: " + e.Data.Length, 2);
             currIp = e.IpPort;
 
             List<byte> newData = new List<byte>(e.Data);
@@ -47,7 +47,7 @@ namespace Windwaker_coop
                 }
             }
             if (newData.Count > 0)
-                Program.displayError("Received data was formatted incorrectly");
+                Output.error("Received data was formatted incorrectly");
         }
 
         private void processDataReceived(byte type, List<byte> data)
@@ -65,59 +65,59 @@ namespace Windwaker_coop
             else if (type == 105) //i
                 receiveIntroData(data);
             else
-                Program.displayError("Unrecognized data type (d, m, n, t, v, i)");
+                Output.error("Unrecognized data type (d, m, n, t, v, i)");
         }
 
         //Send new data functions
         public virtual void sendMemoryList(List<byte> memory)
         {
-            Program.displayError("sendMemoryList() not implemented here");
+            Output.error("sendMemoryList() not implemented here");
         }
         public virtual void sendNewMemoryLocation(short memLocIndex, uint previousValue, byte[] newValue, bool sendToAllButThis)
         {
-            Program.displayError("sendNewMemoryLocation() not implemented here");
+            Output.error("sendNewMemoryLocation() not implemented here");
         }
         public virtual void sendTextMessage(string message)
         {
-            Program.displayError("sendTextMessage() not implemented here");
+            Output.error("sendTextMessage() not implemented here");
         }
         public virtual void sendNotification(string notification, bool sendToAllButThis)
         {
-            Program.displayError("sendNotification() not implemented here");
+            Output.error("sendNotification() not implemented here");
         }
         public virtual void sendDelayTest()
         {
-            Program.displayError("sendDelayTest() not implemented here");
+            Output.error("sendDelayTest() not implemented here");
         }
         public virtual void sendIntroData() //add params
         {
-            Program.displayError("sendIntroData() not implemented here");
+            Output.error("sendIntroData() not implemented here");
         }
 
         //Receive new data functions
         protected virtual void receiveMemoryList(List<byte> data)
         {
-            Program.displayError("receiveMemoryList() not implemented here");
+            Output.error("receiveMemoryList() not implemented here");
         }
         protected virtual void receiveNewMemoryLocation(List<byte> data)
         {
-            Program.displayError("receiveNewMemoryLocation() not implemented here");
+            Output.error("receiveNewMemoryLocation() not implemented here");
         }
         protected virtual void receiveTextMessage(List<byte> data)
         {
-            Program.displayError("receiveTextMessage() not implemented here");
+            Output.error("receiveTextMessage() not implemented here");
         }
         protected virtual void receiveNotification(List<byte> data)
         {
-            Program.displayError("receiveNotification() not implemented here");
+            Output.error("receiveNotification() not implemented here");
         }
         protected virtual void receiveDelayTest(List<byte> data)
         {
-            Program.displayError("receiveDelayTest() not implemented here");
+            Output.error("receiveDelayTest() not implemented here");
         }
         protected virtual void receiveIntroData(List<byte> data)
         {
-            Program.displayError("receiveIntroData() not implemented here");
+            Output.error("receiveIntroData() not implemented here");
         }
     }
 }

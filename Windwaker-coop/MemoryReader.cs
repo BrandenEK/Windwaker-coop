@@ -42,11 +42,11 @@ namespace Windwaker_coop
                 if (!(i < memoryLocations.Count - 1 && memoryLocations[i + 1].startAddress == loc.startAddress + loc.size))
                 {
                     //reads the entire sequence then resets the sequence
-                    Program.displayDebug("Reading contiguous region of " + sequenceLength + " bytes", 3);
+                    Output.debug("Reading contiguous region of " + sequenceLength + " bytes", 3);
                     byte[] value = ReadWrite.Read(1, sequenceStart, sequenceLength);
                     if (value == null)
                     {
-                        Program.displayError("Aborting \"ReadFromMemory()\" due to null byte[]");
+                        Output.error("Aborting \"ReadFromMemory()\" due to null byte[]");
                         return null;
                     }
                     memoryList.AddRange(value);
@@ -66,7 +66,7 @@ namespace Windwaker_coop
             byte[] value = ReadWrite.Read(1, customStartAddress, customSize);
             if (value == null)
             {
-                Program.displayError("Aborting \"ReadFromMemory\" due to null byte[]");
+                Output.error("Aborting \"ReadFromMemory\" due to null byte[]");
                 return null;
             }
             return new List<byte>(value);
@@ -89,7 +89,7 @@ namespace Windwaker_coop
 
                 if (!(i < memoryLocations.Count - 1 && memoryLocations[i + 1].startAddress == loc.startAddress + loc.size))
                 {
-                    Program.displayDebug("Writing contiguous region of " + (byteListIndex - sequenceStartIndex) + " bytes", 3);
+                    Output.debug("Writing contiguous region of " + (byteListIndex - sequenceStartIndex) + " bytes", 3);
                     ReadWrite.Write(1, sequenceStart, saveData.GetRange(sequenceStartIndex, byteListIndex - sequenceStartIndex).ToArray());
                     if (i < memoryLocations.Count - 1)
                     {
@@ -117,7 +117,7 @@ namespace Windwaker_coop
             string word = Encoding.UTF8.GetString(identityValue);
             if (word != "" && word != Program.currGame.identityText)
             {
-                Program.displayError($"{Program.currGame.gameName} memory not initialized!");
+                Output.error($"{Program.currGame.gameName} memory not initialized!");
                 return false;
             }
             return true;

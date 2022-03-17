@@ -31,7 +31,7 @@ namespace Windwaker_coop
                 return;
 
             byte stageId = stageIdList[0];
-            Program.displayDebug("Updating stageInfo " + stageId, 2);
+            Output.debug("Updating stageInfo " + stageId, 2);
             uint from, to;
 
             if (currentToStatic) { from = 0x803B5380; to = 0x803B4F88 + (uint)stageId * 36; }

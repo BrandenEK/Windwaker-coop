@@ -23,7 +23,7 @@ namespace Windwaker_coop
             }
             catch (System.Net.Sockets.SocketException)
             {
-                Program.displayError($"{IpAddress}:{port} is not a valid ip address");
+                Output.error($"{IpAddress}:{port} is not a valid ip address");
                 Program.EndProgram();
             }
 
@@ -78,13 +78,13 @@ namespace Windwaker_coop
                                 //Maybe bitwise or the playernumber
                                 break;
                             default:
-                                Program.displayError("Invalid compareId");
+                                Output.error("Invalid compareId");
                                 break;
                         }
                     }
                     else
                     {
-                        Program.displayDebug("The value at 0x" + memLoc.startAddress.ToInt64().ToString("X") + " is not inside of an acceptable range (" + playerNumber + "). It was not synced to the host.", 2);
+                        Output.debug("The value at 0x" + memLoc.startAddress.ToInt64().ToString("X") + " is not inside of an acceptable range (" + playerNumber + "). It was not synced to the host.", 2);
                     }
 
                     if (gotNewItem)
@@ -149,7 +149,7 @@ namespace Windwaker_coop
                 sendNotification(getNotificationText(itemText, false), true);
             }
             else
-                Program.displayError("Notification was unable to be calculated");
+                Output.error("Notification was unable to be calculated");
         }
 
         //Takes in the text stored in the memoryLocation and converts it to a full notification
@@ -201,11 +201,10 @@ namespace Windwaker_coop
             }
             catch (System.Net.Sockets.SocketException)
             {
-                Program.displayError($"Failed to start the server at {IpAddress}:{port}");
+                Output.error($"Failed to start the server at {IpAddress}:{port}");
                 Program.EndProgram();
             }
-            Program.setConsoleColor(1);
-            Console.WriteLine($"Server successfully started at {IpAddress}:{port}");
+            Output.text($"Server successfully started at {IpAddress}:{port}");
         }
 
         #region Send functions
@@ -215,7 +214,7 @@ namespace Windwaker_coop
             {
                 data.AddRange(new byte[] { 126, 126, Convert.ToByte(dataType) });
                 server.Send(ip, data.ToArray());
-                Program.displayDebug("Sending " + data.Count + " bytes", 2);
+                Output.debug("Sending " + data.Count + " bytes", 2);
             }
         }
 
@@ -279,7 +278,7 @@ namespace Windwaker_coop
         protected override void receiveMemoryList(List<byte> playerData)
         {
             if (playerData == null || playerData.Count < 1)
-                Program.displayError("byte[] received from client is null or empty");
+                Output.error("byte[] received from client is null or empty");
 
             if (playerData.Count == hostdata.Count)
             {
@@ -302,10 +301,10 @@ namespace Windwaker_coop
                     compareHostAndPlayer(playerData);
                 }
                 else
-                    Program.displayDebug("No differences between host and " + clientIps[currIp].name, 1);
+                    Output.debug("No differences between host and " + clientIps[currIp].name, 1);
             }
             else
-                Program.displayError("Host data & player data are different sizes");
+                Output.error("Host data & player data are different sizes");
         }
 
         //type 't' - reads player name & message and sends it to everybody else
@@ -326,8 +325,7 @@ namespace Windwaker_coop
         {
             long sendTime = BitConverter.ToInt64(data.ToArray());
             long timeDelta = DateTime.Now.Ticks - sendTime;
-            Program.setConsoleColor(4);
-            Console.WriteLine("Byte[] received from " + currIp + " came with a delay of " + (timeDelta / 10000) + " milliseconds");
+            Output.text("Byte[] received from " + currIp + " came with a delay of " + (timeDelta / 10000) + " milliseconds", ConsoleColor.Yellow);
         }
         //type 'i' - reads the player name and sets it in the dictionary, then sends the sync settings
         protected override void receiveIntroData(List<byte> data)
@@ -340,15 +338,13 @@ namespace Windwaker_coop
 
         private void Events_ClientDisconnected(object sender, ClientDisconnectedEventArgs e)
         {
-            Program.setConsoleColor(1);
-            Console.WriteLine("Client disconnected at " + e.IpPort);
+            Output.text("Client disconnected at " + e.IpPort);
             clientIps.Remove(e.IpPort);
         }
 
         private void Events_ClientConnected(object sender, ClientConnectedEventArgs e)
         {
-            Program.setConsoleColor(1);
-            Console.WriteLine("Client connected at " + e.IpPort);
+            Output.text("Client connected at " + e.IpPort);
             clientIps.Add(e.IpPort, new PlayerInfo("unknown", false));
         }
     }
