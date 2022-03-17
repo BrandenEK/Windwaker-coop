@@ -18,19 +18,6 @@ namespace Windwaker_coop
         public static Config config;
         public static string tempIp = "192.168.0.133";//"172.16.16.83";
 
-        private static Dictionary<byte, ConsoleColor> colorIDs = new Dictionary<byte, ConsoleColor>()
-        {
-            { 0, ConsoleColor.Gray },
-            { 1, ConsoleColor.White },
-            { 2, ConsoleColor.Red },
-            { 3, ConsoleColor.Green },
-            { 4, ConsoleColor.Yellow },
-            { 5, ConsoleColor.Cyan },
-            { 6, ConsoleColor.Magenta },
-            { 7, ConsoleColor.DarkMagenta },
-            { 8, ConsoleColor.Blue }
-        };
-
         static void Main(string[] args)
         {
             Console.Title = "The Legend of Zelda Coop Server/Client";
