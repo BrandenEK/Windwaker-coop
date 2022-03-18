@@ -12,6 +12,16 @@ namespace Windwaker_coop
         private List<byte> hostdata;
 
         private bool newServer;
+        Dictionary<int, string> notificationValues = new Dictionary<int, string>()
+        {
+            { 0, "obtained the " },
+            { 1, "obtained a " },
+            { 2, "obtained " },
+            { 3, "learned " },
+            { 4, "deciphered " },
+            { 5, "placed " },
+            { 9, "" } //can be anything
+        };
 
         public Server(string ip) : base(ip)
         {
@@ -105,14 +115,14 @@ namespace Windwaker_coop
         }
 
         //Determines whether or not to send a notification & calculates what it should be
-        private void calculateNotification(uint playerNumber, uint hostNumber, MemoryLocation memLoc)
+        private void calculateNotification(uint newValue, uint oldValue, MemoryLocation memLoc)
         {
             if (memLoc.cd.bitfield)
             {
                 //checks each bit and only sends notification if the player just set it
-                for (int i = 0; i < memLoc.cd.values.Length; i++) 
+                for (int i = 0; i < memLoc.cd.values.Length; i++)
                 {
-                    if (ReadWrite.bitSet(playerNumber, memLoc.cd.values[i]) && !ReadWrite.bitSet(hostNumber, memLoc.cd.values[i]))
+                    if (ReadWrite.bitSet(newValue, memLoc.cd.values[i]) && !ReadWrite.bitSet(oldValue, memLoc.cd.values[i]))
                     {
                         processNotification(memLoc.cd.text[i]);
                     }
@@ -129,58 +139,32 @@ namespace Windwaker_coop
             else
             {
                 //compares the new value to everything in the list of possible values
-                for (int i = 0; i < memLoc.cd.values.Length; i++)  
+                for (int i = 0; i < memLoc.cd.values.Length; i++)
                 {
-                    if (playerNumber == memLoc.cd.values[i])
+                    if (newValue == memLoc.cd.values[i])
                     {
                         processNotification(memLoc.cd.text[i]);
                         return;
                     }
                 }
             }
-        }
 
-        //Uses the itemText to actually send the notification
-        private void processNotification(string itemText)
-        {
-            if (itemText != "")
+            //Uses the itemText to actually send the notification
+            void processNotification(string itemText)
             {
-                sendNotification(getNotificationText(itemText, true), false);
-                sendNotification(getNotificationText(itemText, false), true);
+                if (itemText != "")
+                {
+                    string[] strings = itemText.Split('*', 2);
+                    itemText = strings[0]; int formatId = -1;
+                    int.TryParse(strings[1], out formatId);
+
+                    string output = notificationValues[formatId] + itemText;
+                    sendNotification("You have " + output, false);
+                    sendNotification(clientIps[currIp].name + " has " + output, true);
+                }
+                else
+                    Output.error("Notification was unable to be calculated");
             }
-            else
-                Output.error("Notification was unable to be calculated");
-        }
-
-        //Takes in the text stored in the memoryLocation and converts it to a full notification
-        private string getNotificationText(string itemText, bool yourself)
-        {
-            string[] strings = itemText.Split('*', 2);
-            itemText = strings[0]; int formatId = -1;
-            int.TryParse(strings[1], out formatId);
-            string output = "";
-
-            if (formatId == 0)
-                output = "obtained the " + itemText;
-            else if (formatId == 1)
-                output = "obtained a " + itemText;
-            else if (formatId == 2)
-                output = "obtained " + itemText;
-            else if (formatId == 3)
-                output = "learned " + itemText;
-            else if (formatId == 4)
-                output = "deciphered " + itemText;
-            else if (formatId == 5)
-                output = "placed " + itemText;
-            else if (formatId == 9)
-                output = itemText;
-            else
-                output = "format id was wrong lol";
-
-            if (yourself)
-                return "You have " + output;
-            else
-                return clientIps[currIp].name + " has " + output;
         }
 
         public void setServerToDefault()
