@@ -9,7 +9,7 @@ namespace Windwaker_coop
     {
         private SimpleTcpServer server;
         public Dictionary<string, PlayerInfo> clientIps;
-        private List<byte> hostdata;
+        private byte[] hostdata;
 
         private bool newServer;
         Dictionary<int, string> notificationValues = new Dictionary<int, string>()
@@ -50,120 +50,95 @@ namespace Windwaker_coop
             Start();
         }
 
-        private void compareHostAndPlayer(List<byte> playerData)
+        private void compareHostAndPlayer(uint playerValue, uint hostValue, ushort memLocIdx)
         {
-            int byteListIndex = 0;
-            for (int locationListIndex = 0; locationListIndex < mr.memoryLocations.Count; locationListIndex++)
+            MemoryLocation memLoc = mr.memoryLocations[memLocIdx];
+            //Calculate hostValue from the savedList or maybe from oldValue sent in
+
+            //Error conditions - not fatal, but unexpected
+            if (playerValue == hostValue)
             {
-                MemoryLocation memLoc = mr.memoryLocations[locationListIndex];
-                uint hostNumber = ReadWrite.bigToLittleEndian(hostdata, byteListIndex, memLoc.size);
-                uint playerNumber = ReadWrite.bigToLittleEndian(playerData, byteListIndex, memLoc.size);
-
-                if (playerNumber != hostNumber)
-                {
-                    bool gotNewItem = false;
-
-                    if (playerNumber >= memLoc.lowerValue && playerNumber <= memLoc.higherValue)
-                    {
-                        //Compare the two numbers and check which should be updated
-                        switch (memLoc.compareId)
-                        {
-                            case 0: //greater than
-                                if (playerNumber > hostNumber) gotNewItem = true;
-                                    break;
-                            case 1: //less than
-                                if (playerNumber < hostNumber) gotNewItem = true;
-                                break;
-                            case 2: //greater than & not 255
-                                if (hostNumber == 255 || playerNumber > hostNumber && playerNumber != 255) gotNewItem = true;
-                                break;
-                            case 3: //bottles - only send once
-                                if (hostNumber == 255) gotNewItem = true;
-                                break;
-                            case 8: //different at all
-                                if (playerNumber != hostNumber) gotNewItem = true;
-                                break;
-                            case 9: //bitfields - just to make sure bits aren't unset
-                                if ((playerNumber & (playerNumber ^ hostNumber)) > 0) gotNewItem = true;
-                                //Maybe bitwise or the playernumber
-                                break;
-                            default:
-                                Output.error("Invalid compareId");
-                                break;
-                        }
-                    }
-                    else
-                    {
-                        Output.debug("The value at 0x" + memLoc.startAddress.ToInt64().ToString("X") + " is not inside of an acceptable range (" + playerNumber + "). It was not synced to the host.", 2);
-                    }
-
-                    if (gotNewItem)
-                    {
-                        //Update the host value and send new notification
-                        byte[] newValue = ReadWrite.littleToBigEndian(playerNumber, memLoc.size);
-                        for (int i = 0; i < memLoc.size; i++)
-                        {
-                            hostdata[byteListIndex + i] = newValue[i];
-                        }
-                        sendNewMemoryLocation((short)locationListIndex, playerNumber, newValue, true);
-                        calculateNotification(playerNumber, hostNumber, memLoc); 
-                    }
-                }
-
-                byteListIndex += memLoc.size;
+                Output.debug("Player value received was the same as host value.  Server and client are out of sync", 1);
+                return;
             }
-        }
-
-        //Determines whether or not to send a notification & calculates what it should be
-        private void calculateNotification(uint newValue, uint oldValue, MemoryLocation memLoc)
-        {
-            if (memLoc.cd.bitfield)
+            if (playerValue > memLoc.higherValue || playerValue < memLoc.lowerValue)
             {
-                //checks each bit and only sends notification if the player just set it
-                for (int i = 0; i < memLoc.cd.values.Length; i++)
-                {
-                    if (ReadWrite.bitSet(newValue, memLoc.cd.values[i]) && !ReadWrite.bitSet(oldValue, memLoc.cd.values[i]))
-                    {
-                        processNotification(memLoc.cd.text[i]);
-                    }
-                }
+                Output.debug($"The value at 0x{memLoc.startAddress.ToInt64().ToString("X")} is not inside of an acceptable range ({playerValue}). It was not synced to the host.", 2);
                 return;
             }
 
-            if (memLoc.cd.values == null || memLoc.cd.text == null)
+            switch (memLoc.compareId)
             {
-                //If the memoryLocation only has one possible value
-                if (memLoc.name != "")
-                    processNotification(memLoc.name);
+                case 0:
+                    if (playerValue > hostValue) overwriteMemory(); return;
+                case 1:
+                    if (playerValue < hostValue) overwriteMemory(); return;
+                case 2:
+                    if (hostValue == 255 || playerValue > hostValue && playerValue != 255) overwriteMemory(); return;
+                case 9:
+                    if ((playerValue & (playerValue ^ hostValue)) > 0) overwriteMemory(); return;
+                default:
+                    Output.error("Invalid compareId"); return;
             }
-            else
+
+            void overwriteMemory()
             {
-                //compares the new value to everything in the list of possible values
-                for (int i = 0; i < memLoc.cd.values.Length; i++)
+                //write new value to host data
+                sendNewMemoryLocation(0, memLocIdx, hostValue, playerValue, true); //change writeType to be in data
+                calculateNotification(playerValue, hostValue, memLoc);
+            }
+
+            //Determines whether or not to send a notification & calculates what it should be
+            void calculateNotification(uint newValue, uint oldValue, MemoryLocation memLoc)
+            {
+                if (memLoc.cd.bitfield)
                 {
-                    if (newValue == memLoc.cd.values[i])
+                    //checks each bit and only sends notification if the player just set it
+                    for (int i = 0; i < memLoc.cd.values.Length; i++)
                     {
-                        processNotification(memLoc.cd.text[i]);
-                        return;
+                        if (ReadWrite.bitSet(newValue, memLoc.cd.values[i]) && !ReadWrite.bitSet(oldValue, memLoc.cd.values[i]))
+                        {
+                            processNotification(memLoc.cd.text[i]);
+                        }
                     }
+                    return;
                 }
-            }
 
-            //Uses the itemText to actually send the notification
-            void processNotification(string itemText)
-            {
-                if (itemText != "")
+                if (memLoc.cd.values == null || memLoc.cd.text == null)
                 {
-                    string[] strings = itemText.Split('*', 2);
-                    itemText = strings[0]; int formatId = -1;
-                    int.TryParse(strings[1], out formatId);
-
-                    string output = notificationValues[formatId] + itemText;
-                    sendNotification("You have " + output, false);
-                    sendNotification(clientIps[currIp].name + " has " + output, true);
+                    //If the memoryLocation only has one possible value
+                    if (memLoc.name != "")
+                        processNotification(memLoc.name);
                 }
                 else
-                    Output.error("Notification was unable to be calculated");
+                {
+                    //compares the new value to everything in the list of possible values
+                    for (int i = 0; i < memLoc.cd.values.Length; i++)
+                    {
+                        if (newValue == memLoc.cd.values[i])
+                        {
+                            processNotification(memLoc.cd.text[i]);
+                            return;
+                        }
+                    }
+                }
+
+                //Uses the itemText to actually send the notification
+                void processNotification(string itemText)
+                {
+                    if (itemText != "")
+                    {
+                        string[] strings = itemText.Split('*', 2);
+                        itemText = strings[0]; int formatId = -1;
+                        int.TryParse(strings[1], out formatId);
+
+                        string output = notificationValues[formatId] + itemText;
+                        sendNotification("You have " + output, false);
+                        sendNotification(clientIps[currIp].name + " has " + output, true);
+                    }
+                    else
+                        Output.error("Notification was unable to be calculated");
+                }
             }
         }
 
@@ -192,129 +167,124 @@ namespace Windwaker_coop
         }
 
         #region Send functions
-        private void Send(string ip, List<byte> data, char dataType)
+        private void Send(string ip, byte[] data, char dataType)
         {
             if (server.IsListening)
             {
-                data.AddRange(new byte[] { 126, 126, Convert.ToByte(dataType) });
-                server.Send(ip, data.ToArray());
-                Output.debug("Sending " + data.Count + " bytes", 2);
+                List<byte> d = new List<byte>(data);
+                d.AddRange(new byte[] { 126, 126, Convert.ToByte(dataType) });
+                server.Send(ip, d.ToArray());
+                Output.debug("Sending " + d.Count + " bytes", 2);
             }
         }
 
         public override void sendMemoryList(List<byte> memory)
         {
-            List<byte> toSend = new List<byte>(memory);
-            Send(currIp, toSend, 'm');
+            Send(currIp, memory.ToArray(), 'm');
         }
 
-        public override void sendNewMemoryLocation(short memLocIndex, uint previousValue, byte[] newValue, bool sendToAllButThis)
+        public override void sendNewMemoryLocation(byte writeType, ushort memLocIndex, uint oldValue, uint newValue, bool sendToAllButThis)
         {
-            List<byte> toSend = new List<byte>();
-            toSend.AddRange(BitConverter.GetBytes(memLocIndex));
-            //toSend.AddRange(BitConverter.GetBytes(previousValue));
-            toSend.AddRange(newValue);
+            List<byte> toSend = new List<byte>(BitConverter.GetBytes(memLocIndex));
+            toSend.AddRange(BitConverter.GetBytes(oldValue));
+            toSend.AddRange(BitConverter.GetBytes(newValue));
+            toSend.Add(writeType);
 
             if (sendToAllButThis)
             {
                 foreach (string ip in clientIps.Keys)
                     if (ip != currIp)
-                        Send(ip, toSend, 'v');
+                        Send(ip, toSend.ToArray(), 'v');
             }
             else
             {
-                Send(currIp, toSend, 'v');
+                Send(currIp, toSend.ToArray(), 'v');
             }
         }
 
         public override void sendNotification(string notification, bool sendToAllButThis)
         {
-            List<byte> toSend = new List<byte>(Encoding.UTF8.GetBytes(notification));
+            byte[] b = Encoding.UTF8.GetBytes(notification);
             if (sendToAllButThis)
             {
                 foreach (string ip in clientIps.Keys)
                     if (ip != currIp)
-                        Send(ip, toSend, 'n');
+                        Send(ip, b, 'n');
             }
             else
             {
-                Send(currIp, toSend, 'n');
+                Send(currIp, b, 'n');
             }
         }
 
         public override void sendTextMessage(string message)
         {
-            List<byte> toSend = new List<byte>(Encoding.UTF8.GetBytes(message));
+            byte[] b = Encoding.UTF8.GetBytes(message);
             foreach (string ip in clientIps.Keys)
                 if (ip != currIp)
-                    Send(ip, toSend, 't');
+                    Send(ip, b, 't');
         }
 
         public override void sendIntroData()
         {
-            List<byte> toSend = new List<byte>(Encoding.UTF8.GetBytes(Program.currGame.getSyncSettings()));
-            Send(currIp, toSend, 'i');
+            Send(currIp, Encoding.UTF8.GetBytes(Program.currGame.getSyncSettings()), 'i');
         }
         #endregion
 
         #region Receive functions
         //type 'm' - reads player memory list and compares this to host data
-        protected override void receiveMemoryList(List<byte> playerData)
+        protected override void receiveMemoryList(byte[] playerData)
         {
-            if (playerData == null || playerData.Count < 1)
-                Output.error("byte[] received from client is null or empty");
-
-            if (playerData.Count == hostdata.Count)
+            //Basically just going to be this - dont call this function yet though
+            if (newServer)
             {
-                if (newServer)
-                {
-                    //If this is the first player to join, copy their memory to the host
-                    hostdata = playerData;
-                    newServer = false;
-                    clientIps[currIp].repeat = true;
-                }
-                else if (!clientIps[currIp].repeat)
-                {
-                    //If this player is just now syncing with the server, send them the hostData to copy
-                    sendMemoryList(hostdata);
-                    clientIps[currIp].repeat = true;
-                }
-                else if (!ReadWrite.checkIfSame(playerData, hostdata))
-                {
-                    //Otherwise, if they're different, do these - save to host list, save to player memory, update Stage info, send notifications
-                    compareHostAndPlayer(playerData);
-                }
-                else
-                    Output.debug("No differences between host and " + clientIps[currIp].name, 1);
+                //If this is the first player to join, copy their memory to the host
+                hostdata = playerData;
+                newServer = false;
+                clientIps[currIp].repeat = true;
             }
-            else
-                Output.error("Host data & player data are different sizes");
+        }
+
+        //type 'v' - reads the single memoryLocation's new value whenever the player's has changed
+        protected override void receiveNewMemoryLocation(byte[] data)
+        {
+            if (data.Length != 11)
+            {
+                Output.error("Received memory location was not correct length (11b)");
+                return;
+            }
+
+            ushort memLocIdx = BitConverter.ToUInt16(data, 0);
+            uint oldValue = BitConverter.ToUInt32(data, 2);
+            uint newValue = BitConverter.ToUInt32(data, 6);
+
+            compareHostAndPlayer(newValue, oldValue, memLocIdx);
         }
 
         //type 't' - reads player name & message and sends it to everybody else
-        protected override void receiveTextMessage(List<byte> data)
+        protected override void receiveTextMessage(byte[] data)
         {
-            sendTextMessage(Encoding.UTF8.GetString(data.ToArray()));
+            sendTextMessage(Encoding.UTF8.GetString(data));
         }
 
         //type 'n' - read notification and send it to everyone else
-        protected override void receiveNotification(List<byte> data)
+        protected override void receiveNotification(byte[] data)
         {
-            string message = Encoding.UTF8.GetString(data.ToArray());
+            string message = Encoding.UTF8.GetString(data);
             sendNotification(message, true);
         }
 
         //type 'd' - reads the string and converts it to a long & displays it
-        protected override void receiveDelayTest(List<byte> data)
+        protected override void receiveDelayTest(byte[] data)
         {
-            long sendTime = BitConverter.ToInt64(data.ToArray());
+            long sendTime = BitConverter.ToInt64(data);
             long timeDelta = DateTime.Now.Ticks - sendTime;
             Output.text("Byte[] received from " + currIp + " came with a delay of " + (timeDelta / 10000) + " milliseconds", ConsoleColor.Yellow);
         }
         //type 'i' - reads the player name and sets it in the dictionary, then sends the sync settings
-        protected override void receiveIntroData(List<byte> data)
+        protected override void receiveIntroData(byte[] data)
         {
-            string name = Encoding.UTF8.GetString(data.ToArray());
+            string name = Encoding.UTF8.GetString(data);
             clientIps[currIp].name = name;
             sendIntroData();
         }

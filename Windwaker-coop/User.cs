@@ -12,6 +12,8 @@ namespace Windwaker_coop
         public MemoryReader mr { get; protected set; }
         protected string currIp = "";
 
+        private Dictionary<byte, Action<byte[]>> receiveDataFunctions = new Dictionary<byte, Action<byte[]>>();
+
         public User(string ip)
         {
             //sets the ipAddress and port variables - separates them if combined
@@ -26,6 +28,13 @@ namespace Windwaker_coop
                 IpAddress = ip;
                 port = Program.config.defaultPort;
             }
+
+            receiveDataFunctions.Add(100, receiveDelayTest); //d
+            receiveDataFunctions.Add(105, receiveIntroData); //i
+            receiveDataFunctions.Add(109, receiveMemoryList); //m
+            receiveDataFunctions.Add(110, receiveNotification); //n
+            receiveDataFunctions.Add(116, receiveTextMessage); //t
+            receiveDataFunctions.Add(118, receiveNewMemoryLocation); //v
         }
 
         protected virtual void Events_DataReceived(object sender, DataReceivedEventArgs e)
@@ -42,7 +51,7 @@ namespace Windwaker_coop
                     byte type = newData[i + 2];
                     List<byte> singleData = newData.GetRange(0, i);
                     newData.RemoveRange(0, i + 3);
-                    processDataReceived(type, singleData);
+                    processDataReceived(type, singleData.ToArray());
                     i = -1;
                 }
             }
@@ -50,22 +59,14 @@ namespace Windwaker_coop
                 Output.error("Received data was formatted incorrectly");
         }
 
-        private void processDataReceived(byte type, List<byte> data)
+        private void processDataReceived(byte type, byte[] data)
         {
-            if (type == 100) //d
-                receiveDelayTest(data);
-            else if (type == 109) //m
-                receiveMemoryList(data);
-            else if (type == 110) //n
-                receiveNotification(data);
-            else if (type == 116) //t
-                receiveTextMessage(data);
-            else if (type == 118) //v
-                receiveNewMemoryLocation(data);
-            else if (type == 105) //i
-                receiveIntroData(data);
-            else
-                Output.error("Unrecognized data type (d, m, n, t, v, i)");
+            if (!receiveDataFunctions.ContainsKey(type))
+            {
+                Output.error("Unrecognized data type (d, i, m, n, t, v)");
+                return;
+            }
+            receiveDataFunctions[type](data);
         }
 
         //Send new data functions
@@ -73,7 +74,7 @@ namespace Windwaker_coop
         {
             Output.error("sendMemoryList() not implemented here");
         }
-        public virtual void sendNewMemoryLocation(short memLocIndex, uint previousValue, byte[] newValue, bool sendToAllButThis)
+        public virtual void sendNewMemoryLocation(byte writeType, ushort memLocIndex, uint oldValue, uint newValue, bool sendToAllButThis)
         {
             Output.error("sendNewMemoryLocation() not implemented here");
         }
@@ -95,27 +96,27 @@ namespace Windwaker_coop
         }
 
         //Receive new data functions
-        protected virtual void receiveMemoryList(List<byte> data)
+        protected virtual void receiveMemoryList(byte[] data)
         {
             Output.error("receiveMemoryList() not implemented here");
         }
-        protected virtual void receiveNewMemoryLocation(List<byte> data)
+        protected virtual void receiveNewMemoryLocation(byte[] data)
         {
             Output.error("receiveNewMemoryLocation() not implemented here");
         }
-        protected virtual void receiveTextMessage(List<byte> data)
+        protected virtual void receiveTextMessage(byte[] data)
         {
             Output.error("receiveTextMessage() not implemented here");
         }
-        protected virtual void receiveNotification(List<byte> data)
+        protected virtual void receiveNotification(byte[] data)
         {
             Output.error("receiveNotification() not implemented here");
         }
-        protected virtual void receiveDelayTest(List<byte> data)
+        protected virtual void receiveDelayTest(byte[] data)
         {
             Output.error("receiveDelayTest() not implemented here");
         }
-        protected virtual void receiveIntroData(List<byte> data)
+        protected virtual void receiveIntroData(byte[] data)
         {
             Output.error("receiveIntroData() not implemented here");
         }

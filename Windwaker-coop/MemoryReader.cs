@@ -15,14 +15,14 @@ namespace Windwaker_coop
             //Change this to only fill up when syncSettings are received (client) or when syncSettings are read (server)
         }
 
-        public List<byte> getDefaultValues()
+        public byte[] getDefaultValues()
         {
             List<byte> defaults = new List<byte>();
             foreach (MemoryLocation memLoc in memoryLocations)
             {
                 defaults.AddRange(ReadWrite.littleToBigEndian(memLoc.defaultValue, memLoc.size));
             }
-            return defaults;
+            return defaults.ToArray();
         }
 
         public List<byte> readFromMemory()

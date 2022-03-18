@@ -34,7 +34,7 @@ namespace Windwaker_coop
             //Called at end of the sync loop
         }
 
-        public virtual void onReceiveFunctions(Client client, List<byte> data, MemoryLocation memLoc)
+        public virtual void onReceiveFunctions(Client client, uint newValue, MemoryLocation memLoc)
         {
             //Called when client receives a new memory location
         }

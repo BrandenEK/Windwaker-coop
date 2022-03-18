@@ -35,6 +35,9 @@ namespace Windwaker_coop
         public void Begin()
         {
             mr = new MemoryReader();
+            //After receiving initial memory overwrite (if not first player), write before beginSyncing
+            //Maybe move this stuff to still in receiveIntro function
+
             Program.programSyncing = true;
             beginSyncing(Program.config.syncDelay);
         }
@@ -56,7 +59,21 @@ namespace Windwaker_coop
                 List<byte> memory = mr.readFromMemory();
                 if (memory != null)
                 {
-                    sendMemoryList(memory);
+                    //Loop through each memory location and if the bytes are different send them to server
+
+                    int byteListIndex = 0, locationListIndex = 0;
+                    for (; locationListIndex < mr.memoryLocations.Count; locationListIndex++)
+                    {
+                        MemoryLocation memLoc = mr.memoryLocations[locationListIndex];
+
+                        if (true) // if diff
+                        {
+                            uint value = ReadWrite.bigToLittleEndian(memory.ToArray(), byteListIndex, memLoc.size);
+                            sendNewMemoryLocation(0, (ushort)locationListIndex, 0, value, false);
+                        }
+
+                        byteListIndex += memLoc.size;
+                    }
                 }
                 Program.currGame.endingFunctions(this);
 
@@ -80,85 +97,96 @@ namespace Windwaker_coop
         }
 
         #region Send functions
-        private void Send(List<byte> data, char dataType)
+        private void Send(byte[] data, char dataType)
         {
-            if (client.IsConnected && data != null && data.Count > 0)
+            if (client.IsConnected && data != null && data.Length > 0)
             {
-                data.AddRange(new byte[] { 126, 126, Convert.ToByte(dataType) });
-                client.Send(data.ToArray());
-                Output.debug("Sending " + data.Count + " bytes", 2);
+                List<byte> d = new List<byte>(data);
+                d.AddRange(new byte[] { 126, 126, Convert.ToByte(dataType) });
+                client.Send(d.ToArray());
+                Output.debug("Sending " + d.Count + " bytes", 2);
             }
         }
 
         public override void sendMemoryList(List<byte> data)
         {
-            List<byte> toSend = new List<byte>(data);
-            Send(toSend, 'm');
+            Send(data.ToArray(), 'm');
+        }
+
+        public override void sendNewMemoryLocation(byte writeType, ushort memLocIndex, uint oldValue, uint newValue, bool useless)
+        {
+            List<byte> toSend = new List<byte>(BitConverter.GetBytes(memLocIndex));
+            toSend.AddRange(BitConverter.GetBytes(oldValue));
+            toSend.AddRange(BitConverter.GetBytes(newValue));
+            toSend.Add(writeType);
+
+            Send(toSend.ToArray(), 'v');
         }
 
         public override void sendTextMessage(string message)
         {
-            List<byte> toSend = new List<byte>(Encoding.UTF8.GetBytes(playerName + ": " + message));
-            Send(toSend, 't');
+            Send(Encoding.UTF8.GetBytes(playerName + ": " + message), 't');
         }
 
         public override void sendNotification(string notification, bool useless)
         {
-            List<byte> toSend = new List<byte>(Encoding.UTF8.GetBytes(notification));
-            Send(toSend, 'n');
+            Send(Encoding.UTF8.GetBytes(notification), 'n');
         }
 
         public override void sendDelayTest()
         {
-            List<byte> toSend = new List<byte>(BitConverter.GetBytes(DateTime.Now.Ticks));
-            Send(toSend, 'd');
+            Send(BitConverter.GetBytes(DateTime.Now.Ticks), 'd');
         }
         public override void sendIntroData()
         {
-            List<byte> toSend = new List<byte>(Encoding.UTF8.GetBytes(playerName));
-            Send(toSend, 'i');
+            Send(Encoding.UTF8.GetBytes(playerName), 'i');
         }
         #endregion
 
         #region Receive functions
         //type 'v' - locates the updated memoryLocation and writes the newValue to memory
-        protected override void receiveNewMemoryLocation(List<byte> data)
+        protected override void receiveNewMemoryLocation(byte[] data)
         {
             if (!Program.programSyncing) return;
 
-            if (data.Count < 3 || data.Count > 6)
+            if (data.Length != 11)
             {
-                Output.error("New memoryLocation received from server has an invalid size");
+                Output.error("Received memory location was not correct length (11b)");
                 return;
             }
 
-            short memLocIdx = BitConverter.ToInt16(data.GetRange(0, 2).ToArray());
-            List<byte> newValue = data.GetRange(2, data.Count - 2);
-            mr.saveToMemory(newValue, mr.memoryLocations[memLocIdx].startAddress);
-            Program.currGame.onReceiveFunctions(this, newValue, mr.memoryLocations[memLocIdx]);
+            ushort memLocIdx = BitConverter.ToUInt16(data, 0);
+            uint oldValue = BitConverter.ToUInt32(data, 2);
+            uint newValue = BitConverter.ToUInt32(data, 6);
+            byte writeType = data[10];
+
+            MemoryLocation memLoc = mr.memoryLocations[memLocIdx];
+            List<byte> listValue = new List<byte>(ReadWrite.littleToBigEndian(newValue, memLoc.size));
+            mr.saveToMemory(listValue, memLoc.startAddress);
+            Program.currGame.onReceiveFunctions(this, newValue, memLoc);
         }
 
         //type 'm' - received when first joining an existing server, save the list to memory
-        protected override void receiveMemoryList(List<byte> data)
+        protected override void receiveMemoryList(byte[] data)
         {
-            mr.saveToMemory(data);
+            mr.saveToMemory(new List<byte>(data));
         }
 
         //type 'n' - displays the notification in the console
-        protected override void receiveNotification(List<byte> data)
+        protected override void receiveNotification(byte[] data)
         {
-            Output.text(Encoding.UTF8.GetString(data.ToArray()), ConsoleColor.Green);
+            Output.text(Encoding.UTF8.GetString(data), ConsoleColor.Green);
         }
 
         //type 't' - displays the text message in the console
-        protected override void receiveTextMessage(List<byte> data)
+        protected override void receiveTextMessage(byte[] data)
         {
-            Output.text(Encoding.UTF8.GetString(data.ToArray()), ConsoleColor.Blue);
+            Output.text(Encoding.UTF8.GetString(data), ConsoleColor.Blue);
         }
         //type 'i' - sets the syncSettings and allows to start syncing
-        protected override void receiveIntroData(List<byte> data)
+        protected override void receiveIntroData(byte[] data)
         {
-            string jsonObject = Encoding.UTF8.GetString(data.ToArray());
+            string jsonObject = Encoding.UTF8.GetString(data);
             Program.currGame.setSyncSettings(jsonObject);
             Begin();
         }
