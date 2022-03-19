@@ -21,7 +21,7 @@ namespace Windwaker_coop
             {
                 if (level > 2)
                     setColor(ConsoleColor.DarkMagenta);
-                else if (level > 1)
+                else if (level > 0)
                     setColor(ConsoleColor.Magenta);
                 else
                     setColor(ConsoleColor.White);

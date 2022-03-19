@@ -61,22 +61,23 @@ namespace Windwaker_coop
                 byte[] memory = mr.readFromMemory();
                 if (memory != null)
                 {
-                    if (lastReadMemory == null) continue;
-
-                    int byteListIndex = 0;
-                    for (int locationListIndex = 0; locationListIndex < mr.memoryLocations.Count; locationListIndex++)
+                    if (lastReadMemory == null)
                     {
-                        //Loops through each memory location and compares its value to its previous value
-                        //If different it sends it to the server for processing
-
-                        MemoryLocation memLoc = mr.memoryLocations[locationListIndex];
-                        if (!compareToPreviousMemory(memory, lastReadMemory, byteListIndex, memLoc.size))
+                        int byteListIndex = 0;
+                        for (int locationListIndex = 0; locationListIndex < mr.memoryLocations.Count; locationListIndex++)
                         {
-                            uint newValue = ReadWrite.bigToLittleEndian(memory, byteListIndex, memLoc.size);
-                            uint oldValue = ReadWrite.bigToLittleEndian(lastReadMemory, byteListIndex, memLoc.size);
-                            sendNewMemoryLocation(0, (ushort)locationListIndex, oldValue, newValue, false);
+                            //Loops through each memory location and compares its value to its previous value
+                            //If different it sends it to the server for processing
+
+                            MemoryLocation memLoc = mr.memoryLocations[locationListIndex];
+                            if (!compareToPreviousMemory(memory, lastReadMemory, byteListIndex, memLoc.size))
+                            {
+                                uint newValue = ReadWrite.bigToLittleEndian(memory, byteListIndex, memLoc.size);
+                                uint oldValue = ReadWrite.bigToLittleEndian(lastReadMemory, byteListIndex, memLoc.size);
+                                sendNewMemoryLocation(0, (ushort)locationListIndex, oldValue, newValue, false);
+                            }
+                            byteListIndex += memLoc.size;
                         }
-                        byteListIndex += memLoc.size;
                     }
 
                     lastReadMemory = memory;
