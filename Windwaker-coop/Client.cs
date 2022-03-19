@@ -61,7 +61,7 @@ namespace Windwaker_coop
                 byte[] memory = mr.readFromMemory();
                 if (memory != null)
                 {
-                    if (lastReadMemory == null)
+                    if (lastReadMemory != null)
                     {
                         int byteListIndex = 0;
                         for (int locationListIndex = 0; locationListIndex < mr.memoryLocations.Count; locationListIndex++)
