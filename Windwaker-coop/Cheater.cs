@@ -75,8 +75,7 @@ namespace Windwaker_coop
 
         private void writeCheatResult(uint address, byte theByte)
         {
-            List<byte> data = new List<byte>(); data.Add(theByte);
-            client.mr.saveToMemory(data, (IntPtr)address);
+            client.mr.saveToMemory(new byte[] { theByte }, (IntPtr)address);
         }
     }
 }

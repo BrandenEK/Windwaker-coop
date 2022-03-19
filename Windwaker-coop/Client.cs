@@ -9,6 +9,8 @@ namespace Windwaker_coop
     class Client : User
     {
         public string playerName;
+        private byte[] lastReadMemory;
+
         private SimpleTcpClient client;
 
         public Client(string ip, string playerName) : base(ip)
@@ -52,33 +54,47 @@ namespace Windwaker_coop
         {
             while (Program.programSyncing)
             {
+                //Time logging and beginning functions
                 int timeStart = Environment.TickCount;
-
-                //syncLoop stuff
                 Program.currGame.beginningFunctions(this);
-                List<byte> memory = mr.readFromMemory();
+
+                byte[] memory = mr.readFromMemory();
                 if (memory != null)
                 {
-                    //Loop through each memory location and if the bytes are different send them to server
+                    if (lastReadMemory == null) continue;
 
-                    int byteListIndex = 0, locationListIndex = 0;
-                    for (; locationListIndex < mr.memoryLocations.Count; locationListIndex++)
+                    int byteListIndex = 0;
+                    for (int locationListIndex = 0; locationListIndex < mr.memoryLocations.Count; locationListIndex++)
                     {
+                        //Loops through each memory location and compares its value to its previous value
+                        //If different it sends it to the server for processing
+
                         MemoryLocation memLoc = mr.memoryLocations[locationListIndex];
-
-                        if (true) // if diff
+                        if (!compareToPreviousMemory(memory, lastReadMemory, byteListIndex, memLoc.size))
                         {
-                            uint value = ReadWrite.bigToLittleEndian(memory.ToArray(), byteListIndex, memLoc.size);
-                            sendNewMemoryLocation(0, (ushort)locationListIndex, 0, value, false);
+                            uint newValue = ReadWrite.bigToLittleEndian(memory, byteListIndex, memLoc.size);
+                            uint oldValue = ReadWrite.bigToLittleEndian(lastReadMemory, byteListIndex, memLoc.size);
+                            sendNewMemoryLocation(0, (ushort)locationListIndex, oldValue, newValue, false);
                         }
-
                         byteListIndex += memLoc.size;
                     }
-                }
-                Program.currGame.endingFunctions(this);
 
+                    lastReadMemory = memory;
+                }
+
+                //Time logging and ending functions
+                Program.currGame.endingFunctions(this);
                 Output.debug("Time taken to complete entire sync loop: " + (Environment.TickCount - timeStart) + " milliseconds", 1);
                 await Task.Delay(loopTime);
+            }
+
+            //Compares a single memory location to its previous value while still in byte[] form
+            bool compareToPreviousMemory(byte[]curr, byte[] prev, int startIdx, int length)
+            {
+                for (int i = startIdx; i < startIdx + length; i++)
+                    if (curr[i] != prev[i])
+                        return false;
+                return true;
             }
         }
 
@@ -161,15 +177,14 @@ namespace Windwaker_coop
             byte writeType = data[10];
 
             MemoryLocation memLoc = mr.memoryLocations[memLocIdx];
-            List<byte> listValue = new List<byte>(ReadWrite.littleToBigEndian(newValue, memLoc.size));
-            mr.saveToMemory(listValue, memLoc.startAddress);
+            mr.saveToMemory(ReadWrite.littleToBigEndian(newValue, memLoc.size), memLoc.startAddress);
             Program.currGame.onReceiveFunctions(this, newValue, memLoc);
         }
 
         //type 'm' - received when first joining an existing server, save the list to memory
         protected override void receiveMemoryList(byte[] data)
         {
-            mr.saveToMemory(new List<byte>(data));
+            mr.saveToMemory(data);
         }
 
         //type 'n' - displays the notification in the console

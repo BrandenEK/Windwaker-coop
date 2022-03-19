@@ -51,17 +51,6 @@ namespace Windwaker_coop
             return result;
         }
 
-        //Assumes neither are null
-        public static bool checkIfSame(List<byte> one, List<byte> two)
-        {
-            if (one.Count != two.Count)
-                return false;
-            for (int i = 0; i < one.Count; i++)
-                if (one[i] != two[i])
-                    return false;
-            return true;
-        }
-
         //Checks if a given bit in the number is set
         public static bool bitSet(uint number, uint bit)
         {
