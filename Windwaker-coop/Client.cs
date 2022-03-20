@@ -118,8 +118,9 @@ namespace Windwaker_coop
         {
             if (client.IsConnected && data != null && data.Length > 0)
             {
-                List<byte> d = new List<byte>(data);
-                d.AddRange(new byte[] { 126, 126, Convert.ToByte(dataType) });
+                List<byte> d = new List<byte>(BitConverter.GetBytes((ushort)data.Length));
+                d.Add(Convert.ToByte(dataType));
+                d.AddRange(data);
                 client.Send(d.ToArray());
                 Output.debug("Sending " + d.Count + " bytes", 2);
             }

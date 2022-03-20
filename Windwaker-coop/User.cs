@@ -37,25 +37,23 @@ namespace Windwaker_coop
             receiveDataFunctions.Add(118, receiveNewMemoryLocation); //v
         }
 
+        //Each data message should be in the form [ length1 length2 type data data data ... ]
         protected virtual void Events_DataReceived(object sender, DataReceivedEventArgs e)
         {
             Output.debug("Bytes received: " + e.Data.Length, 2);
             currIp = e.IpPort;
 
-            List<byte> newData = new List<byte>(e.Data);
-            for (int i = 0; i < newData.Count; i++)
+            int startIdx = 0;
+            while (startIdx < e.Data.Length - 3)
             {
-                if (i < newData.Count - 2 && newData[i] == 126 && newData[i + 1] == 126)
-                {
-                    //If index is the start of a ~~x section
-                    byte type = newData[i + 2];
-                    List<byte> singleData = newData.GetRange(0, i);
-                    newData.RemoveRange(0, i + 3);
-                    processDataReceived(type, singleData.ToArray());
-                    i = -1;
-                }
+                ushort length = BitConverter.ToUInt16(e.Data, startIdx);
+                byte type = e.Data[startIdx + 2];
+                byte[] messageData = e.Data[(startIdx + 3)..(startIdx + 3 + length)];
+
+                processDataReceived(type, messageData);
+                startIdx += 3 + length;
             }
-            if (newData.Count > 0)
+            if (startIdx != e.Data.Length)
                 Output.error("Received data was formatted incorrectly");
         }
 
