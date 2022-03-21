@@ -126,5 +126,7 @@ namespace Windwaker_coop
         {
             Output.error("receiveIntroData() not implemented here");
         }
+
+        public abstract string processCommand(string command, string[] args);
     }
 }

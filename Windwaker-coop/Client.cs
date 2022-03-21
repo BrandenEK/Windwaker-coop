@@ -10,6 +10,7 @@ namespace Windwaker_coop
     {
         public string playerName;
         private byte[] lastReadMemory;
+        private Cheater cheater;
 
         private SimpleTcpClient client;
 
@@ -29,6 +30,7 @@ namespace Windwaker_coop
             client.Events.Connected += Events_Connected;
             client.Events.Disconnected += Events_Disconnected;
             client.Events.DataReceived += Events_DataReceived;
+            cheater = new Cheater();
 
             Connect();
             sendIntroData();
@@ -106,6 +108,60 @@ namespace Windwaker_coop
             {
                 Output.error($"Failed to connect to a server at {IpAddress}:{port}");
                 Program.EndProgram();
+            }
+        }
+
+        public override string processCommand(string command, string[] args)
+        {
+            switch (command)
+            {
+                case "help":
+                    //Displays the available client commands
+                    return "Available client commands:\npause - temporarily disables syncing to and from the host\nunpause - resumes syncing to and from the host\n" +
+                        "stop - ends syncing and closes the application\nsay [message] - sends a message to everyone in the server\n" +
+                        "give [item] [number] - gives player the specified item (If cheats are enabled)\nping - tests the delay between client and server\n" +
+                        "help - lists available commands";
+
+                case "pause":
+                    //command not implemented yet
+                    return "command not implemented yet";
+
+                case "unpause":
+                    //command not implemented yet
+                    return "command not implemented yet";
+
+                case "say":
+                    //Takes in a message and sends it to everyone else in the game
+                    if (args.Length > 0)
+                    {
+                        string text = "";
+                        foreach (string word in args)
+                            text += word + " ";
+                        sendTextMessage(text);
+                        return "Message sent";
+                    }
+                    return "Command 'say' takes at least 1 argument!";
+
+                case "ping":
+                    //Sends a test to the server to determine the delay
+                    sendDelayTest();
+                    return "Sending delay test!";
+
+                case "give":
+                    //Gives the player a specified item
+                    if (cheater != null)
+                    {
+                        return cheater.processCommand(this, args);
+                    }
+                    Output.error("Cheater object has not been initialized");
+                    return "";
+
+                case "stop":
+                    //Ends the program
+                    return "";
+
+                default:
+                    return "Command '" + command + "' not valid.";
             }
         }
 

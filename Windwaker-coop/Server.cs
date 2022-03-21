@@ -166,6 +166,82 @@ namespace Windwaker_coop
             Output.text($"Server successfully started at {IpAddress}:{port}");
         }
 
+        public override string processCommand(string command, string[] args)
+        {
+            switch (command)
+            {
+                case "help":
+                    //Displays the available server commands
+                    return "Available server commands:\nlist - lists all of the currently connected players\n" +
+                        "reset - resets the host to default values\n" +
+                        "kick [type] [Name or IpPort] - kicks the speciifed Name or IpPort from the game\nstop - ends syncing and closes the application\n" +
+                        "help - lists available commands";
+
+                case "list":
+                    //Lists the names : ip addresses in the server
+                    string text = "Connected players:\n";
+                    foreach (string ip in clientIps.Keys)
+                    {
+                        text += $"{clientIps[ip].name} ({ip})\n";
+                    }
+                    if (clientIps.Count < 1)
+                        text += "none\n";
+                    return text.Substring(0, text.Length - 1);
+
+                case "reset":
+                    //resets the server to default values
+                    setServerToDefault();
+                    sendNotification("Server data has been reset to default!", true);
+                    sendNotification("Server data has been reset to default!", false);
+                    return "Server data has been reset to default!";
+
+                case "kick":
+                    //kicks the inputted player's ipPort or name from the game
+                    if (args.Length != 2)
+                        return "Command 'kick' takes 2 arguments!";
+
+                    if (args[0] == "name" || args[0] == "n")
+                    {
+                        //Change to simple lookup once names are individualized
+                        int numFound = 0;
+                        string texts = "";
+                        foreach (string ip in clientIps.Keys)
+                        {
+                            if (clientIps[ip].name == args[1])
+                            {
+                                kickPlayer(ip);
+                                texts += "Player '" + args[1] + "' has been kicked from the game!\n";
+                                numFound++;
+                            }
+                        }
+                        if (numFound == 0)
+                            return "Player '" + args[1] + "' does not exist in the game!";
+                        return texts;
+                    }
+                    else if (args[0] == "ip" || args[0] == "i")
+                    {
+                        if (clientIps.ContainsKey(args[1]))
+                        {
+                            kickPlayer(args[1]);
+                            return "IpPort '" + args[1] + "' has been kicked from the game!";
+                        }
+                        return "IpPort '" + args[1] + "' does not exist in the game!";
+                    }
+                    return "Invalid type.  Must be either 'name' or 'ip'";
+
+                case "ban":
+                    //command not implemented yet
+                    return "command not implemented yet";
+
+                case "stop":
+                    //Ends the program
+                    return "";
+
+                default:
+                    return "Command '" + command + "' not valid.";
+            }
+        }
+
         //Sets the current Ip address to the one that sent the data then call regular data received function
         protected override void Events_DataReceived(object sender, DataReceivedEventArgs e)
         {
