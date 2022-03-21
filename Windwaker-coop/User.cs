@@ -65,6 +65,16 @@ namespace Windwaker_coop
             receiveDataFunctions[type](data);
         }
 
+        protected byte[] calculateMessageToSend(byte[] message, char type)
+        {
+            List<byte> d = new List<byte>(BitConverter.GetBytes((ushort)message.Length));
+            d.Add(Convert.ToByte(type));
+            d.AddRange(message);
+
+            Output.debug("Sending " + d.Count + " bytes", 1);
+            return d.ToArray();
+        }
+
         //Send new data functions
         public virtual void sendMemoryList(List<byte> memory)
         {

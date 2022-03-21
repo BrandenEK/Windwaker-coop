@@ -177,13 +177,9 @@ namespace Windwaker_coop
         #region Send functions
         private void Send(string ip, byte[] data, char dataType)
         {
-            if (server.IsListening)
+            if (server.IsListening && data != null && data.Length > 0)
             {
-                List<byte> d = new List<byte>(BitConverter.GetBytes((ushort)data.Length));
-                d.Add(Convert.ToByte(dataType));
-                d.AddRange(data);
-                server.Send(ip, d.ToArray());
-                Output.debug("Sending " + d.Count + " bytes", 1);
+                server.Send(ip, calculateMessageToSend(data, dataType));
             }
         }
 
