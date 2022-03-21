@@ -8,11 +8,10 @@ namespace Windwaker_coop
     class Server : User
     {
         private SimpleTcpServer server;
-        public Dictionary<string, PlayerInfo> clientIps;
+        public Dictionary<string, string> clientIps;
         private byte[] hostdata;
         private string currIp = "";
 
-        private bool newServer;
         Dictionary<int, string> notificationValues = new Dictionary<int, string>()
         {
             { 0, "obtained the " },
@@ -26,8 +25,6 @@ namespace Windwaker_coop
 
         public Server(string ip) : base(ip)
         {
-            newServer = true;
-
             try
             {
                 server = new SimpleTcpServer(IpAddress, port);
@@ -41,7 +38,7 @@ namespace Windwaker_coop
             server.Events.ClientConnected += Events_ClientConnected;
             server.Events.ClientDisconnected += Events_ClientDisconnected;
             server.Events.DataReceived += Events_DataReceived;
-            clientIps = new Dictionary<string, PlayerInfo>();
+            clientIps = new Dictionary<string, string>();
 
             //Set sync settings, create memory locations, and then start server
             Program.currGame.syncSettings = Program.currGame.GetSyncSettingsFromFile();
@@ -134,7 +131,7 @@ namespace Windwaker_coop
 
                         string output = notificationValues[formatId] + itemText;
                         sendNotification("You have " + output, false);
-                        sendNotification(clientIps[currIp].name + " has " + output, true);
+                        sendNotification(clientIps[currIp] + " has " + output, true);
                     }
                     else
                         Output.error("Notification was unable to be calculated");
@@ -182,7 +179,7 @@ namespace Windwaker_coop
                     string text = "Connected players:\n";
                     foreach (string ip in clientIps.Keys)
                     {
-                        text += $"{clientIps[ip].name} ({ip})\n";
+                        text += $"{clientIps[ip]} ({ip})\n";
                     }
                     if (clientIps.Count < 1)
                         text += "none\n";
@@ -207,7 +204,7 @@ namespace Windwaker_coop
                         string texts = "";
                         foreach (string ip in clientIps.Keys)
                         {
-                            if (clientIps[ip].name == args[1])
+                            if (clientIps[ip] == args[1])
                             {
                                 kickPlayer(ip);
                                 texts += "Player '" + args[1] + "' has been kicked from the game!\n";
@@ -366,7 +363,7 @@ namespace Windwaker_coop
         protected override void receiveIntroData(byte[] data)
         {
             string name = Encoding.UTF8.GetString(data);
-            clientIps[currIp].name = name;
+            clientIps[currIp] = name;
             sendIntroData();
         }
         #endregion
@@ -375,26 +372,14 @@ namespace Windwaker_coop
         {
             Output.text("Client disconnected at " + e.IpPort);
             currIp = e.IpPort;
-            sendNotification(clientIps[currIp].name + " has left the game!", true);
+            sendNotification(clientIps[currIp] + " has left the game!", true);
             clientIps.Remove(e.IpPort);
         }
 
         private void Events_ClientConnected(object sender, ClientConnectedEventArgs e)
         {
             Output.text("Client connected at " + e.IpPort);
-            clientIps.Add(e.IpPort, new PlayerInfo("unknown", false));
-        }
-    }
-
-    class PlayerInfo
-    {
-        public string name;
-        public bool repeat;
-
-        public PlayerInfo(string name, bool repeat)
-        {
-            this.name = name;
-            this.repeat = repeat;
+            clientIps.Add(e.IpPort, "unknown");
         }
     }
 }
