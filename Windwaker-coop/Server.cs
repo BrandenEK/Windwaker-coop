@@ -163,6 +163,13 @@ namespace Windwaker_coop
             Output.text($"Server successfully started at {IpAddress}:{port}");
         }
 
+        //Doesn't do anything
+        public override void End()
+        {
+            if (server.IsListening)
+                server.Stop();
+        }
+
         public override string processCommand(string command, string[] args)
         {
             switch (command)

@@ -128,5 +128,7 @@ namespace Windwaker_coop
         }
 
         public abstract string processCommand(string command, string[] args);
+
+        public abstract void End();
     }
 }

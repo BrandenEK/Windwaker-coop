@@ -111,6 +111,13 @@ namespace Windwaker_coop
             }
         }
 
+        //Disconnects from the server
+        public override void End()
+        {
+            if (client.IsConnected)
+                client.Disconnect();
+        }
+
         public override string processCommand(string command, string[] args)
         {
             switch (command)
