@@ -294,6 +294,8 @@ namespace Windwaker_coop
         private void Events_ClientDisconnected(object sender, ClientDisconnectedEventArgs e)
         {
             Output.text("Client disconnected at " + e.IpPort);
+            currIp = e.IpPort;
+            sendNotification(clientIps[currIp].name + " has left the game!", true);
             clientIps.Remove(e.IpPort);
         }
 

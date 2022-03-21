@@ -211,8 +211,7 @@ namespace Windwaker_coop
 
         private void Events_Disconnected(object sender, ClientDisconnectedEventArgs e)
         {
-            Output.text("Disconnected from the server at " + e.IpPort); //new line
-            sendNotification(playerName + " has left the game!", true);
+            Output.text("Disconnected from the server at " + e.IpPort);
             Program.EndProgram();
         }
 
