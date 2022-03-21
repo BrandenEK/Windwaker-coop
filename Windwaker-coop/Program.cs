@@ -15,7 +15,7 @@ namespace Windwaker_coop
         private static Game[] games;
         public static Game currGame;
         public static Config config;
-        public static string tempIp = "172.16.192.173";
+        public static string tempIp = "172.16.16.75";
 
         static void Main(string[] args)
         {

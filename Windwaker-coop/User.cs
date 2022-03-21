@@ -76,7 +76,7 @@ namespace Windwaker_coop
         }
 
         //Send new data functions
-        public virtual void sendMemoryList(List<byte> memory)
+        public virtual void sendMemoryList(byte[] memory)
         {
             Output.error("sendMemoryList() not implemented here");
         }

@@ -36,10 +36,6 @@ namespace Windwaker_coop
 
         public void Begin()
         {
-            mr = new MemoryReader();
-            //After receiving initial memory overwrite (if not first player), write before beginSyncing
-            //Maybe move this stuff to still in receiveIntro function
-
             Program.programSyncing = true;
             beginSyncing(Program.config.syncDelay);
         }
@@ -122,9 +118,9 @@ namespace Windwaker_coop
             }
         }
 
-        public override void sendMemoryList(List<byte> data)
+        public override void sendMemoryList(byte[] memory)
         {
-            Send(data.ToArray(), 'm');
+            Send(memory, 'm');
         }
 
         public override void sendNewMemoryLocation(byte writeType, ushort memLocIndex, uint oldValue, uint newValue, bool useless)
@@ -179,10 +175,14 @@ namespace Windwaker_coop
             Program.currGame.onReceiveFunctions(this, newValue, memLoc);
         }
 
-        //type 'm' - received when first joining an existing server, save the list to memory
+        //type 'm' - received when first joining the server, save the list to memory
         protected override void receiveMemoryList(byte[] data)
         {
-            mr.saveToMemory(data);
+            if (!(data.Length == 1 && data[0] == 255))
+            {
+                mr.saveToMemory(data);
+            }
+            Begin();
         }
 
         //type 'n' - displays the notification in the console
@@ -196,12 +196,22 @@ namespace Windwaker_coop
         {
             Output.text(Encoding.UTF8.GetString(data), ConsoleColor.Blue);
         }
-        //type 'i' - sets the syncSettings and allows to start syncing
+        //type 'i' - sets the syncSettings and sends initial memory to server
         protected override void receiveIntroData(byte[] data)
         {
             string jsonObject = Encoding.UTF8.GetString(data);
             Program.currGame.setSyncSettings(jsonObject);
-            Begin();
+
+            mr = new MemoryReader();
+            byte[] initialMemory = mr.readFromMemory();
+            if (initialMemory == null)
+            {
+                Program.EndProgram();
+            }
+            else
+            {
+                sendMemoryList(initialMemory);
+            }
         }
         #endregion
 

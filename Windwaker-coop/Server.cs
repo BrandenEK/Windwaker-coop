@@ -46,7 +46,6 @@ namespace Windwaker_coop
             //Set sync settings, create memory locations, and then start server
             Program.currGame.syncSettings = Program.currGame.GetSyncSettingsFromFile();
             mr = new MemoryReader();
-            setServerToDefault();
 
             Start();
         }
@@ -145,7 +144,7 @@ namespace Windwaker_coop
 
         public void setServerToDefault()
         {
-            hostdata = mr.getDefaultValues();
+            //hostdata = mr.getDefaultValues();
         }
 
         public void kickPlayer(string ipPort)
@@ -183,9 +182,9 @@ namespace Windwaker_coop
             }
         }
 
-        public override void sendMemoryList(List<byte> memory)
+        public override void sendMemoryList(byte[] memory)
         {
-            Send(currIp, memory.ToArray(), 'm');
+            Send(currIp, memory, 'm');
         }
 
         public override void sendNewMemoryLocation(byte writeType, ushort memLocIndex, uint oldValue, uint newValue, bool sendToAllButThis)
@@ -237,16 +236,17 @@ namespace Windwaker_coop
         #endregion
 
         #region Receive functions
-        //type 'm' - reads player memory list and compares this to host data
+        //type 'm' - reads player memory list and sets hostdata if first player
         protected override void receiveMemoryList(byte[] playerData)
         {
-            //Basically just going to be this - dont call this function yet though
-            if (newServer)
+            if (hostdata == null)
             {
-                //If this is the first player to join, copy their memory to the host
                 hostdata = playerData;
-                newServer = false;
-                clientIps[currIp].repeat = true;
+                sendMemoryList(new byte[] { 255 });
+            }
+            else
+            {
+                sendMemoryList(hostdata);
             }
         }
 
