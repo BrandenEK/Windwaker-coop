@@ -10,7 +10,6 @@ namespace Windwaker_coop
         public string IpAddress;
         public int port;
         public MemoryReader mr { get; protected set; }
-        protected string currIp = "";
 
         private Dictionary<byte, Action<byte[]>> receiveDataFunctions = new Dictionary<byte, Action<byte[]>>();
 
@@ -41,7 +40,6 @@ namespace Windwaker_coop
         protected virtual void Events_DataReceived(object sender, DataReceivedEventArgs e)
         {
             Output.debug("Bytes received: " + e.Data.Length, 2);
-            currIp = e.IpPort;
 
             int startIdx = 0;
             while (startIdx < e.Data.Length - 3)

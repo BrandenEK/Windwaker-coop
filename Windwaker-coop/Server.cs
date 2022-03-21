@@ -10,6 +10,7 @@ namespace Windwaker_coop
         private SimpleTcpServer server;
         public Dictionary<string, PlayerInfo> clientIps;
         private byte[] hostdata;
+        private string currIp = "";
 
         private bool newServer;
         Dictionary<int, string> notificationValues = new Dictionary<int, string>()
@@ -164,6 +165,13 @@ namespace Windwaker_coop
                 Program.EndProgram();
             }
             Output.text($"Server successfully started at {IpAddress}:{port}");
+        }
+
+        //Sets the current Ip address to the one that sent the data then call regular data received function
+        protected override void Events_DataReceived(object sender, DataReceivedEventArgs e)
+        {
+            currIp = e.IpPort;
+            base.Events_DataReceived(sender, e);
         }
 
         #region Send functions
