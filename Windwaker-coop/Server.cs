@@ -183,7 +183,7 @@ namespace Windwaker_coop
                 d.Add(Convert.ToByte(dataType));
                 d.AddRange(data);
                 server.Send(ip, d.ToArray());
-                Output.debug("Sending " + d.Count + " bytes", 2);
+                Output.debug("Sending " + d.Count + " bytes", 1);
             }
         }
 

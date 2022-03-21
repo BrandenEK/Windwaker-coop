@@ -42,7 +42,7 @@ namespace Windwaker_coop
                 if (!(i < memoryLocations.Count - 1 && memoryLocations[i + 1].startAddress == loc.startAddress + loc.size))
                 {
                     //reads the entire sequence then resets the sequence
-                    Output.debug("Reading contiguous region of " + sequenceLength + " bytes", 3);
+                    Output.debug("Reading contiguous region of " + sequenceLength + " bytes", 2);
                     byte[] value = ReadWrite.Read(1, sequenceStart, sequenceLength);
                     if (value == null)
                     {
@@ -90,7 +90,7 @@ namespace Windwaker_coop
 
                 if (!(i < memoryLocations.Count - 1 && memoryLocations[i + 1].startAddress == loc.startAddress + loc.size))
                 {
-                    Output.debug("Writing contiguous region of " + (byteListIndex - sequenceStartIndex) + " bytes", 3);
+                    Output.debug("Writing contiguous region of " + (byteListIndex - sequenceStartIndex) + " bytes", 2);
                     ReadWrite.Write(1, sequenceStart, data.GetRange(sequenceStartIndex, byteListIndex - sequenceStartIndex).ToArray());
                     if (i < memoryLocations.Count - 1)
                     {

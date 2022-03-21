@@ -115,7 +115,7 @@ namespace Windwaker_coop
                 //Displaying debug output
                 string debugOuput = "Processing command:";
                 foreach (string word in words)
-                    debugOuput += $" '{word}'";
+                    debugOuput += " '" + word + "'";
                 Output.debug(debugOuput, 2);
 
                 //Processes multiword command - not sure if this is needed
@@ -329,7 +329,7 @@ namespace Windwaker_coop
                 new OcarinaOfTime(),
                 new Zelda1()
             };
-            Output.debug("Loading " + games.Length + " games", 2);
+            Output.debug("Loading " + games.Length + " games", 1);
             return games;
         }
     }

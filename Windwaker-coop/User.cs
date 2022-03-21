@@ -39,7 +39,7 @@ namespace Windwaker_coop
         //Each data message should be in the form [ length1 length2 type data data data ... ]
         protected virtual void Events_DataReceived(object sender, DataReceivedEventArgs e)
         {
-            Output.debug("Bytes received: " + e.Data.Length, 2);
+            Output.debug("Bytes received: " + e.Data.Length, 1);
 
             int startIdx = 0;
             while (startIdx < e.Data.Length - 3)

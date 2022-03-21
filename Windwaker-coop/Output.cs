@@ -15,16 +15,20 @@ namespace Windwaker_coop
             Console.WriteLine("Error: " + message);
         }
 
+        //Level 1 - decent stuff to know, level 2 - deep stuff
         public static void debug(string message, byte level)
         {
             if (level <= Program.config.debugLevel)
             {
-                if (level > 2)
-                    setColor(ConsoleColor.DarkMagenta);
-                else if (level > 0)
+                if (level == 1)
                     setColor(ConsoleColor.Magenta);
+                else if (level == 2)
+                    setColor(ConsoleColor.DarkMagenta);
                 else
-                    setColor(ConsoleColor.White);
+                {
+                    error("Invalid debug level");
+                    return;
+                }
                 Console.WriteLine(message);
             }
         }

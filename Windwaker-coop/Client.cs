@@ -122,7 +122,7 @@ namespace Windwaker_coop
                 d.Add(Convert.ToByte(dataType));
                 d.AddRange(data);
                 client.Send(d.ToArray());
-                Output.debug("Sending " + d.Count + " bytes", 2);
+                Output.debug("Sending " + d.Count + " bytes", 1);
             }
         }
 

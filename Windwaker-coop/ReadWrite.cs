@@ -61,13 +61,10 @@ namespace Windwaker_coop
         public static uint bigToLittleEndian(byte[] arr, int startIndex, int length)
         {
             byte[] bytes = new byte[4];
-            string debugOuput = "Converting byte[] { ";
             for (int i = 0; i < length; i++)
             {
                 bytes[length - 1 - i] = arr[startIndex + i];
-                debugOuput += arr[startIndex + i].ToString("X") + " ";
             }
-            Output.debug(debugOuput + "} to integer: " + BitConverter.ToUInt32(bytes), 4);
             return BitConverter.ToUInt32(bytes);
         }
 
