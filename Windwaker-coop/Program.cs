@@ -105,38 +105,29 @@ namespace Windwaker_coop
 
         static void commandLoop()
         {
-            string lastCommand = "";
-            while (lastCommand != "stop")
+            string command = "";
+            while (command != "stop")
             {
-                bool validCommand = true;
-                lastCommand = Console.ReadLine().Trim();
-                string[] words = lastCommand.Split(' ');
-
-                //Displaying debug output
-                string debugOuput = "Processing command:";
-                foreach (string word in words)
-                    debugOuput += " '" + word + "'";
-                Output.debug(debugOuput, 2);
-
-                //Processes multiword command - not sure if this is needed
-                if (words.Length > 1)
+                //Read command from user input and make sure it is valid
+                command = Console.ReadLine().Trim();
+                string[] words = command.Split(' ');
+                if (words.Length < 1)
                 {
-                    lastCommand = words[0];
-                    foreach (string word in words)
-                    {
-                        if (word == "")
-                        {
-                            validCommand = false;
-                            break;
-                        }
-                    }
-                }
-
-                if (!validCommand)
-                {
-                    Output.text("Syntax error with inputted command.", ConsoleColor.Yellow);
+                    Output.text("Enter a command.", ConsoleColor.Yellow);
                     continue;
                 }
+
+                //Seperate it into command and arguments
+                string debugOuput = $"Processing command: '{words[0]}'";
+                string[] args = new string[words.Length - 1];
+                for (int i = 1; i < words.Length; i++)
+                {
+                    args[i - 1] = words[i];
+                    debugOuput += " '" + words[i] + "'";
+                }
+                command = words[0];
+                Output.debug(debugOuput, 1);
+
 
                 //If the command is valid, check which one and use it
                 string response = "";
@@ -146,7 +137,7 @@ namespace Windwaker_coop
                     //Client commands
                     Client client = (Client)currUser;
 
-                    switch (lastCommand)
+                    switch (command)
                     {
                         case "help":
                             //Displays the available client commands
@@ -193,7 +184,7 @@ namespace Windwaker_coop
                             break;
                         case "stop": break;
                         default:
-                            response = "Command '" + lastCommand + "' not valid.";
+                            response = "Command '" + command + "' not valid.";
                             break;
                     }
                 }
@@ -202,7 +193,7 @@ namespace Windwaker_coop
                     //server commands
                     Server server = (Server)currUser;
 
-                    switch (lastCommand)
+                    switch (command)
                     {
                         case "help":
                             //Displays the available server commands
@@ -272,7 +263,7 @@ namespace Windwaker_coop
                             break;
                         case "stop": break;
                         default:
-                            response = "Command '" + lastCommand + "' not valid.";
+                            response = "Command '" + command + "' not valid.";
                             break;
                     }
                 }
