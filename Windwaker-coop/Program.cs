@@ -162,7 +162,7 @@ namespace Windwaker_coop
             }
             else
             {
-                c = new Config(0, 2500, 25565, true, false);
+                c = Config.getDefaultConfig();
                 File.WriteAllText(path, JsonConvert.SerializeObject(c, Formatting.Indented));
             }
             return c;

@@ -86,11 +86,16 @@ namespace Windwaker_coop
     [Serializable]
     struct Config
     {
-        public int debugLevel;//0
-        public int syncDelay;//2500
-        public int defaultPort;//25565
-        public bool enableCheats;//true
-        public bool runInWatcherMode;//false
+        //Shows more technical parts in the console.  Possible values are 0-2 [0]
+        public int debugLevel;
+        //The time in milliseconds to wait between each sync loop [2500]
+        public int syncDelay;
+        //If a port is not specified, this is the port that will be used [25565]
+        public int defaultPort;
+        //Whether or not cheats should be allowed using the 'give' command [true]
+        public bool enableCheats;
+        //Watcher Mode is for memory testing [false]
+        public bool runInWatcherMode;
 
         public Config(int dl, int sd, int dp, bool ec, bool wm)
         {
@@ -99,6 +104,11 @@ namespace Windwaker_coop
             defaultPort = dp;
             enableCheats = ec;
             runInWatcherMode = wm;
+        }
+
+        public static Config getDefaultConfig()
+        {
+            return new Config(0, 2500, 25565, true, false);
         }
     }
 
