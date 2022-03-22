@@ -15,17 +15,17 @@ namespace Windwaker_coop
             //Change this to only fill up when syncSettings are received (client) or when syncSettings are read (server)
         }
 
-        public List<byte> getDefaultValues()
+        public byte[] getDefaultValues()
         {
             List<byte> defaults = new List<byte>();
             foreach (MemoryLocation memLoc in memoryLocations)
             {
                 defaults.AddRange(ReadWrite.littleToBigEndian(memLoc.defaultValue, memLoc.size));
             }
-            return defaults;
+            return defaults.ToArray();
         }
 
-        public List<byte> readFromMemory()
+        public byte[] readFromMemory()
         {
             if (!checkMemoryInitialized(1))
                 return null;
@@ -42,7 +42,7 @@ namespace Windwaker_coop
                 if (!(i < memoryLocations.Count - 1 && memoryLocations[i + 1].startAddress == loc.startAddress + loc.size))
                 {
                     //reads the entire sequence then resets the sequence
-                    Output.debug("Reading contiguous region of " + sequenceLength + " bytes", 3);
+                    Output.debug("Reading contiguous region of " + sequenceLength + " bytes", 2);
                     byte[] value = ReadWrite.Read(1, sequenceStart, sequenceLength);
                     if (value == null)
                     {
@@ -55,10 +55,10 @@ namespace Windwaker_coop
                         sequenceStart = memoryLocations[i + 1].startAddress;
                 }
             }
-            return memoryList;
+            return memoryList.ToArray();
         }
 
-        public List<byte> readFromMemory(IntPtr customStartAddress, int customSize)
+        public byte[] readFromMemory(IntPtr customStartAddress, int customSize)
         {
             if (!checkMemoryInitialized(1))
                 return null;
@@ -69,15 +69,16 @@ namespace Windwaker_coop
                 Output.error("Aborting \"ReadFromMemory\" due to null byte[]");
                 return null;
             }
-            return new List<byte>(value);
+            return value;
         }
 
-        public void saveToMemory(List<byte> saveData)
+        public void saveToMemory(byte[] saveData)
         {
             //Writes each value in saveData to the player's game's memory
             if (!checkMemoryInitialized(1))
                 return;
 
+            List<byte> data = new List<byte>(saveData);
             int byteListIndex = 0;
             IntPtr sequenceStart = memoryLocations[0].startAddress;
             int sequenceStartIndex = 0;
@@ -89,8 +90,8 @@ namespace Windwaker_coop
 
                 if (!(i < memoryLocations.Count - 1 && memoryLocations[i + 1].startAddress == loc.startAddress + loc.size))
                 {
-                    Output.debug("Writing contiguous region of " + (byteListIndex - sequenceStartIndex) + " bytes", 3);
-                    ReadWrite.Write(1, sequenceStart, saveData.GetRange(sequenceStartIndex, byteListIndex - sequenceStartIndex).ToArray());
+                    Output.debug("Writing contiguous region of " + (byteListIndex - sequenceStartIndex) + " bytes", 2);
+                    ReadWrite.Write(1, sequenceStart, data.GetRange(sequenceStartIndex, byteListIndex - sequenceStartIndex).ToArray());
                     if (i < memoryLocations.Count - 1)
                     {
                         sequenceStartIndex = byteListIndex;
@@ -100,12 +101,12 @@ namespace Windwaker_coop
             }
         }
 
-        public void saveToMemory(List<byte> saveData, IntPtr customStartAddress)
+        public void saveToMemory(byte[] saveData, IntPtr customStartAddress)
         {
             //Writes each value in saveData to the player's game's memory
             if (!checkMemoryInitialized(1))
                 return;
-            ReadWrite.Write(1, customStartAddress, saveData.ToArray());
+            ReadWrite.Write(1, customStartAddress, saveData);
         }
 
         private bool checkMemoryInitialized(int playerNumber)

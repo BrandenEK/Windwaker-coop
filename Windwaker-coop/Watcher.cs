@@ -48,7 +48,7 @@ namespace Windwaker_coop
                 List<byte> memory = new List<byte>();
                 for (int i = 0; i < addressStarts.Length; i++)
                 {
-                    List<byte> bytes = mr.readFromMemory((IntPtr)addressStarts[i], addressLengths[i]);
+                    byte[] bytes = mr.readFromMemory((IntPtr)addressStarts[i], addressLengths[i]);
                     if (bytes == null) return;
                     memory.AddRange(bytes);
                 }

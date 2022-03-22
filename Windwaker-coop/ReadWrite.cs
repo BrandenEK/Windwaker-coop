@@ -51,17 +51,6 @@ namespace Windwaker_coop
             return result;
         }
 
-        //Assumes neither are null
-        public static bool checkIfSame(List<byte> one, List<byte> two)
-        {
-            if (one.Count != two.Count)
-                return false;
-            for (int i = 0; i < one.Count; i++)
-                if (one[i] != two[i])
-                    return false;
-            return true;
-        }
-
         //Checks if a given bit in the number is set
         public static bool bitSet(uint number, uint bit)
         {
@@ -69,16 +58,13 @@ namespace Windwaker_coop
         }
 
         //Converts a byte list to a number from bit to little endian format
-        public static uint bigToLittleEndian(List<byte> byteList, int startIndex, int length)
+        public static uint bigToLittleEndian(byte[] arr, int startIndex, int length)
         {
             byte[] bytes = new byte[4];
-            string debugOuput = "Converting byte[] { ";
             for (int i = 0; i < length; i++)
             {
-                bytes[length - 1 - i] = byteList[startIndex + i];
-                debugOuput += byteList[startIndex + i].ToString("X") + " ";
+                bytes[length - 1 - i] = arr[startIndex + i];
             }
-            Output.debug(debugOuput + "} to integer: " + BitConverter.ToUInt32(bytes), 4);
             return BitConverter.ToUInt32(bytes);
         }
 

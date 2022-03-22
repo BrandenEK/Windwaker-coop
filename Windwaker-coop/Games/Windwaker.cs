@@ -18,7 +18,7 @@ namespace Windwaker_coop
             updateCurrentStageInfo(client, false);
         }
 
-        public override void onReceiveFunctions(Client client, List<byte> data, MemoryLocation memLoc)
+        public override void onReceiveFunctions(Client client, uint newValue, MemoryLocation memLoc)
         {
             //Check for an event that sets the time
         }
@@ -26,18 +26,18 @@ namespace Windwaker_coop
         //Takes the current stageInfo & copies it onto the corresponding unchanging stageInfo or vice versa
         private void updateCurrentStageInfo(Client client, bool currentToStatic)
         {
-            List<byte> stageIdList = client.mr.readFromMemory((IntPtr)0x803B53A4, 1);
-            if (stageIdList == null || stageIdList.Count < 1)
+            byte[] stageIdList = client.mr.readFromMemory((IntPtr)0x803B53A4, 1);
+            if (stageIdList == null || stageIdList.Length < 1)
                 return;
 
             byte stageId = stageIdList[0];
-            Output.debug("Updating stageInfo " + stageId, 2);
+            Output.debug("Updating stageInfo " + stageId, 1);
             uint from, to;
 
             if (currentToStatic) { from = 0x803B5380; to = 0x803B4F88 + (uint)stageId * 36; }
             else { from = 0x803B4F88 + (uint)stageId * 36; to = 0x803B5380; }
 
-            List<byte> stageDataToCopy = client.mr.readFromMemory((IntPtr)from, 35);
+            byte[] stageDataToCopy = client.mr.readFromMemory((IntPtr)from, 35);
             if (stageDataToCopy != null)
                 client.mr.saveToMemory(stageDataToCopy, (IntPtr)to);
         }
