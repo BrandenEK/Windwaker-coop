@@ -47,6 +47,11 @@ namespace Windwaker_coop
 
                 //Gets the ip address
                 string ip = askQuestion("Enter ip address of this machine: ");
+                if (ip == "")
+                {
+                    Output.error("You need to enter an ip address");
+                    EndProgram();
+                }
                 if (ip == "x")
                     ip = tempIp;
 
@@ -63,6 +68,11 @@ namespace Windwaker_coop
 
                 //gets the ip address
                 string ip = askQuestion("Enter ip address of the server: ");
+                if (ip == "")
+                {
+                    Output.error("You need to enter an ip address");
+                    EndProgram();
+                }
                 if (ip == "x")
                     ip = tempIp;
 

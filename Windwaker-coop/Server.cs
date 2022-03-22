@@ -47,10 +47,15 @@ namespace Windwaker_coop
             Start();
         }
 
-        private void compareHostAndPlayer(uint playerValue, uint hostValue, ushort memLocIdx)
+        private void compareHostAndPlayer(uint playerValue, ushort memLocIdx)
         {
             MemoryLocation memLoc = mr.memoryLocations[memLocIdx];
-            //Calculate hostValue from the savedList or maybe from oldValue sent in
+
+            //Calculate hostValue from the savedList
+            int byteListIdx = 0;
+            for (int i = 0; i < memLocIdx; i++)
+                byteListIdx += mr.memoryLocations[i].size;
+            uint hostValue = ReadWrite.bigToLittleEndian(hostdata, byteListIdx, memLoc.size);
 
             //Error conditions - not fatal, but unexpected
             if (playerValue == hostValue)
@@ -80,7 +85,11 @@ namespace Windwaker_coop
 
             void overwriteMemory()
             {
-                //write new value to host data
+                //Write new value to host data
+                byte[] bytes = ReadWrite.littleToBigEndian(playerValue, memLoc.size);
+                for (int i = 0; i < bytes.Length; i++)
+                    hostdata[byteListIdx + i] = bytes[i];
+
                 sendNewMemoryLocation(0, memLocIdx, hostValue, playerValue, true); //change writeType to be in data
                 calculateNotification(playerValue, hostValue, memLoc);
             }
@@ -344,10 +353,10 @@ namespace Windwaker_coop
             }
 
             ushort memLocIdx = BitConverter.ToUInt16(data, 0);
-            uint oldValue = BitConverter.ToUInt32(data, 2);
+            //uint oldValue = BitConverter.ToUInt32(data, 2);
             uint newValue = BitConverter.ToUInt32(data, 6);
 
-            compareHostAndPlayer(newValue, oldValue, memLocIdx);
+            compareHostAndPlayer(newValue, memLocIdx);
         }
 
         //type 't' - reads player name & message and sends it to everybody else
