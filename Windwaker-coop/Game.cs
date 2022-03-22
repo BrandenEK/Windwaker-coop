@@ -39,12 +39,6 @@ namespace Windwaker_coop
             //Called when client receives a new memory location
         }
 
-        public abstract void addMemoryLocations(List<MemoryLocation> memoryLocations);
-
-        public abstract Cheat[] getCheats();
-
-        public abstract SyncSettings getDefaultSyncSettings();
-
         public void setSyncSettings(string jsonObject)
         {
             syncSettings = JsonConvert.DeserializeObject<SyncSettings>(jsonObject);
@@ -73,5 +67,11 @@ namespace Windwaker_coop
             }
             return s;
         }
+
+        public abstract void addMemoryLocations(List<MemoryLocation> memoryLocations);
+
+        public abstract Cheat[] getCheats();
+
+        public abstract SyncSettings getDefaultSyncSettings();
     }
 }

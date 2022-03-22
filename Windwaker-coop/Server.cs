@@ -177,7 +177,7 @@ namespace Windwaker_coop
                 case "help":
                     //Displays the available server commands
                     return "Available server commands:\nlist - lists all of the currently connected players\n" +
-                        "reset - resets the host to default values\n" +
+                        "stats - displays the items the server currently has\nreset - resets the host to default values\n" +
                         "kick [type] [Name or IpPort] - kicks the speciifed Name or IpPort from the game\nstop - ends syncing and closes the application\n" +
                         "help - lists available commands";
 
@@ -191,6 +191,10 @@ namespace Windwaker_coop
                     if (clientIps.Count < 1)
                         text += "none\n";
                     return text.Substring(0, text.Length - 1);
+
+                case "stats":
+                    //command not implemented yet
+                    return "command not implemented yet";
 
                 case "reset":
                     //resets the server to default values
