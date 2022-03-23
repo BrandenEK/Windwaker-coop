@@ -57,7 +57,7 @@ namespace Windwaker_coop
             return (number & (1 << (int)bit)) != 0;
         }
 
-        //Converts a byte list to a number from bit to little endian format
+        //Converts a byte[] to a number from big to little endian format
         public static uint bigToLittleEndian(byte[] arr, int startIndex, int length)
         {
             byte[] bytes = new byte[4];

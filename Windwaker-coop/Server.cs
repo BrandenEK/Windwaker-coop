@@ -75,6 +75,8 @@ namespace Windwaker_coop
                     if (playerValue < hostValue) overwriteMemory(); return;
                 case 2:
                     if (hostValue == 255 || playerValue > hostValue && playerValue != 255) overwriteMemory(); return;
+                case 3:
+                    if (hostValue == 255) overwriteMemory(); return;
                 case 9:
                     if ((playerValue & (playerValue ^ hostValue)) > 0) overwriteMemory(); return;
                 default:
