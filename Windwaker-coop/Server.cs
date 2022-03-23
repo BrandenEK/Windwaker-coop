@@ -47,7 +47,7 @@ namespace Windwaker_coop
             Start();
         }
 
-        private void compareHostAndPlayer(uint playerValue, ushort memLocIdx)
+        private void compareHostAndPlayer(uint playerValue, uint previousValue, ushort memLocIdx)
         {
             MemoryLocation memLoc = mr.memoryLocations[memLocIdx];
 
@@ -90,7 +90,7 @@ namespace Windwaker_coop
                 for (int i = 0; i < bytes.Length; i++)
                     hostdata[byteListIdx + i] = bytes[i];
 
-                sendNewMemoryLocation(0, memLocIdx, hostValue, playerValue, true); //change writeType to be in data
+                sendNewMemoryLocation(0, memLocIdx, previousValue, playerValue, true); //change writeType to be in data
                 calculateNotification(playerValue, hostValue, memLoc);
             }
 
@@ -158,6 +158,7 @@ namespace Windwaker_coop
             server.DisconnectClient(ipPort);
         }
 
+        //Starts the server
         public void Start()
         {
             try
@@ -179,6 +180,7 @@ namespace Windwaker_coop
                 server.Stop();
         }
 
+        //Returns the string result from processing the command
         public override string processCommand(string command, string[] args)
         {
             switch (command)
@@ -329,7 +331,6 @@ namespace Windwaker_coop
         #endregion
 
         #region Receive functions
-        //type 'm' - reads player memory list and sets hostdata if first player
         protected override void receiveMemoryList(byte[] playerData)
         {
             if (hostdata == null)
@@ -343,7 +344,6 @@ namespace Windwaker_coop
             }
         }
 
-        //type 'v' - reads the single memoryLocation's new value whenever the player's has changed
         protected override void receiveNewMemoryLocation(byte[] data)
         {
             if (data.Length != 11)
@@ -353,33 +353,29 @@ namespace Windwaker_coop
             }
 
             ushort memLocIdx = BitConverter.ToUInt16(data, 0);
-            //uint oldValue = BitConverter.ToUInt32(data, 2);
+            uint oldValue = BitConverter.ToUInt32(data, 2);
             uint newValue = BitConverter.ToUInt32(data, 6);
 
-            compareHostAndPlayer(newValue, memLocIdx);
+            compareHostAndPlayer(newValue, oldValue, memLocIdx);
         }
 
-        //type 't' - reads player name & message and sends it to everybody else
         protected override void receiveTextMessage(byte[] data)
         {
             sendTextMessage(Encoding.UTF8.GetString(data));
         }
 
-        //type 'n' - read notification and send it to everyone else
         protected override void receiveNotification(byte[] data)
         {
             string message = Encoding.UTF8.GetString(data);
             sendNotification(message, true);
         }
 
-        //type 'd' - reads the string and converts it to a long & displays it
         protected override void receiveDelayTest(byte[] data)
         {
             long sendTime = BitConverter.ToInt64(data);
             long timeDelta = DateTime.Now.Ticks - sendTime;
             Output.text("Byte[] received from " + currIp + " came with a delay of " + (timeDelta / 10000) + " milliseconds", ConsoleColor.Yellow);
         }
-        //type 'i' - reads the player name and sets it in the dictionary, then sends the sync settings
         protected override void receiveIntroData(byte[] data)
         {
             string name = Encoding.UTF8.GetString(data);

@@ -118,6 +118,7 @@ namespace Windwaker_coop
                 client.Disconnect();
         }
 
+        //Returns the string result from processing the command
         public override string processCommand(string command, string[] args)
         {
             switch (command)
@@ -217,7 +218,6 @@ namespace Windwaker_coop
         #endregion
 
         #region Receive functions
-        //type 'v' - locates the updated memoryLocation and writes the newValue to memory
         protected override void receiveNewMemoryLocation(byte[] data)
         {
             if (!Program.programSyncing) return;
@@ -238,9 +238,9 @@ namespace Windwaker_coop
             Program.currGame.onReceiveFunctions(this, newValue, memLoc);
         }
 
-        //type 'm' - received when first joining the server, save the list to memory
         protected override void receiveMemoryList(byte[] data)
         {
+            //{ 255 } means this is a brand new server - no memory overwite
             if (!(data.Length == 1 && data[0] == 255))
             {
                 mr.saveToMemory(data);
@@ -248,18 +248,15 @@ namespace Windwaker_coop
             Begin();
         }
 
-        //type 'n' - displays the notification in the console
         protected override void receiveNotification(byte[] data)
         {
             Output.text(Encoding.UTF8.GetString(data), ConsoleColor.Green);
         }
 
-        //type 't' - displays the text message in the console
         protected override void receiveTextMessage(byte[] data)
         {
             Output.text(Encoding.UTF8.GetString(data), ConsoleColor.Blue);
         }
-        //type 'i' - sets the syncSettings and sends initial memory to server
         protected override void receiveIntroData(byte[] data)
         {
             string jsonObject = Encoding.UTF8.GetString(data);
