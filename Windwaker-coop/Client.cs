@@ -72,7 +72,10 @@ namespace Windwaker_coop
                             {
                                 uint newValue = ReadWrite.bigToLittleEndian(memory, byteListIndex, memLoc.size);
                                 uint oldValue = ReadWrite.bigToLittleEndian(lastReadMemory, byteListIndex, memLoc.size);
-                                sendNewMemoryLocation(0, (ushort)locationListIndex, oldValue, newValue, false);
+
+                                //The numbers are different, but still checks to see if any non individual bits were set
+                                if (((oldValue ^ newValue) & ~memLoc.individualBits) > 0)
+                                    sendNewMemoryLocation(0, (ushort)locationListIndex, oldValue, newValue, false);
                             }
                             byteListIndex += memLoc.size;
                         }
@@ -232,8 +235,16 @@ namespace Windwaker_coop
             uint oldValue = BitConverter.ToUInt32(data, 2);
             uint newValue = BitConverter.ToUInt32(data, 6);
             byte writeType = data[10];
-
             MemoryLocation memLoc = mr.memoryLocations[memLocIdx];
+
+            //Calculate the new value if some bits are individual
+            if (memLoc.individualBits > 0)
+            {
+                newValue = (oldValue & memLoc.individualBits) + (newValue & ~memLoc.individualBits);
+            }
+            Console.WriteLine($"Old value: {oldValue}, New value: {BitConverter.ToUInt32(data, 6)}, IdvBit value: {newValue}");
+
+            //Save new value to memory
             mr.saveToMemory(ReadWrite.littleToBigEndian(newValue, memLoc.size), memLoc.startAddress);
             Program.currGame.onReceiveFunctions(this, newValue, memLoc);
         }
