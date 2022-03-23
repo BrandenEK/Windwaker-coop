@@ -15,31 +15,44 @@ namespace Windwaker_coop
 
         public override void endingFunctions(Client client)
         {
-            updateCurrentStageInfo(client, false);
+            
         }
 
         public override void onReceiveFunctions(Client client, uint newValue, MemoryLocation memLoc)
         {
+            updateCurrentStageInfo(client, false, memLoc);
             //Check for an event that sets the time
         }
 
         //Takes the current stageInfo & copies it onto the corresponding unchanging stageInfo or vice versa
-        private void updateCurrentStageInfo(Client client, bool currentToStatic)
+        private void updateCurrentStageInfo(Client client, bool currentToStatic, MemoryLocation? memLoc = null)
         {
+            //Get current stage id & calculate addresses
             byte[] stageIdList = client.mr.readFromMemory((IntPtr)0x803B53A4, 1);
             if (stageIdList == null || stageIdList.Length < 1)
                 return;
-
             byte stageId = stageIdList[0];
-            Output.debug("Updating stageInfo " + stageId, 1);
-            uint from, to;
+            uint currentAdr = 0x803B5380;
+            uint staticAdr = 0x803B4F88 + (uint)stageId * 36;
 
-            if (currentToStatic) { from = 0x803B5380; to = 0x803B4F88 + (uint)stageId * 36; }
-            else { from = 0x803B4F88 + (uint)stageId * 36; to = 0x803B5380; }
+            if (currentToStatic)
+            {
+                Output.debug("Copying current stage data to static stage data " + stageId, 1);
+                byte[] currentStageData = client.mr.readFromMemory((IntPtr)currentAdr, 35);
+                if (currentStageData != null)
+                    client.mr.saveToMemory(currentStageData, (IntPtr)staticAdr);
+            }
+            else
+            {
+                //Only update the current stageInfo if data received was of type dungeon
+                if (memLoc.Value.type != "dungeon")
+                    return;
 
-            byte[] stageDataToCopy = client.mr.readFromMemory((IntPtr)from, 35);
-            if (stageDataToCopy != null)
-                client.mr.saveToMemory(stageDataToCopy, (IntPtr)to);
+                Output.debug("Copying static stage data " + stageId + " to current stage data", 1);
+                byte[] staticStageData = client.mr.readFromMemory((IntPtr)staticAdr, 35);
+                if (staticStageData != null)
+                    client.mr.saveToMemory(staticStageData, (IntPtr)currentAdr);
+            }
         }
 
         public override void addMemoryLocations(List<MemoryLocation> memoryLocations)
