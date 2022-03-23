@@ -269,11 +269,16 @@ namespace Windwaker_coop
                     if (memLoc.individualBits > 0)
                     {
                         uint player = ReadWrite.bigToLittleEndian(lastReadMemory, byteListIndex, memLoc.size);
-                        uint overwrite = ReadWrite.bigToLittleEndian(data, byteListIndex, memLoc.size);
-                        uint newValue = (player & memLoc.individualBits) + (overwrite & ~memLoc.individualBits);
-                        byte[] bytes = ReadWrite.littleToBigEndian(newValue, memLoc.size);
-                        for (int i = 0; i < bytes.Length; i++)
-                            data[byteListIndex + i] = bytes[i];
+
+                        //If item is fully individual after first receive, don't reset to idv if player hasn't received yet
+                        if (memLoc.individualBits != uint.MaxValue || player != 255)
+                        {
+                            uint overwrite = ReadWrite.bigToLittleEndian(data, byteListIndex, memLoc.size);
+                            uint newValue = (player & memLoc.individualBits) + (overwrite & ~memLoc.individualBits);
+                            byte[] bytes = ReadWrite.littleToBigEndian(newValue, memLoc.size);
+                            for (int i = 0; i < bytes.Length; i++)
+                                data[byteListIndex + i] = bytes[i];
+                        }
                     }
                     byteListIndex += memLoc.size;
                 }
