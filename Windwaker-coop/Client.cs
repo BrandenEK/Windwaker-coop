@@ -72,7 +72,7 @@ namespace Windwaker_coop
                             uint oldValue = ReadWrite.bigToLittleEndian(lastReadMemory, byteListIndex, memLoc.size);
 
                             //The numbers are different, but still checks to see if any non individual bits were set
-                            if (((oldValue ^ newValue) & ~memLoc.individualBits) > 0)
+                            if (((oldValue ^ newValue) & ~memLoc.individualBits) > 0 || memLoc.individualBits == uint.MaxValue)
                                 sendNewMemoryLocation(0, (ushort)locationListIndex, oldValue, newValue, false);
                         }
                         byteListIndex += memLoc.size;
@@ -107,6 +107,11 @@ namespace Windwaker_coop
             catch (System.Net.Sockets.SocketException)
             {
                 Output.error($"Failed to connect to a server at {IpAddress}:{port}");
+                Program.EndProgram();
+            }
+            catch (TimeoutException)
+            {
+                Output.error($"Client timed out attempting to connect to the server at {IpAddress}:{port}");
                 Program.EndProgram();
             }
         }
@@ -235,7 +240,7 @@ namespace Windwaker_coop
             MemoryLocation memLoc = mr.memoryLocations[memLocIdx];
 
             //Calculate the new value if some bits are individual
-            if (memLoc.individualBits > 0)
+            if (memLoc.individualBits > 0 && memLoc.individualBits != uint.MaxValue)
             {
                 newValue = (oldValue & memLoc.individualBits) + (newValue & ~memLoc.individualBits);
             }
