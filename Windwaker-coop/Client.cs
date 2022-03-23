@@ -242,10 +242,15 @@ namespace Windwaker_coop
             {
                 newValue = (oldValue & memLoc.individualBits) + (newValue & ~memLoc.individualBits);
             }
-            Console.WriteLine($"Old value: {oldValue}, New value: {BitConverter.ToUInt32(data, 6)}, IdvBit value: {newValue}");
+            byte[] bytes = ReadWrite.littleToBigEndian(newValue, memLoc.size);
 
-            //Save new value to memory
-            mr.saveToMemory(ReadWrite.littleToBigEndian(newValue, memLoc.size), memLoc.startAddress);
+            //Save new value to lastReadMemory
+            int byteListIdx = mr.getByteIndexOfMemLocs(memLocIdx);
+            for (int i = 0; i < bytes.Length; i++)
+                lastReadMemory[byteListIdx + i] = bytes[i];
+
+            //Save new value to game memory
+            mr.saveToMemory(bytes, memLoc.startAddress);
             Program.currGame.onReceiveFunctions(this, newValue, memLoc);
         }
 

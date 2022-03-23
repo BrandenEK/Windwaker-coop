@@ -123,5 +123,13 @@ namespace Windwaker_coop
             }
             return true;
         }
+
+        public int getByteIndexOfMemLocs(int memLocIndex)
+        {
+            int byteListIdx = 0;
+            for (int i = 0; i < memLocIndex; i++)
+                byteListIdx += memoryLocations[i].size;
+            return byteListIdx;
+        }
     }
 }

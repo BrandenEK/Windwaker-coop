@@ -52,9 +52,7 @@ namespace Windwaker_coop
             MemoryLocation memLoc = mr.memoryLocations[memLocIdx];
 
             //Calculate hostValue from the savedList
-            int byteListIdx = 0;
-            for (int i = 0; i < memLocIdx; i++)
-                byteListIdx += mr.memoryLocations[i].size;
+            int byteListIdx = mr.getByteIndexOfMemLocs(memLocIdx);
             uint hostValue = ReadWrite.bigToLittleEndian(hostdata, byteListIdx, memLoc.size);
 
             //Error conditions - not fatal, but unexpected
