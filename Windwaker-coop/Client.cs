@@ -59,7 +59,6 @@ namespace Windwaker_coop
                 byte[] memory = mr.readFromMemory();
                 if (memory != null && lastReadMemory != null)
                 {
-                    Console.WriteLine("Last read memory is full");
                     int byteListIndex = 0;
                     for (int locationListIndex = 0; locationListIndex < mr.memoryLocations.Count; locationListIndex++)
                     {
@@ -257,6 +256,24 @@ namespace Windwaker_coop
             //{ 255 } means this is a brand new server - no memory overwite
             if (!(data.Length == 1 && data[0] == 255))
             {
+                //Set any individual bits to what they were in the initial memory and overwrite memory
+                int byteListIndex = 0;
+                for (int locationListIndex = 0; locationListIndex < mr.memoryLocations.Count; locationListIndex++)
+                {
+                    MemoryLocation memLoc = mr.memoryLocations[locationListIndex];
+                    if (memLoc.individualBits > 0)
+                    {
+                        uint player = ReadWrite.bigToLittleEndian(lastReadMemory, byteListIndex, memLoc.size);
+                        uint overwrite = ReadWrite.bigToLittleEndian(data, byteListIndex, memLoc.size);
+                        uint newValue = (player & memLoc.individualBits) + (overwrite & ~memLoc.individualBits);
+                        byte[] bytes = ReadWrite.littleToBigEndian(newValue, memLoc.size);
+                        for (int i = 0; i < bytes.Length; i++)
+                            data[byteListIndex + i] = bytes[i];
+                    }
+                    byteListIndex += memLoc.size;
+                }
+
+                lastReadMemory = data;
                 mr.saveToMemory(data);
             }
             Begin();
