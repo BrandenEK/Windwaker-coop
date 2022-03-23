@@ -77,10 +77,10 @@ namespace Windwaker_coop
 
                 if (true)
                 {
-                    memoryLocations.Add(new MemoryLocation(0x803B4C52, 1, "Bottle #1*2", "item", 3, 80, 255, 255, 255, empty));
-                    memoryLocations.Add(new MemoryLocation(0x803B4C53, 1, "Bottle #2*2", "item", 3, 80, 255, 255, 255, empty));
-                    memoryLocations.Add(new MemoryLocation(0x803B4C54, 1, "Bottle #3*2", "item", 3, 80, 255, 255, 255, empty));
-                    memoryLocations.Add(new MemoryLocation(0x803B4C55, 1, "Bottle #4*2", "item", 3, 80, 255, 255, 255, empty));
+                    memoryLocations.Add(new MemoryLocation(0x803B4C52, 1, "Bottle #1*2", "item", 3, 80, 255, 255, 0, empty));
+                    memoryLocations.Add(new MemoryLocation(0x803B4C53, 1, "Bottle #2*2", "item", 3, 80, 255, 255, 0, empty));
+                    memoryLocations.Add(new MemoryLocation(0x803B4C54, 1, "Bottle #3*2", "item", 3, 80, 255, 255, 0, empty));
+                    memoryLocations.Add(new MemoryLocation(0x803B4C55, 1, "Bottle #4*2", "item", 3, 80, 255, 255, 0, empty));
                 }
 
                 memoryLocations.Add(new MemoryLocation(0x803B4C56, 1, "Delivery Bag*0", "item", 1, 48, 255, 255, 0, empty));

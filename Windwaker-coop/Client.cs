@@ -57,28 +57,26 @@ namespace Windwaker_coop
                 Program.currGame.beginningFunctions(this);
 
                 byte[] memory = mr.readFromMemory();
-                if (memory != null)
+                if (memory != null && lastReadMemory != null)
                 {
-                    if (lastReadMemory != null)
+                    Console.WriteLine("Last read memory is full");
+                    int byteListIndex = 0;
+                    for (int locationListIndex = 0; locationListIndex < mr.memoryLocations.Count; locationListIndex++)
                     {
-                        int byteListIndex = 0;
-                        for (int locationListIndex = 0; locationListIndex < mr.memoryLocations.Count; locationListIndex++)
+                        //Loops through each memory location and compares its value to its previous value
+                        //If different it sends it to the server for processing
+
+                        MemoryLocation memLoc = mr.memoryLocations[locationListIndex];
+                        if (!compareToPreviousMemory(memory, lastReadMemory, byteListIndex, memLoc.size))
                         {
-                            //Loops through each memory location and compares its value to its previous value
-                            //If different it sends it to the server for processing
+                            uint newValue = ReadWrite.bigToLittleEndian(memory, byteListIndex, memLoc.size);
+                            uint oldValue = ReadWrite.bigToLittleEndian(lastReadMemory, byteListIndex, memLoc.size);
 
-                            MemoryLocation memLoc = mr.memoryLocations[locationListIndex];
-                            if (!compareToPreviousMemory(memory, lastReadMemory, byteListIndex, memLoc.size))
-                            {
-                                uint newValue = ReadWrite.bigToLittleEndian(memory, byteListIndex, memLoc.size);
-                                uint oldValue = ReadWrite.bigToLittleEndian(lastReadMemory, byteListIndex, memLoc.size);
-
-                                //The numbers are different, but still checks to see if any non individual bits were set
-                                if (((oldValue ^ newValue) & ~memLoc.individualBits) > 0)
-                                    sendNewMemoryLocation(0, (ushort)locationListIndex, oldValue, newValue, false);
-                            }
-                            byteListIndex += memLoc.size;
+                            //The numbers are different, but still checks to see if any non individual bits were set
+                            if (((oldValue ^ newValue) & ~memLoc.individualBits) > 0)
+                                sendNewMemoryLocation(0, (ushort)locationListIndex, oldValue, newValue, false);
                         }
+                        byteListIndex += memLoc.size;
                     }
 
                     lastReadMemory = memory;
@@ -286,6 +284,7 @@ namespace Windwaker_coop
             }
             else
             {
+                lastReadMemory = initialMemory;
                 sendMemoryList(initialMemory);
             }
         }
