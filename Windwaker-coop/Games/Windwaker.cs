@@ -6,6 +6,9 @@ namespace Windwaker_coop
 {
     class Windwaker : Game
     {
+        private byte[] lastCurrentStageData;
+        private byte lastCurrentStageId;
+
         public Windwaker() : base(0, "Windwaker", "dolphin", 0x7FFF0000, "GZLE01") { }
 
         public override void beginningFunctions(Client client)
@@ -37,10 +40,18 @@ namespace Windwaker_coop
 
             if (currentToStatic)
             {
-                Output.debug("Copying current stage data to static stage data " + stageId, 1);
                 byte[] currentStageData = client.mr.readFromMemory((IntPtr)currentAdr, 35);
-                if (currentStageData != null)
-                    client.mr.saveToMemory(currentStageData, (IntPtr)staticAdr);
+                if (currentStageData == null)
+                    return;
+
+                //Only update if you are in the same stage and the currentStageData has changed (lastCurrentStageData should never be null after receiveMemoryList)
+                if (client.compareToPreviousMemory(currentStageData, lastCurrentStageData, 0, 35) || lastCurrentStageId != stageId)
+                    return;
+
+                Output.debug("Copying current stage data to static stage data " + stageId, 1);
+                client.mr.saveToMemory(currentStageData, (IntPtr)staticAdr);
+                lastCurrentStageData = currentStageData;
+                lastCurrentStageId = stageId;
             }
             else
             {
@@ -51,7 +62,11 @@ namespace Windwaker_coop
                 Output.debug("Copying static stage data " + stageId + " to current stage data", 1);
                 byte[] staticStageData = client.mr.readFromMemory((IntPtr)staticAdr, 35);
                 if (staticStageData != null)
+                {
                     client.mr.saveToMemory(staticStageData, (IntPtr)currentAdr);
+                    lastCurrentStageData = staticStageData;
+                    lastCurrentStageId = stageId;
+                }
             }
         }
 

@@ -86,15 +86,15 @@ namespace Windwaker_coop
                 Output.debug("Time taken to complete entire sync loop: " + (Environment.TickCount - timeStart) + " milliseconds", 1);
                 await Task.Delay(loopTime);
             }
+        }
 
-            //Compares a single memory location to its previous value while still in byte[] form
-            bool compareToPreviousMemory(byte[]curr, byte[] prev, int startIdx, int length)
-            {
-                for (int i = startIdx; i < startIdx + length; i++)
-                    if (curr[i] != prev[i])
-                        return false;
-                return true;
-            }
+        //Assumes they are non null and of the same length
+        public bool compareToPreviousMemory(byte[] curr, byte[] prev, int startIdx, int length)
+        {
+            for (int i = startIdx; i < startIdx + length; i++)
+                if (curr[i] != prev[i])
+                    return false;
+            return true;
         }
 
         //Connects to the server
