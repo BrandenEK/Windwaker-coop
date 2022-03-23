@@ -148,11 +148,6 @@ namespace Windwaker_coop
             }
         }
 
-        public void setServerToDefault()
-        {
-            //hostdata = mr.getDefaultValues();
-        }
-
         public void kickPlayer(string ipPort)
         {
             server.DisconnectClient(ipPort);
@@ -188,7 +183,7 @@ namespace Windwaker_coop
                 case "help":
                     //Displays the available server commands
                     return "Available server commands:\nlist - lists all of the currently connected players\n" +
-                        "stats - displays the items the server currently has\nreset - resets the host to default values\n" +
+                        "stats - displays the items the server currently has\n" +
                         "kick [type] [Name or IpPort] - kicks the speciifed Name or IpPort from the game\nstop - ends syncing and closes the application\n" +
                         "help - lists available commands";
 
@@ -206,13 +201,6 @@ namespace Windwaker_coop
                 case "stats":
                     //command not implemented yet
                     return "command not implemented yet";
-
-                case "reset":
-                    //resets the server to default values
-                    setServerToDefault();
-                    sendNotification("Server data has been reset to default!", true);
-                    sendNotification("Server data has been reset to default!", false);
-                    return "Server data has been reset to default!";
 
                 case "kick":
                     //kicks the inputted player's ipPort or name from the game
