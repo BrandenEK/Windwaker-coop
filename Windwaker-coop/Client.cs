@@ -281,6 +281,7 @@ namespace Windwaker_coop
                 lastReadMemory = data;
                 mr.saveToMemory(data);
             }
+            Program.currGame.onReceiveFunctions(this, 0, null);
             Begin();
         }
 
