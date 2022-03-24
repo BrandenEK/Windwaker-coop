@@ -57,6 +57,16 @@ namespace Windwaker_coop
             return (number & (1 << (int)bit)) != 0;
         }
 
+        public static uint gameToAppNumber(byte[] number)
+        {
+            return 0;
+        }
+
+        public static byte[] appToGameNumber(uint number)
+        {
+            return null;
+        }
+
         //Converts a byte[] to a number from big to little endian format
         public static uint bigToLittleEndian(byte[] arr, int startIndex, int length)
         {

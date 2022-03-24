@@ -9,7 +9,7 @@ namespace Windwaker_coop
         private byte[] lastCurrentStageData;
         private byte lastCurrentStageId;
 
-        public Windwaker() : base(0, "Windwaker", "dolphin", 0x7FFF0000, "GZLE01") { }
+        public Windwaker() : base(0, "Windwaker", "dolphin", 0x7FFF0000, "GZLE01", true) { }
 
         public override void beginningFunctions(Client client)
         {

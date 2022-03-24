@@ -6,7 +6,7 @@ namespace Windwaker_coop
 {
     class OcarinaOfTime : Game
     {
-        public OcarinaOfTime() : base(1, "Ocarina of Time", "project64", 0x7B263D84, "THE LEGEND OF ZELDA") { }
+        public OcarinaOfTime() : base(1, "Ocarina of Time", "project64", 0x7B263D84, "THE LEGEND OF ZELDA", true) { }
 
         //Individual functions
 

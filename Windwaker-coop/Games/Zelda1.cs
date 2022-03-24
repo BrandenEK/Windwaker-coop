@@ -6,7 +6,7 @@ namespace Windwaker_coop
 {
     class Zelda1 : Game
     {
-        public Zelda1() : base(2, "Zelda 1", "fceu", 0, "idk yet") { }
+        public Zelda1() : base(2, "Zelda 1", "fceu", 0, "idk yet", true) { }
 
         //Individual functions
 

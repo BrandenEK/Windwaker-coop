@@ -12,15 +12,17 @@ namespace Windwaker_coop
         public string processName;
         public uint identityAddress;
         public string identityText;
+        public bool bigEndian;
         public SyncSettings syncSettings;
 
-        public Game(int gameId, string gameName, string processName, uint identityAddress, string identityText)
+        public Game(int gameId, string gameName, string processName, uint identityAddress, string identityText, bool bigEndian)
         {
             this.gameId = gameId;
             this.gameName = gameName;
             this.processName = processName;
             this.identityAddress = identityAddress;
             this.identityText = identityText;
+            this.bigEndian = bigEndian;
             syncSettings = getDefaultSyncSettings();
         }
 
