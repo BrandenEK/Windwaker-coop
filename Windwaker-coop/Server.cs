@@ -9,6 +9,7 @@ namespace Windwaker_coop
     {
         private SimpleTcpServer server;
         public Dictionary<string, string> clientIps;
+        private List<string> bannedIps;
         private byte[] hostdata;
         private string currIp = "";
 
@@ -39,6 +40,7 @@ namespace Windwaker_coop
             server.Events.ClientDisconnected += Events_ClientDisconnected;
             server.Events.DataReceived += Events_DataReceived;
             clientIps = new Dictionary<string, string>();
+            bannedIps = new List<string>();
 
             //Set sync settings, create memory locations, and then start server
             Program.currGame.syncSettings = Program.currGame.GetSyncSettingsFromFile();
@@ -369,9 +371,19 @@ namespace Windwaker_coop
         {
             string name = Encoding.UTF8.GetString(data);
 
+            //If the ip address is banned, disconnect them
+            if (bannedIps.Contains(currIp))
+            {
+                Output.text("Banned player attempted to join the server");
+                sendNotification("You have been banned from the server!", false);
+                kickPlayer(currIp);
+                return;
+            }
+
             //If a player already has that name, disconnect them
             if (clientIps.ContainsValue(name))
             {
+                Output.text("Player with a duplicate name attempted to join the server");
                 sendNotification($"The name '{name}' is already taken!", false);
                 kickPlayer(currIp);
                 return;
