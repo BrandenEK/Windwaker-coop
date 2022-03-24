@@ -212,21 +212,18 @@ namespace Windwaker_coop
 
                     if (args[0] == "name" || args[0] == "n")
                     {
-                        //Change to simple lookup once names are individualized
-                        int numFound = 0;
-                        string texts = "";
-                        foreach (string ip in clientIps.Keys)
+                        if (clientIps.ContainsValue(args[1]))
                         {
-                            if (clientIps[ip] == args[1])
+                            foreach (string ip in clientIps.Keys)
                             {
-                                kickPlayer(ip);
-                                texts += "Player '" + args[1] + "' has been kicked from the game!\n";
-                                numFound++;
+                                if (clientIps[ip] == args[1])
+                                {
+                                    kickPlayer(ip);
+                                    return "Player '" + args[1] + "' has been kicked from the game!\n";
+                                }
                             }
                         }
-                        if (numFound == 0)
-                            return "Player '" + args[1] + "' does not exist in the game!";
-                        return texts;
+                        return "Player '" + args[1] + "' does not exist in the game!";
                     }
                     else if (args[0] == "ip" || args[0] == "i")
                     {
