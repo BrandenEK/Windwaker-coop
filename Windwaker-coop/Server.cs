@@ -187,7 +187,7 @@ namespace Windwaker_coop
                     return "Available server commands:\nlist - lists all of the currently connected players\n" +
                         "stats - displays the items the server currently has\nstop - ends syncing and closes the application\n" +
                         "kick [type] [Name or IpPort] - kicks the speciifed Name or IpPort from the game\n" +
-                        "ban [type] [Nme or IpPort] - prevents the speciifed Name or IpPort from ever joining the server\n" +
+                        "ban [Ip Address] - prevents the speciifed Ip Address from ever joining the server\n" +
                         "help - lists available commands";
 
                 case "list":
@@ -206,7 +206,7 @@ namespace Windwaker_coop
                     return "command not implemented yet";
 
                 case "kick":
-                    //kicks the inputted player's ipPort or name from the game
+                    //kicks the inputted player's ipPort or name from the server
                     if (args.Length != 2)
                         return "Command 'kick' takes 2 arguments!";
 
@@ -237,8 +237,13 @@ namespace Windwaker_coop
                     return "Invalid type.  Must be either 'name' or 'ip'";
 
                 case "ban":
-                    //command not implemented yet
-                    return "command not implemented yet";
+                    //bans the inputted player's ipAddress from the server
+                    if (args.Length != 1)
+                        return "Command 'ban' takes 1 argument!";
+                    
+                    bannedIps.Add(args[0]);
+                    //Also kick the player
+                    return $"Ip Address '{args[0]}' has been banned from the server";
 
                 case "stop":
                     //Ends the program
