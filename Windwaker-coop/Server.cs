@@ -8,8 +8,11 @@ namespace Windwaker_coop
     class Server : User
     {
         private SimpleTcpServer server;
+
         public Dictionary<string, string> clientIps; //ipPort
         private List<string> bannedIps; //Just ip
+        private const int maxPlayers = 8;
+
         private byte[] hostdata;
         private string currIp = "";
 
@@ -373,10 +376,9 @@ namespace Windwaker_coop
             long timeDelta = DateTime.Now.Ticks - sendTime;
             Output.text("Byte[] received from " + currIp + " came with a delay of " + (timeDelta / 10000) + " milliseconds", ConsoleColor.Yellow);
         }
+
         protected override void receiveIntroData(byte[] data)
         {
-            string name = Encoding.UTF8.GetString(data);
-
             //If the ip address is banned, disconnect them
             string justIp = currIp.Substring(0, currIp.IndexOf(':'));
             if (bannedIps.Contains(justIp))
@@ -386,6 +388,17 @@ namespace Windwaker_coop
                 kickPlayer(currIp);
                 return;
             }
+
+            //If there are too many players, disconnect them
+            if (clientIps.Count > maxPlayers)
+            {
+                Output.text("Player attempted to join the server after it was full");
+                sendNotification("The server is full!", false);
+                kickPlayer(currIp);
+                return;
+            }
+
+            string name = Encoding.UTF8.GetString(data);
 
             //If a player already has that name, disconnect them
             if (clientIps.ContainsValue(name))
