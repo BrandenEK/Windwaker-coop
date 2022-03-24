@@ -183,8 +183,9 @@ namespace Windwaker_coop
                 case "help":
                     //Displays the available server commands
                     return "Available server commands:\nlist - lists all of the currently connected players\n" +
-                        "stats - displays the items the server currently has\n" +
-                        "kick [type] [Name or IpPort] - kicks the speciifed Name or IpPort from the game\nstop - ends syncing and closes the application\n" +
+                        "stats - displays the items the server currently has\nstop - ends syncing and closes the application\n" +
+                        "kick [type] [Name or IpPort] - kicks the speciifed Name or IpPort from the game\n" +
+                        "ban [type] [Nme or IpPort] - prevents the speciifed Name or IpPort from ever joining the server\n" +
                         "help - lists available commands";
 
                 case "list":
@@ -367,7 +368,17 @@ namespace Windwaker_coop
         protected override void receiveIntroData(byte[] data)
         {
             string name = Encoding.UTF8.GetString(data);
+
+            //If a player already has that name, disconnect them
+            if (clientIps.ContainsValue(name))
+            {
+                sendNotification($"The name '{name}' is already taken!", false);
+                kickPlayer(currIp);
+                return;
+            }
+
             clientIps[currIp] = name;
+            sendNotification(name + " has joined the game!", true);
             sendIntroData();
         }
         #endregion
@@ -376,7 +387,9 @@ namespace Windwaker_coop
         {
             Output.text("Client disconnected at " + e.IpPort);
             currIp = e.IpPort;
-            sendNotification(clientIps[currIp] + " has left the game!", true);
+
+            if (clientIps[currIp] != "unknown")
+                sendNotification(clientIps[currIp] + " has left the game!", true);
             clientIps.Remove(e.IpPort);
         }
 

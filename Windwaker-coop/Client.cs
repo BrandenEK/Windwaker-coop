@@ -327,7 +327,6 @@ namespace Windwaker_coop
         private void Events_Connected(object sender, ClientConnectedEventArgs e)
         {
             Output.text("Successfully connected to the server at " + e.IpPort);
-            sendNotification(playerName + " has joined the game!", true);
         }
     }
 }
