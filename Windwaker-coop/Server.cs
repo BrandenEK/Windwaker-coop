@@ -237,12 +237,16 @@ namespace Windwaker_coop
                     return "Invalid type.  Must be either 'name' or 'ip'";
 
                 case "ban":
-                    //bans the inputted player's ipAddress from the server
+                    //bans the inputted ipAddress from the server
                     if (args.Length != 1)
                         return "Command 'ban' takes 1 argument!";
                     
                     bannedIps.Add(args[0]);
-                    //Also kick the player
+                    foreach (string ip in clientIps.Keys)
+                    {
+                        if (ip.Substring(0, ip.IndexOf(':')) == args[0])
+                            kickPlayer(ip);
+                    }
                     return $"Ip Address '{args[0]}' has been banned from the server";
 
                 case "stop":
