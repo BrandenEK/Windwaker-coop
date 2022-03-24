@@ -8,8 +8,8 @@ namespace Windwaker_coop
     class Server : User
     {
         private SimpleTcpServer server;
-        public Dictionary<string, string> clientIps;
-        private List<string> bannedIps;
+        public Dictionary<string, string> clientIps; //ipPort
+        private List<string> bannedIps; //Just ip
         private byte[] hostdata;
         private string currIp = "";
 
@@ -372,7 +372,8 @@ namespace Windwaker_coop
             string name = Encoding.UTF8.GetString(data);
 
             //If the ip address is banned, disconnect them
-            if (bannedIps.Contains(currIp))
+            string justIp = currIp.Substring(0, currIp.IndexOf(':'));
+            if (bannedIps.Contains(justIp))
             {
                 Output.text("Banned player attempted to join the server");
                 sendNotification("You have been banned from the server!", false);
