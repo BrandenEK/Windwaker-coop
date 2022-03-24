@@ -1,4 +1,4 @@
-# Windwaker-coop
+# Windwaker Co-op
 A multiplayer program for The Legend of Zelda: The Wind Waker that syncs player progress throughout the game
 
 Progress board:
@@ -25,7 +25,7 @@ https://trello.com/b/eBKLJlX5/windwaker-coop
 
 ## Things to note:
 - You must be using Dolphin 5.0 (Other versions may possibly work, but they changed how memory is initialized after 5.0 and I haven't tested them).
-- As of now, you can not see other players in your game, but their progress will still sync
+- As of now, you can not see other players in your game; the program only syncs inventory and story/dungeon progress
 - Most events in the game such as cutscenes being triggered/watched or chests being opened require a room transition to take effect.  For example, in Dragon Roost Cavern, once somebody unlocks the first locked door, other players must enter this room after the event has synced in order for the change to take place.
 - You can change some of the settings by editing the "config.json" file
 

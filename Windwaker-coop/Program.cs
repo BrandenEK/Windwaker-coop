@@ -22,7 +22,7 @@ namespace Windwaker_coop
             Output.text("-The Legend of Zelda Coop-\n", ConsoleColor.Green);
             config = readConfigFile();
             games = loadGames();
-            currGame = games[0];
+            currGame = games[config.gameId];
 
             //Run in memory watcher mode
             if (config.runInWatcherMode)
@@ -162,7 +162,7 @@ namespace Windwaker_coop
             }
             else
             {
-                c = new Config(0, 2500, 25565, true, false);
+                c = Config.getDefaultConfig();
                 File.WriteAllText(path, JsonConvert.SerializeObject(c, Formatting.Indented));
             }
             return c;

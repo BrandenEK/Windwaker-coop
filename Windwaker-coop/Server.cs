@@ -47,14 +47,12 @@ namespace Windwaker_coop
             Start();
         }
 
-        private void compareHostAndPlayer(uint playerValue, ushort memLocIdx)
+        private void compareHostAndPlayer(uint playerValue, uint previousValue, ushort memLocIdx)
         {
             MemoryLocation memLoc = mr.memoryLocations[memLocIdx];
 
             //Calculate hostValue from the savedList
-            int byteListIdx = 0;
-            for (int i = 0; i < memLocIdx; i++)
-                byteListIdx += mr.memoryLocations[i].size;
+            int byteListIdx = mr.getByteIndexOfMemLocs(memLocIdx);
             uint hostValue = ReadWrite.bigToLittleEndian(hostdata, byteListIdx, memLoc.size);
 
             //Error conditions - not fatal, but unexpected
@@ -77,6 +75,8 @@ namespace Windwaker_coop
                     if (playerValue < hostValue) overwriteMemory(); return;
                 case 2:
                     if (hostValue == 255 || playerValue > hostValue && playerValue != 255) overwriteMemory(); return;
+                case 3:
+                    if (hostValue == 255) overwriteMemory(); return;
                 case 9:
                     if ((playerValue & (playerValue ^ hostValue)) > 0) overwriteMemory(); return;
                 default:
@@ -90,7 +90,7 @@ namespace Windwaker_coop
                 for (int i = 0; i < bytes.Length; i++)
                     hostdata[byteListIdx + i] = bytes[i];
 
-                sendNewMemoryLocation(0, memLocIdx, hostValue, playerValue, true); //change writeType to be in data
+                sendNewMemoryLocation(0, memLocIdx, previousValue, playerValue, true); //change writeType to be in data
                 calculateNotification(playerValue, hostValue, memLoc);
             }
 
@@ -148,16 +148,12 @@ namespace Windwaker_coop
             }
         }
 
-        public void setServerToDefault()
-        {
-            //hostdata = mr.getDefaultValues();
-        }
-
         public void kickPlayer(string ipPort)
         {
             server.DisconnectClient(ipPort);
         }
 
+        //Starts the server
         public void Start()
         {
             try
@@ -179,6 +175,7 @@ namespace Windwaker_coop
                 server.Stop();
         }
 
+        //Returns the string result from processing the command
         public override string processCommand(string command, string[] args)
         {
             switch (command)
@@ -186,7 +183,7 @@ namespace Windwaker_coop
                 case "help":
                     //Displays the available server commands
                     return "Available server commands:\nlist - lists all of the currently connected players\n" +
-                        "stats - displays the items the server currently has\nreset - resets the host to default values\n" +
+                        "stats - displays the items the server currently has\n" +
                         "kick [type] [Name or IpPort] - kicks the speciifed Name or IpPort from the game\nstop - ends syncing and closes the application\n" +
                         "help - lists available commands";
 
@@ -204,13 +201,6 @@ namespace Windwaker_coop
                 case "stats":
                     //command not implemented yet
                     return "command not implemented yet";
-
-                case "reset":
-                    //resets the server to default values
-                    setServerToDefault();
-                    sendNotification("Server data has been reset to default!", true);
-                    sendNotification("Server data has been reset to default!", false);
-                    return "Server data has been reset to default!";
 
                 case "kick":
                     //kicks the inputted player's ipPort or name from the game
@@ -329,7 +319,6 @@ namespace Windwaker_coop
         #endregion
 
         #region Receive functions
-        //type 'm' - reads player memory list and sets hostdata if first player
         protected override void receiveMemoryList(byte[] playerData)
         {
             if (hostdata == null)
@@ -343,7 +332,6 @@ namespace Windwaker_coop
             }
         }
 
-        //type 'v' - reads the single memoryLocation's new value whenever the player's has changed
         protected override void receiveNewMemoryLocation(byte[] data)
         {
             if (data.Length != 11)
@@ -353,33 +341,29 @@ namespace Windwaker_coop
             }
 
             ushort memLocIdx = BitConverter.ToUInt16(data, 0);
-            //uint oldValue = BitConverter.ToUInt32(data, 2);
+            uint oldValue = BitConverter.ToUInt32(data, 2);
             uint newValue = BitConverter.ToUInt32(data, 6);
 
-            compareHostAndPlayer(newValue, memLocIdx);
+            compareHostAndPlayer(newValue, oldValue, memLocIdx);
         }
 
-        //type 't' - reads player name & message and sends it to everybody else
         protected override void receiveTextMessage(byte[] data)
         {
             sendTextMessage(Encoding.UTF8.GetString(data));
         }
 
-        //type 'n' - read notification and send it to everyone else
         protected override void receiveNotification(byte[] data)
         {
             string message = Encoding.UTF8.GetString(data);
             sendNotification(message, true);
         }
 
-        //type 'd' - reads the string and converts it to a long & displays it
         protected override void receiveDelayTest(byte[] data)
         {
             long sendTime = BitConverter.ToInt64(data);
             long timeDelta = DateTime.Now.Ticks - sendTime;
             Output.text("Byte[] received from " + currIp + " came with a delay of " + (timeDelta / 10000) + " milliseconds", ConsoleColor.Yellow);
         }
-        //type 'i' - reads the player name and sets it in the dictionary, then sends the sync settings
         protected override void receiveIntroData(byte[] data)
         {
             string name = Encoding.UTF8.GetString(data);

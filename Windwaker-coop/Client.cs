@@ -57,25 +57,25 @@ namespace Windwaker_coop
                 Program.currGame.beginningFunctions(this);
 
                 byte[] memory = mr.readFromMemory();
-                if (memory != null)
+                if (memory != null && lastReadMemory != null)
                 {
-                    if (lastReadMemory != null)
+                    int byteListIndex = 0;
+                    for (int locationListIndex = 0; locationListIndex < mr.memoryLocations.Count; locationListIndex++)
                     {
-                        int byteListIndex = 0;
-                        for (int locationListIndex = 0; locationListIndex < mr.memoryLocations.Count; locationListIndex++)
-                        {
-                            //Loops through each memory location and compares its value to its previous value
-                            //If different it sends it to the server for processing
+                        //Loops through each memory location and compares its value to its previous value
+                        //If different it sends it to the server for processing
 
-                            MemoryLocation memLoc = mr.memoryLocations[locationListIndex];
-                            if (!compareToPreviousMemory(memory, lastReadMemory, byteListIndex, memLoc.size))
-                            {
-                                uint newValue = ReadWrite.bigToLittleEndian(memory, byteListIndex, memLoc.size);
-                                uint oldValue = ReadWrite.bigToLittleEndian(lastReadMemory, byteListIndex, memLoc.size);
+                        MemoryLocation memLoc = mr.memoryLocations[locationListIndex];
+                        if (!compareToPreviousMemory(memory, lastReadMemory, byteListIndex, memLoc.size))
+                        {
+                            uint newValue = ReadWrite.bigToLittleEndian(memory, byteListIndex, memLoc.size);
+                            uint oldValue = ReadWrite.bigToLittleEndian(lastReadMemory, byteListIndex, memLoc.size);
+
+                            //The numbers are different, but still checks to see if any non individual bits were set
+                            if (((oldValue ^ newValue) & ~memLoc.individualBits) > 0 || memLoc.individualBits == uint.MaxValue)
                                 sendNewMemoryLocation(0, (ushort)locationListIndex, oldValue, newValue, false);
-                            }
-                            byteListIndex += memLoc.size;
                         }
+                        byteListIndex += memLoc.size;
                     }
 
                     lastReadMemory = memory;
@@ -86,15 +86,15 @@ namespace Windwaker_coop
                 Output.debug("Time taken to complete entire sync loop: " + (Environment.TickCount - timeStart) + " milliseconds", 1);
                 await Task.Delay(loopTime);
             }
+        }
 
-            //Compares a single memory location to its previous value while still in byte[] form
-            bool compareToPreviousMemory(byte[]curr, byte[] prev, int startIdx, int length)
-            {
-                for (int i = startIdx; i < startIdx + length; i++)
-                    if (curr[i] != prev[i])
-                        return false;
-                return true;
-            }
+        //Assumes they are non null and of the same length
+        public bool compareToPreviousMemory(byte[] curr, byte[] prev, int startIdx, int length)
+        {
+            for (int i = startIdx; i < startIdx + length; i++)
+                if (curr[i] != prev[i])
+                    return false;
+            return true;
         }
 
         //Connects to the server
@@ -109,6 +109,11 @@ namespace Windwaker_coop
                 Output.error($"Failed to connect to a server at {IpAddress}:{port}");
                 Program.EndProgram();
             }
+            catch (TimeoutException)
+            {
+                Output.error($"Client timed out attempting to connect to the server at {IpAddress}:{port}");
+                Program.EndProgram();
+            }
         }
 
         //Disconnects from the server
@@ -118,6 +123,7 @@ namespace Windwaker_coop
                 client.Disconnect();
         }
 
+        //Returns the string result from processing the command
         public override string processCommand(string command, string[] args)
         {
             switch (command)
@@ -217,7 +223,6 @@ namespace Windwaker_coop
         #endregion
 
         #region Receive functions
-        //type 'v' - locates the updated memoryLocation and writes the newValue to memory
         protected override void receiveNewMemoryLocation(byte[] data)
         {
             if (!Program.programSyncing) return;
@@ -232,34 +237,68 @@ namespace Windwaker_coop
             uint oldValue = BitConverter.ToUInt32(data, 2);
             uint newValue = BitConverter.ToUInt32(data, 6);
             byte writeType = data[10];
-
             MemoryLocation memLoc = mr.memoryLocations[memLocIdx];
-            mr.saveToMemory(ReadWrite.littleToBigEndian(newValue, memLoc.size), memLoc.startAddress);
+
+            //Calculate the new value if some bits are individual
+            if (memLoc.individualBits > 0 && memLoc.individualBits != uint.MaxValue)
+            {
+                newValue = (oldValue & memLoc.individualBits) + (newValue & ~memLoc.individualBits);
+            }
+            byte[] bytes = ReadWrite.littleToBigEndian(newValue, memLoc.size);
+
+            //Save new value to lastReadMemory
+            int byteListIdx = mr.getByteIndexOfMemLocs(memLocIdx);
+            for (int i = 0; i < bytes.Length; i++)
+                lastReadMemory[byteListIdx + i] = bytes[i];
+
+            //Save new value to game memory
+            mr.saveToMemory(bytes, memLoc.startAddress);
             Program.currGame.onReceiveFunctions(this, newValue, memLoc);
         }
 
-        //type 'm' - received when first joining the server, save the list to memory
         protected override void receiveMemoryList(byte[] data)
         {
+            //{ 255 } means this is a brand new server - no memory overwite
             if (!(data.Length == 1 && data[0] == 255))
             {
+                //Set any individual bits to what they were in the initial memory and overwrite memory
+                int byteListIndex = 0;
+                for (int locationListIndex = 0; locationListIndex < mr.memoryLocations.Count; locationListIndex++)
+                {
+                    MemoryLocation memLoc = mr.memoryLocations[locationListIndex];
+                    if (memLoc.individualBits > 0)
+                    {
+                        uint player = ReadWrite.bigToLittleEndian(lastReadMemory, byteListIndex, memLoc.size);
+                        uint overwrite = ReadWrite.bigToLittleEndian(data, byteListIndex, memLoc.size);
+
+                        //If item is fully individual after first receive, don't reset to idv if player hasn't received yet
+                        if (memLoc.individualBits != uint.MaxValue || (player != 255 && overwrite != 255))
+                        {
+                            uint newValue = (player & memLoc.individualBits) + (overwrite & ~memLoc.individualBits);
+                            byte[] bytes = ReadWrite.littleToBigEndian(newValue, memLoc.size);
+                            for (int i = 0; i < bytes.Length; i++)
+                                data[byteListIndex + i] = bytes[i];
+                        }
+                    }
+                    byteListIndex += memLoc.size;
+                }
+
+                lastReadMemory = data;
                 mr.saveToMemory(data);
             }
+            Program.currGame.onReceiveFunctions(this, 0, null);
             Begin();
         }
 
-        //type 'n' - displays the notification in the console
         protected override void receiveNotification(byte[] data)
         {
             Output.text(Encoding.UTF8.GetString(data), ConsoleColor.Green);
         }
 
-        //type 't' - displays the text message in the console
         protected override void receiveTextMessage(byte[] data)
         {
             Output.text(Encoding.UTF8.GetString(data), ConsoleColor.Blue);
         }
-        //type 'i' - sets the syncSettings and sends initial memory to server
         protected override void receiveIntroData(byte[] data)
         {
             string jsonObject = Encoding.UTF8.GetString(data);
@@ -273,6 +312,7 @@ namespace Windwaker_coop
             }
             else
             {
+                lastReadMemory = initialMemory;
                 sendMemoryList(initialMemory);
             }
         }

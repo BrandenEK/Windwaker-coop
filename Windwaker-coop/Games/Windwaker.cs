@@ -6,40 +6,68 @@ namespace Windwaker_coop
 {
     class Windwaker : Game
     {
-        public Windwaker() : base(0, "Windwaker", "dolphin", 0x7FFF0000, "GZLE01") { }
+        private byte[] lastCurrentStageData;
+        private byte lastCurrentStageId;
+
+        public Windwaker() : base(0, "Windwaker", "dolphin", 0x7FFF0000, "GZLE01", true) { }
 
         public override void beginningFunctions(Client client)
         {
-            updateCurrentStageInfo(client, true);
+            updateCurrentStageInfo(client, true, null);
         }
 
         public override void endingFunctions(Client client)
         {
-            updateCurrentStageInfo(client, false);
+            
         }
 
-        public override void onReceiveFunctions(Client client, uint newValue, MemoryLocation memLoc)
+        public override void onReceiveFunctions(Client client, uint newValue, MemoryLocation? memLoc)
         {
+            updateCurrentStageInfo(client, false, memLoc);
             //Check for an event that sets the time
         }
 
         //Takes the current stageInfo & copies it onto the corresponding unchanging stageInfo or vice versa
-        private void updateCurrentStageInfo(Client client, bool currentToStatic)
+        private void updateCurrentStageInfo(Client client, bool currentToStatic, MemoryLocation? memLoc)
         {
+            //Get current stage id & calculate addresses
             byte[] stageIdList = client.mr.readFromMemory((IntPtr)0x803B53A4, 1);
             if (stageIdList == null || stageIdList.Length < 1)
                 return;
-
             byte stageId = stageIdList[0];
-            Output.debug("Updating stageInfo " + stageId, 1);
-            uint from, to;
+            uint currentAdr = 0x803B5380;
+            uint staticAdr = 0x803B4F88 + (uint)stageId * 36;
 
-            if (currentToStatic) { from = 0x803B5380; to = 0x803B4F88 + (uint)stageId * 36; }
-            else { from = 0x803B4F88 + (uint)stageId * 36; to = 0x803B5380; }
+            if (currentToStatic)
+            {
+                byte[] currentStageData = client.mr.readFromMemory((IntPtr)currentAdr, 35);
+                if (currentStageData == null)
+                    return;
 
-            byte[] stageDataToCopy = client.mr.readFromMemory((IntPtr)from, 35);
-            if (stageDataToCopy != null)
-                client.mr.saveToMemory(stageDataToCopy, (IntPtr)to);
+                //Only update if you are in the same stage and the currentStageData has changed (lastCurrentStageData should never be null after receiveMemoryList)
+                if (client.compareToPreviousMemory(currentStageData, lastCurrentStageData, 0, 35) || lastCurrentStageId != stageId)
+                    return;
+
+                Output.debug("Copying current stage data to static stage data " + stageId, 1);
+                client.mr.saveToMemory(currentStageData, (IntPtr)staticAdr);
+                lastCurrentStageData = currentStageData;
+                lastCurrentStageId = stageId;
+            }
+            else
+            {
+                //Only update the current stageInfo if data received was of type dungeon
+                if (memLoc.HasValue && memLoc.Value.type != "dungeon")
+                    return;
+
+                Output.debug("Copying static stage data " + stageId + " to current stage data", 1);
+                byte[] staticStageData = client.mr.readFromMemory((IntPtr)staticAdr, 35);
+                if (staticStageData != null)
+                {
+                    client.mr.saveToMemory(staticStageData, (IntPtr)currentAdr);
+                    lastCurrentStageData = staticStageData;
+                    lastCurrentStageId = stageId;
+                }
+            }
         }
 
         public override void addMemoryLocations(List<MemoryLocation> memoryLocations)
@@ -77,10 +105,10 @@ namespace Windwaker_coop
 
                 if (true)
                 {
-                    memoryLocations.Add(new MemoryLocation(0x803B4C52, 1, "Bottle #1*2", "item", 3, 80, 255, 255, 255, empty));
-                    memoryLocations.Add(new MemoryLocation(0x803B4C53, 1, "Bottle #2*2", "item", 3, 80, 255, 255, 255, empty));
-                    memoryLocations.Add(new MemoryLocation(0x803B4C54, 1, "Bottle #3*2", "item", 3, 80, 255, 255, 255, empty));
-                    memoryLocations.Add(new MemoryLocation(0x803B4C55, 1, "Bottle #4*2", "item", 3, 80, 255, 255, 255, empty));
+                    memoryLocations.Add(new MemoryLocation(0x803B4C52, 1, "Bottle #1*2", "item", 3, 80, 255, 255, uint.MaxValue, empty));
+                    memoryLocations.Add(new MemoryLocation(0x803B4C53, 1, "Bottle #2*2", "item", 3, 80, 255, 255, uint.MaxValue, empty));
+                    memoryLocations.Add(new MemoryLocation(0x803B4C54, 1, "Bottle #3*2", "item", 3, 80, 255, 255, uint.MaxValue, empty));
+                    memoryLocations.Add(new MemoryLocation(0x803B4C55, 1, "Bottle #4*2", "item", 3, 80, 255, 255, uint.MaxValue, empty));
                 }
 
                 memoryLocations.Add(new MemoryLocation(0x803B4C56, 1, "Delivery Bag*0", "item", 1, 48, 255, 255, 0, empty));
