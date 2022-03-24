@@ -47,17 +47,17 @@ namespace Windwaker_coop
 
             //Set sync settings, create memory locations, and then start server
             Program.currGame.syncSettings = Program.currGame.GetSyncSettingsFromFile();
-            mr = new MemoryReader();
+            memoryLocations = Program.currGame.createMemoryLocations();
 
             Start();
         }
 
         private void compareHostAndPlayer(uint playerValue, uint previousValue, ushort memLocIdx)
         {
-            MemoryLocation memLoc = mr.memoryLocations[memLocIdx];
+            MemoryLocation memLoc = memoryLocations[memLocIdx];
 
             //Calculate hostValue from the savedList
-            int byteListIdx = mr.getByteIndexOfMemLocs(memLocIdx);
+            int byteListIdx = getByteIndexOfMemLocs(memLocIdx);
             uint hostValue = ReadWrite.bigToLittleEndian(hostdata, byteListIdx, memLoc.size);
 
             //Error conditions - not fatal, but unexpected

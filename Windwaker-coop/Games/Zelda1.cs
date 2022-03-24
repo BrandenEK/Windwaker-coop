@@ -10,8 +10,9 @@ namespace Windwaker_coop
 
         //Individual functions
 
-        public override void addMemoryLocations(List<MemoryLocation> memoryLocations)
+        public override List<MemoryLocation> createMemoryLocations()
         {
+            List<MemoryLocation> memoryLocations = new List<MemoryLocation>();
             ComparisonData empty = new ComparisonData();
 
             memoryLocations.Add(new MemoryLocation(0x59FE67, 1, "sword*0", "item", 0, 0, 3, 0, 0, new ComparisonData(new uint[] { 1, 2, 3 }, new string[] { "Wooden Sword*0", "White Sword*0", "Magical Sword*0" }, false)));
@@ -51,6 +52,8 @@ namespace Windwaker_coop
             memoryLocations.Add(new MemoryLocation(0x59FE86, 1, "Magical Shield*0", "item", 0, 0, 1, 0, 0, empty));
 
             memoryLocations.Add(new MemoryLocation(0x59FE8C, 1, "bomb bag*0", "item", 0, 8, 16, 8, 0, new ComparisonData(new uint[] { 12, 16 }, new string[] { "12 bomb maximum*1", "16 bomb maximum*1" }, false)));
+
+            return memoryLocations;
         }
 
         public override Cheat[] getCheats()

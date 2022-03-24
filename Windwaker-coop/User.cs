@@ -9,7 +9,8 @@ namespace Windwaker_coop
     {
         public string IpAddress;
         public int port;
-        public MemoryReader mr { get; protected set; }
+
+        protected List<MemoryLocation> memoryLocations;
 
         private Dictionary<byte, Action<byte[]>> receiveDataFunctions = new Dictionary<byte, Action<byte[]>>();
 
@@ -73,6 +74,14 @@ namespace Windwaker_coop
 
             Output.debug("Sending " + d.Count + " bytes", 1);
             return d.ToArray();
+        }
+
+        protected int getByteIndexOfMemLocs(int memLocIndex)
+        {
+            int byteListIdx = 0;
+            for (int i = 0; i < memLocIndex; i++)
+                byteListIdx += memoryLocations[i].size;
+            return byteListIdx;
         }
 
         //Send new data functions

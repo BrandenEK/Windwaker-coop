@@ -11,6 +11,7 @@ namespace Windwaker_coop
         public string playerName;
         private byte[] lastReadMemory;
         private Cheater cheater;
+        public MemoryReader mr;
 
         private SimpleTcpClient client;
 
@@ -56,16 +57,16 @@ namespace Windwaker_coop
                 int timeStart = Environment.TickCount;
                 Program.currGame.beginningFunctions(this);
 
-                byte[] memory = mr.readFromMemory();
+                byte[] memory = mr.readFromMemory(memoryLocations);
                 if (memory != null && lastReadMemory != null)
                 {
                     int byteListIndex = 0;
-                    for (int locationListIndex = 0; locationListIndex < mr.memoryLocations.Count; locationListIndex++)
+                    for (int locationListIndex = 0; locationListIndex < memoryLocations.Count; locationListIndex++)
                     {
                         //Loops through each memory location and compares its value to its previous value
                         //If different it sends it to the server for processing
 
-                        MemoryLocation memLoc = mr.memoryLocations[locationListIndex];
+                        MemoryLocation memLoc = memoryLocations[locationListIndex];
                         if (!compareToPreviousMemory(memory, lastReadMemory, byteListIndex, memLoc.size))
                         {
                             uint newValue = ReadWrite.bigToLittleEndian(memory, byteListIndex, memLoc.size);
@@ -237,7 +238,7 @@ namespace Windwaker_coop
             uint oldValue = BitConverter.ToUInt32(data, 2);
             uint newValue = BitConverter.ToUInt32(data, 6);
             byte writeType = data[10];
-            MemoryLocation memLoc = mr.memoryLocations[memLocIdx];
+            MemoryLocation memLoc = memoryLocations[memLocIdx];
 
             //Calculate the new value if some bits are individual
             if (memLoc.individualBits > 0 && memLoc.individualBits != uint.MaxValue)
@@ -247,7 +248,7 @@ namespace Windwaker_coop
             byte[] bytes = ReadWrite.littleToBigEndian(newValue, memLoc.size);
 
             //Save new value to lastReadMemory
-            int byteListIdx = mr.getByteIndexOfMemLocs(memLocIdx);
+            int byteListIdx = getByteIndexOfMemLocs(memLocIdx);
             for (int i = 0; i < bytes.Length; i++)
                 lastReadMemory[byteListIdx + i] = bytes[i];
 
@@ -263,9 +264,9 @@ namespace Windwaker_coop
             {
                 //Set any individual bits to what they were in the initial memory and overwrite memory
                 int byteListIndex = 0;
-                for (int locationListIndex = 0; locationListIndex < mr.memoryLocations.Count; locationListIndex++)
+                for (int locationListIndex = 0; locationListIndex < memoryLocations.Count; locationListIndex++)
                 {
-                    MemoryLocation memLoc = mr.memoryLocations[locationListIndex];
+                    MemoryLocation memLoc = memoryLocations[locationListIndex];
                     if (memLoc.individualBits > 0)
                     {
                         uint player = ReadWrite.bigToLittleEndian(lastReadMemory, byteListIndex, memLoc.size);
@@ -284,7 +285,7 @@ namespace Windwaker_coop
                 }
 
                 lastReadMemory = data;
-                mr.saveToMemory(data);
+                mr.saveToMemory(data, memoryLocations);
             }
             Program.currGame.onReceiveFunctions(this, 0, null);
             Begin();
@@ -304,8 +305,9 @@ namespace Windwaker_coop
             string jsonObject = Encoding.UTF8.GetString(data);
             Program.currGame.setSyncSettings(jsonObject);
 
+            memoryLocations = Program.currGame.createMemoryLocations();
             mr = new MemoryReader();
-            byte[] initialMemory = mr.readFromMemory();
+            byte[] initialMemory = mr.readFromMemory(memoryLocations);
             if (initialMemory == null)
             {
                 Program.EndProgram();

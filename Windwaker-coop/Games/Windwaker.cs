@@ -70,9 +70,10 @@ namespace Windwaker_coop
             }
         }
 
-        public override void addMemoryLocations(List<MemoryLocation> memoryLocations)
+        public override List<MemoryLocation> createMemoryLocations()
         {
             //Min & Max values are in decimal format
+            List<MemoryLocation> memoryLocations = new List<MemoryLocation>();
             ComparisonData empty = new ComparisonData();
 
             //Stat upgrades
@@ -293,6 +294,7 @@ namespace Windwaker_coop
                 //event notifications to add - raise TOTG, talk to quill on DRI?, Pirate ship password, totg statues might be wrong, rang TOTG bell
             }
 
+            return memoryLocations;
             //Bag items - id & number - might sync
         }
 
