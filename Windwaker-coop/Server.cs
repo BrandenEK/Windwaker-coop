@@ -188,7 +188,7 @@ namespace Windwaker_coop
                 case "help":
                     //Displays the available server commands
                     return "Available server commands:\nlist - lists all of the currently connected players\n" +
-                        "stats - displays the items the server currently has\nstop - ends syncing and closes the application\n" +
+                        "stop - ends syncing and closes the application\n" +
                         "kick [type] [Name or IpPort] - kicks the speciifed Name or IpPort from the game\n" +
                         "ban [Ip Address] - prevents the speciifed Ip Address from ever joining the server\n" +
                         "help - lists available commands";
@@ -203,10 +203,6 @@ namespace Windwaker_coop
                     if (clientIps.Count < 1)
                         text += "none\n";
                     return text.Substring(0, text.Length - 1);
-
-                case "stats":
-                    //command not implemented yet
-                    return "command not implemented yet";
 
                 case "kick":
                     //kicks the inputted player's ipPort or name from the server
