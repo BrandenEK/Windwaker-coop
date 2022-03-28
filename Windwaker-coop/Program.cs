@@ -38,40 +38,15 @@ namespace Windwaker_coop
                 EndProgram();
             }
 
-            //Find ipv4 address of machine
-            string strHostName = Dns.GetHostName();
-            Output.debug("Local Machine's Host Name: " + strHostName, 2);
-            IPAddress[] addr = Dns.GetHostEntry(strHostName).AddressList;
-            string ipv4 = "";
-            foreach (IPAddress ipAd in addr)
-            {
-                if (ipAd.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
-                {
-                    ipv4 = ipAd.ToString();
-                    break;
-                }
-            }
-
             //Gets the type - server or client
             string type = askQuestion("Is this instance a server or a client? (s/c): ").ToLower();
 
             if (type == "s" || type == "server")
             {
                 Console.Title = $"{currGame.gameName} Coop Server";
-                if (ipv4 != "")
-                    Output.text("\nUse this machine's ip address? (Enter 'x' to select it)\n" + ipv4);
 
-                //Gets the ip address
-                string ip = askQuestion("\nEnter ip address of this machine: ");
-                if (ip == "")
-                {
-                    Output.error("You need to enter an ip address");
-                    EndProgram();
-                }
-                if (ip == "x" && ipv4 != "")
-                {
-                    ip = ipv4;
-                }
+                //gets the ip address
+                string ip = askForIp("\nEnter ip address of this machine: ");
 
                 //Reset console
                 Output.clear();
@@ -83,23 +58,12 @@ namespace Windwaker_coop
             else if (type == "c" || type == "client")
             {
                 Console.Title = $"{currGame.gameName} Coop Client";
-                if (ipv4 != "")
-                    Output.text("\nUse this machine's ip address? (Enter 'x' to select it)\n" + ipv4);
 
                 //gets the ip address
-                string ip = askQuestion("\nEnter ip address of the server: ");
-                if (ip == "")
-                {
-                    Output.error("You need to enter an ip address");
-                    EndProgram();
-                }
-                if (ip == "x" && ipv4 != "")
-                {
-                    ip = ipv4;
-                }
+                string ip = askForIp("\nEnter ip address of the server: ");
 
                 //gets the player name
-                string playerName = askQuestion("\nEnter player name: ").Trim();
+                string playerName = askQuestion("\nEnter player name: ");
                 if (playerName.Length < 1 || playerName.Length > 20 || playerName.Contains('~') || playerName.Contains(' '))
                 {
                     Output.error("That player name is invalid - Must be between 1 and 20 characters and can not contain spaces or '~'");
@@ -122,6 +86,44 @@ namespace Windwaker_coop
             //Server/Client has begun operation - run the command loop
             commandLoop();
             EndProgram();
+        }
+
+        //Called in main to ask both server and client for ip
+        private static string askForIp(string message)
+        {
+            //Find ipv4 addresses of machine
+            string strHostName = Dns.GetHostName();
+            Output.debug("Local Machine's Host Name: " + strHostName, 2);
+            IPAddress[] addr = Dns.GetHostEntry(strHostName).AddressList;
+            List<string> possibleIps = new List<string>();
+            foreach (IPAddress ipAd in addr)
+            {
+                Output.debug(ipAd.ToString(), 2);
+                if (ipAd.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                {
+                    possibleIps.Add(ipAd.ToString());
+                }
+            }
+
+            //Display potential ips
+            if (possibleIps.Count > 0)
+            {
+                Output.text("\nUse IP address of this machine? (Enter id to select it)");
+                for (int i = 0; i < possibleIps.Count; i++)
+                    Output.text($"[{i}]: {possibleIps[i]}");
+            }
+            //Ask for ip address
+            string ip = askQuestion(message);
+            if (ip == "")
+            {
+                Output.error("You need to enter an ip address");
+                EndProgram();
+            }
+            //Check if it is one of the provided potential ones
+            byte ipId;
+            if (byte.TryParse(ip, out ipId) && ipId < possibleIps.Count)
+                return possibleIps[ipId];
+            return ip;
         }
 
         static void commandLoop()
@@ -168,7 +170,7 @@ namespace Windwaker_coop
         static string askQuestion(string question)
         {
             Output.text(question, ConsoleColor.White, false);
-            return Console.ReadLine();
+            return Console.ReadLine().Trim();
         }
 
         //~Reads from config.json and returns the config object
