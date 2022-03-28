@@ -8,7 +8,10 @@ namespace Windwaker_coop
     class Server : User
     {
         private SimpleTcpServer server;
-        public Dictionary<string, string> clientIps;
+
+        public Dictionary<string, string> clientIps; //ipPort
+        private List<string> bannedIps; //Just ip
+
         private byte[] hostdata;
         private string currIp = "";
 
@@ -39,20 +42,21 @@ namespace Windwaker_coop
             server.Events.ClientDisconnected += Events_ClientDisconnected;
             server.Events.DataReceived += Events_DataReceived;
             clientIps = new Dictionary<string, string>();
+            bannedIps = new List<string>();
 
             //Set sync settings, create memory locations, and then start server
             Program.currGame.syncSettings = Program.currGame.GetSyncSettingsFromFile();
-            mr = new MemoryReader();
+            memoryLocations = Program.currGame.createMemoryLocations();
 
             Start();
         }
 
         private void compareHostAndPlayer(uint playerValue, uint previousValue, ushort memLocIdx)
         {
-            MemoryLocation memLoc = mr.memoryLocations[memLocIdx];
+            MemoryLocation memLoc = memoryLocations[memLocIdx];
 
             //Calculate hostValue from the savedList
-            int byteListIdx = mr.getByteIndexOfMemLocs(memLocIdx);
+            int byteListIdx = getByteIndexOfMemLocs(memLocIdx);
             uint hostValue = ReadWrite.bigToLittleEndian(hostdata, byteListIdx, memLoc.size);
 
             //Error conditions - not fatal, but unexpected
@@ -183,8 +187,9 @@ namespace Windwaker_coop
                 case "help":
                     //Displays the available server commands
                     return "Available server commands:\nlist - lists all of the currently connected players\n" +
-                        "stats - displays the items the server currently has\n" +
-                        "kick [type] [Name or IpPort] - kicks the speciifed Name or IpPort from the game\nstop - ends syncing and closes the application\n" +
+                        "stop - ends syncing and closes the application\n" +
+                        "kick [type] [Name or IpPort] - kicks the speciifed Name or IpPort from the game\n" +
+                        "ban [Ip Address] - prevents the speciifed Ip Address from ever joining the server\n" +
                         "help - lists available commands";
 
                 case "list":
@@ -198,32 +203,25 @@ namespace Windwaker_coop
                         text += "none\n";
                     return text.Substring(0, text.Length - 1);
 
-                case "stats":
-                    //command not implemented yet
-                    return "command not implemented yet";
-
                 case "kick":
-                    //kicks the inputted player's ipPort or name from the game
+                    //kicks the inputted player's ipPort or name from the server
                     if (args.Length != 2)
                         return "Command 'kick' takes 2 arguments!";
 
                     if (args[0] == "name" || args[0] == "n")
                     {
-                        //Change to simple lookup once names are individualized
-                        int numFound = 0;
-                        string texts = "";
-                        foreach (string ip in clientIps.Keys)
+                        if (clientIps.ContainsValue(args[1]))
                         {
-                            if (clientIps[ip] == args[1])
+                            foreach (string ip in clientIps.Keys)
                             {
-                                kickPlayer(ip);
-                                texts += "Player '" + args[1] + "' has been kicked from the game!\n";
-                                numFound++;
+                                if (clientIps[ip] == args[1])
+                                {
+                                    kickPlayer(ip);
+                                    return "Player '" + args[1] + "' has been kicked from the game!\n";
+                                }
                             }
                         }
-                        if (numFound == 0)
-                            return "Player '" + args[1] + "' does not exist in the game!";
-                        return texts;
+                        return "Player '" + args[1] + "' does not exist in the game!";
                     }
                     else if (args[0] == "ip" || args[0] == "i")
                     {
@@ -237,8 +235,17 @@ namespace Windwaker_coop
                     return "Invalid type.  Must be either 'name' or 'ip'";
 
                 case "ban":
-                    //command not implemented yet
-                    return "command not implemented yet";
+                    //bans the inputted ipAddress from the server
+                    if (args.Length != 1)
+                        return "Command 'ban' takes 1 argument!";
+                    
+                    bannedIps.Add(args[0]);
+                    foreach (string ip in clientIps.Keys)
+                    {
+                        if (ip.Substring(0, ip.IndexOf(':')) == args[0])
+                            kickPlayer(ip);
+                    }
+                    return $"Ip Address '{args[0]}' has been banned from the server";
 
                 case "stop":
                     //Ends the program
@@ -364,10 +371,41 @@ namespace Windwaker_coop
             long timeDelta = DateTime.Now.Ticks - sendTime;
             Output.text("Byte[] received from " + currIp + " came with a delay of " + (timeDelta / 10000) + " milliseconds", ConsoleColor.Yellow);
         }
+
         protected override void receiveIntroData(byte[] data)
         {
+            //If the ip address is banned, disconnect them
+            string justIp = currIp.Substring(0, currIp.IndexOf(':'));
+            if (bannedIps.Contains(justIp))
+            {
+                Output.text("Banned player attempted to join the server");
+                sendNotification("You have been banned from the server!", false);
+                kickPlayer(currIp);
+                return;
+            }
+
+            //If there are too many players, disconnect them
+            if (clientIps.Count > Program.config.maxPlayers)
+            {
+                Output.text("Player attempted to join the server after it was full");
+                sendNotification("The server is full!", false);
+                kickPlayer(currIp);
+                return;
+            }
+
             string name = Encoding.UTF8.GetString(data);
+
+            //If a player already has that name, disconnect them
+            if (clientIps.ContainsValue(name))
+            {
+                Output.text("Player with a duplicate name attempted to join the server");
+                sendNotification($"The name '{name}' is already taken!", false);
+                kickPlayer(currIp);
+                return;
+            }
+
             clientIps[currIp] = name;
+            sendNotification(name + " has joined the game!", true);
             sendIntroData();
         }
         #endregion
@@ -376,7 +414,9 @@ namespace Windwaker_coop
         {
             Output.text("Client disconnected at " + e.IpPort);
             currIp = e.IpPort;
-            sendNotification(clientIps[currIp] + " has left the game!", true);
+
+            if (clientIps[currIp] != "unknown")
+                sendNotification(clientIps[currIp] + " has left the game!", true);
             clientIps.Remove(e.IpPort);
         }
 

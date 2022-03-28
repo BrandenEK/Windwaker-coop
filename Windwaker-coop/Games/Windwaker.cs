@@ -70,9 +70,10 @@ namespace Windwaker_coop
             }
         }
 
-        public override void addMemoryLocations(List<MemoryLocation> memoryLocations)
+        public override List<MemoryLocation> createMemoryLocations()
         {
             //Min & Max values are in decimal format
+            List<MemoryLocation> memoryLocations = new List<MemoryLocation>();
             ComparisonData empty = new ComparisonData();
 
             //Stat upgrades
@@ -103,14 +104,10 @@ namespace Windwaker_coop
                     new ComparisonData(new uint[] { 39, 53, 54 }, new string[] { "Hero's Bow*0", "Fire & Ice Arrows*0", "Light Arrows*0" }, false))); //Doesn't represent items accurately
                 memoryLocations.Add(new MemoryLocation(0x803B4C51, 1, "Bombs*2", "item", 1, 49, 255, 255, 0, empty));
 
-                if (true)
-                {
-                    memoryLocations.Add(new MemoryLocation(0x803B4C52, 1, "Bottle #1*2", "item", 3, 80, 255, 255, uint.MaxValue, empty));
-                    memoryLocations.Add(new MemoryLocation(0x803B4C53, 1, "Bottle #2*2", "item", 3, 80, 255, 255, uint.MaxValue, empty));
-                    memoryLocations.Add(new MemoryLocation(0x803B4C54, 1, "Bottle #3*2", "item", 3, 80, 255, 255, uint.MaxValue, empty));
-                    memoryLocations.Add(new MemoryLocation(0x803B4C55, 1, "Bottle #4*2", "item", 3, 80, 255, 255, uint.MaxValue, empty));
-                }
-
+                memoryLocations.Add(new MemoryLocation(0x803B4C52, 1, "Bottle #1*2", "item", 3, 80, 255, 255, uint.MaxValue, empty));
+                memoryLocations.Add(new MemoryLocation(0x803B4C53, 1, "Bottle #2*2", "item", 3, 80, 255, 255, uint.MaxValue, empty));
+                memoryLocations.Add(new MemoryLocation(0x803B4C54, 1, "Bottle #3*2", "item", 3, 80, 255, 255, uint.MaxValue, empty));
+                memoryLocations.Add(new MemoryLocation(0x803B4C55, 1, "Bottle #4*2", "item", 3, 80, 255, 255, uint.MaxValue, empty));
                 memoryLocations.Add(new MemoryLocation(0x803B4C56, 1, "Delivery Bag*0", "item", 1, 48, 255, 255, 0, empty));
                 memoryLocations.Add(new MemoryLocation(0x803B4C57, 1, "Hookshot*0", "item", 1, 47, 255, 255, 0, empty));
                 memoryLocations.Add(new MemoryLocation(0x803B4C58, 1, "Skull Hammer*0", "item", 1, 51, 255, 255, 0, empty));
@@ -218,6 +215,8 @@ namespace Windwaker_coop
                         new ComparisonData(new uint[] { 1, 0 }, new string[] { "visited sector " + sectorName + " for the first time*9", "mapped out sector " + sectorName + "*9" }, true)));
                 }
             }
+
+            //Charts
             if (syncSettings.getSetting("Charts"))
                 memoryLocations.Add(new MemoryLocation(0x803B4D4D, 1, "deciphered a new triforce chart*9", "chart", 9, 0, 255, 0, 0, new ComparisonData(new uint[] { 0, 1, 2, 3, 4, 5, 6, 7 },
                     new string[] { "Triforce Chart 1*4", "Triforce Chart 2*4", "Triforce Chart 3*4", "Triforce Chart 4*4", "Triforce Chart 5*4", "Triforce Chart 6*4", "Triforce Chart 7*4", "Triforce Chart 8*4" }, true))); //deciphered charts bitfield
@@ -293,6 +292,7 @@ namespace Windwaker_coop
                 //event notifications to add - raise TOTG, talk to quill on DRI?, Pirate ship password, totg statues might be wrong, rang TOTG bell
             }
 
+            return memoryLocations;
             //Bag items - id & number - might sync
         }
 

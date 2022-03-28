@@ -70,7 +70,7 @@ namespace Windwaker_coop
             return s;
         }
 
-        public abstract void addMemoryLocations(List<MemoryLocation> memoryLocations);
+        public abstract List<MemoryLocation> createMemoryLocations();
 
         public abstract Cheat[] getCheats();
 

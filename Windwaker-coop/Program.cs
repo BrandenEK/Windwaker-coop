@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
+using System.Net;
 
 namespace Windwaker_coop
 {
@@ -14,7 +15,6 @@ namespace Windwaker_coop
         private static Game[] games;
         public static Game currGame;
         public static Config config;
-        public static string tempIp = "172.16.16.75";
 
         static void Main(string[] args)
         {
@@ -45,15 +45,8 @@ namespace Windwaker_coop
             {
                 Console.Title = $"{currGame.gameName} Coop Server";
 
-                //Gets the ip address
-                string ip = askQuestion("Enter ip address of this machine: ");
-                if (ip == "")
-                {
-                    Output.error("You need to enter an ip address");
-                    EndProgram();
-                }
-                if (ip == "x")
-                    ip = tempIp;
+                //gets the ip address
+                string ip = askForIp("\nEnter ip address of this machine: ");
 
                 //Reset console
                 Output.clear();
@@ -67,17 +60,10 @@ namespace Windwaker_coop
                 Console.Title = $"{currGame.gameName} Coop Client";
 
                 //gets the ip address
-                string ip = askQuestion("Enter ip address of the server: ");
-                if (ip == "")
-                {
-                    Output.error("You need to enter an ip address");
-                    EndProgram();
-                }
-                if (ip == "x")
-                    ip = tempIp;
+                string ip = askForIp("\nEnter ip address of the server: ");
 
                 //gets the player name
-                string playerName = askQuestion("Enter player name: ").Trim();
+                string playerName = askQuestion("\nEnter player name: ");
                 if (playerName.Length < 1 || playerName.Length > 20 || playerName.Contains('~') || playerName.Contains(' '))
                 {
                     Output.error("That player name is invalid - Must be between 1 and 20 characters and can not contain spaces or '~'");
@@ -100,6 +86,44 @@ namespace Windwaker_coop
             //Server/Client has begun operation - run the command loop
             commandLoop();
             EndProgram();
+        }
+
+        //Called in main to ask both server and client for ip
+        private static string askForIp(string message)
+        {
+            //Find ipv4 addresses of machine
+            string strHostName = Dns.GetHostName();
+            Output.debug("Local Machine's Host Name: " + strHostName, 2);
+            IPAddress[] addr = Dns.GetHostEntry(strHostName).AddressList;
+            List<string> possibleIps = new List<string>();
+            foreach (IPAddress ipAd in addr)
+            {
+                Output.debug(ipAd.ToString(), 2);
+                if (ipAd.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                {
+                    possibleIps.Add(ipAd.ToString());
+                }
+            }
+
+            //Display potential ips
+            if (possibleIps.Count > 0)
+            {
+                Output.text("\nUse IP address of this machine? (Enter id to select it)");
+                for (int i = 0; i < possibleIps.Count; i++)
+                    Output.text($"[{i}]: {possibleIps[i]}");
+            }
+            //Ask for ip address
+            string ip = askQuestion(message);
+            if (ip == "")
+            {
+                Output.error("You need to enter an ip address");
+                EndProgram();
+            }
+            //Check if it is one of the provided potential ones
+            byte ipId;
+            if (byte.TryParse(ip, out ipId) && ipId < possibleIps.Count)
+                return possibleIps[ipId];
+            return ip;
         }
 
         static void commandLoop()
@@ -146,7 +170,7 @@ namespace Windwaker_coop
         static string askQuestion(string question)
         {
             Output.text(question, ConsoleColor.White, false);
-            return Console.ReadLine();
+            return Console.ReadLine().Trim();
         }
 
         //~Reads from config.json and returns the config object

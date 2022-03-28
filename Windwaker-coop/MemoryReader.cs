@@ -6,16 +6,7 @@ namespace Windwaker_coop
 {
     class MemoryReader
     {
-        public List<MemoryLocation> memoryLocations;
-
-        public MemoryReader()
-        {
-            memoryLocations = new List<MemoryLocation>();
-            Program.currGame.addMemoryLocations(memoryLocations);
-            //Change this to only fill up when syncSettings are received (client) or when syncSettings are read (server)
-        }
-
-        public byte[] readFromMemory()
+        public byte[] readFromMemory(List<MemoryLocation> memoryLocations)
         {
             if (!checkMemoryInitialized(1))
                 return null;
@@ -62,7 +53,7 @@ namespace Windwaker_coop
             return value;
         }
 
-        public void saveToMemory(byte[] saveData)
+        public void saveToMemory(byte[] saveData, List<MemoryLocation> memoryLocations)
         {
             //Writes each value in saveData to the player's game's memory
             if (!checkMemoryInitialized(1))
@@ -112,14 +103,6 @@ namespace Windwaker_coop
                 return false;
             }
             return true;
-        }
-
-        public int getByteIndexOfMemLocs(int memLocIndex)
-        {
-            int byteListIdx = 0;
-            for (int i = 0; i < memLocIndex; i++)
-                byteListIdx += memoryLocations[i].size;
-            return byteListIdx;
         }
     }
 }
