@@ -11,7 +11,6 @@ namespace Windwaker_coop
 
         public Dictionary<string, string> clientIps; //ipPort
         private List<string> bannedIps; //Just ip
-        private const int maxPlayers = 8;
 
         private byte[] hostdata;
         private string currIp = "";
@@ -386,7 +385,7 @@ namespace Windwaker_coop
             }
 
             //If there are too many players, disconnect them
-            if (clientIps.Count > maxPlayers)
+            if (clientIps.Count > Program.config.maxPlayers)
             {
                 Output.text("Player attempted to join the server after it was full");
                 sendNotification("The server is full!", false);
