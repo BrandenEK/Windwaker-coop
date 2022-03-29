@@ -21,9 +21,6 @@ https://trello.com/b/eBKLJlX5/windwaker-coop
 - You can change some of the settings by editing the "config.json" file.
 - Specifying a port is optional, simply add ":xxx" after the ip address.
 
-## How to set up Hamachi (To simulate a local network):
-1. Download & install Hamachi (https://www.vpn.net)
-
 ## Sync details:
 ### Things that do sync:
 - Capacity upgrades (Magic meter, quiver, etc)
@@ -49,5 +46,16 @@ https://trello.com/b/eBKLJlX5/windwaker-coop
 
 ### Things that will sync soon
 - Figurines
-- Delivery bag letters
+- Bag contents
 - Mail?
+
+## How to set up Hamachi (To simulate a local network):
+1. Download & install LogMeIn Hamachi (https://www.vpn.net)
+2. Open "Windows Defender Firewall with Advanced Security" (Easiest way is by searching for it in the search bar)
+![Windows Defender Firewall with Advanced Security](https://docs.microsoft.com/en-us/windows/security/threat-protection/windows-firewall/images/fw01-profiles.png)
+4. In the top left, click on "Inbound Rules" and create a new rule
+5. For "Rule Type", leave 'Program' selected
+6. For "Program", select the program path of the Hamachi exe file (Most likely: C:\Program Files (x86)\LogMeIn Hamachi\x64\hamachi-2.exe)
+7. For "Action" and "Profile", leave the default options selected
+8. For "Name", give it a name such as 'Windwaker Co-op'
+9. Now when Hamachi is powered on, you can create/join a network and play Windwaker Co-op without being on a local network
