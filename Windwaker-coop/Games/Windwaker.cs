@@ -29,7 +29,7 @@ namespace Windwaker_coop
 
         public override void onReceiveListFunctions(Client client, byte[] memory)
         {
-
+            updateStageInfo(client, false, "stage255"); //copy static to current regardless
         }
 
         //Takes the current stageInfo & copies it onto the corresponding unchanging stageInfo or vice versa
@@ -61,7 +61,7 @@ namespace Windwaker_coop
             else
             {
                 //Only update the current stageInfo if data received was the stageinfo that the player is currently in
-                if (type.IndexOf("stage") < 0 || type.Substring(5) != stageId.ToString())
+                if (type.IndexOf("stage") < 0 || (type.Substring(5) != stageId.ToString() && type.Substring(5) != "255"))
                     return;
 
                 Output.debug("Copying static stage data " + stageId + " to current stage data", 1);

@@ -260,7 +260,7 @@ namespace Windwaker_coop
         protected override void receiveMemoryList(byte[] data)
         {
             //{ 255 } means this is a brand new server - no memory overwite
-            if (!(data.Length == 1 && data[0] == 255))
+            if (data.Length > 1)
             {
                 //Set any individual bits to what they were in the initial memory and overwrite memory
                 int byteListIndex = 0;
@@ -286,8 +286,8 @@ namespace Windwaker_coop
 
                 lastReadMemory = data;
                 mr.saveToMemory(data, memoryLocations);
-                Program.currGame.onReceiveListFunctions(this, data);
             }
+            Program.currGame.onReceiveListFunctions(this, data); //Needs to be here to set initial lastCurrentData & lastStageId
             Begin();
         }
 
