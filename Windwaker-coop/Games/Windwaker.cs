@@ -13,7 +13,7 @@ namespace Windwaker_coop
 
         public override void beginningFunctions(Client client)
         {
-            updateCurrentStageInfo(client, true, null);
+            updateCurrentStageInfo(client, true, false);
         }
 
         public override void endingFunctions(Client client)
@@ -21,14 +21,14 @@ namespace Windwaker_coop
             
         }
 
-        public override void onReceiveFunctions(Client client, uint newValue, MemoryLocation? memLoc)
+        public override void onReceiveFunctions(Client client, uint newValue, MemoryLocation memLoc)
         {
-            updateCurrentStageInfo(client, false, memLoc);
+            updateCurrentStageInfo(client, false, memLoc.type == "dungeon");
             //Check for an event that sets the time
         }
 
         //Takes the current stageInfo & copies it onto the corresponding unchanging stageInfo or vice versa
-        private void updateCurrentStageInfo(Client client, bool currentToStatic, MemoryLocation? memLoc)
+        private void updateCurrentStageInfo(Client client, bool currentToStatic, bool isStageInfo)
         {
             //Get current stage id & calculate addresses
             byte[] stageIdList = client.mr.readFromMemory((IntPtr)0x803B53A4, 1);
@@ -55,8 +55,8 @@ namespace Windwaker_coop
             }
             else
             {
-                //Only update the current stageInfo if data received was of type dungeon
-                if (memLoc.HasValue && memLoc.Value.type != "dungeon")
+                //Only update the current stageInfo if data received was of type dungeon (Really any stage info)
+                if (!isStageInfo)
                     return;
 
                 Output.debug("Copying static stage data " + stageId + " to current stage data", 1);
