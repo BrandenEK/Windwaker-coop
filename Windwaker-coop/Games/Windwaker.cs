@@ -13,7 +13,7 @@ namespace Windwaker_coop
 
         public override void beginningFunctions(Client client)
         {
-            updateCurrentStageInfo(client, true, null);
+            updateCurrentStageInfo(client, true, "");
         }
 
         public override void endingFunctions(Client client)
@@ -21,14 +21,14 @@ namespace Windwaker_coop
             
         }
 
-        public override void onReceiveFunctions(Client client, uint newValue, MemoryLocation? memLoc)
+        public override void onReceiveFunctions(Client client, uint newValue, MemoryLocation memLoc)
         {
-            updateCurrentStageInfo(client, false, memLoc);
+            updateCurrentStageInfo(client, false, memLoc.type);
             //Check for an event that sets the time
         }
 
         //Takes the current stageInfo & copies it onto the corresponding unchanging stageInfo or vice versa
-        private void updateCurrentStageInfo(Client client, bool currentToStatic, MemoryLocation? memLoc)
+        private void updateCurrentStageInfo(Client client, bool currentToStatic, string type)
         {
             //Get current stage id & calculate addresses
             byte[] stageIdList = client.mr.readFromMemory((IntPtr)0x803B53A4, 1);
@@ -55,8 +55,8 @@ namespace Windwaker_coop
             }
             else
             {
-                //Only update the current stageInfo if data received was of type dungeon
-                if (memLoc.HasValue && memLoc.Value.type != "dungeon")
+                //Only update the current stageInfo if data received was the stageinfo that the player is currently in
+                if (type.IndexOf("stage") < 0 || type.Substring(5) != stageId.ToString())
                     return;
 
                 Output.debug("Copying static stage data " + stageId + " to current stage data", 1);
@@ -230,17 +230,17 @@ namespace Windwaker_coop
                 for (uint i = 0; i < 16; i++) //loops through each stage
                 {
                     uint stageOffset = 0x803B4F88 + i * 36;
-                    memoryLocations.Add(new MemoryLocation(stageOffset, 4, "opened a chest in " + stageNames[i] + "*9", "dungeon", 9, 0, uint.MaxValue, 0, 0, empty)); //chest open bitfield
+                    memoryLocations.Add(new MemoryLocation(stageOffset, 4, "opened a chest in " + stageNames[i] + "*9", "stage" + i, 9, 0, uint.MaxValue, 0, 0, empty)); //chest open bitfield
                     for (uint j = 0; j < 4; j++)
-                        memoryLocations.Add(new MemoryLocation(stageOffset + 4 + (4 * j), 4, "triggered an event in " + stageNames[i] + "*9", "dungeon", 9, 0, uint.MaxValue, 0, 0, empty)); //event flag bitfield
+                        memoryLocations.Add(new MemoryLocation(stageOffset + 4 + (4 * j), 4, "triggered an event in " + stageNames[i] + "*9", "stage" + i, 9, 0, uint.MaxValue, 0, 0, empty)); //event flag bitfield
 
-                    memoryLocations.Add(new MemoryLocation(stageOffset + 20, 4, "picked up an item in " + stageNames[i] + "*9", "dungeon", 9, 0, uint.MaxValue, 0, 0, empty)); //item pickup bitfield
-                    memoryLocations.Add(new MemoryLocation(stageOffset + 24, 4, "visited a new room in " + stageNames[i] + "*9", "dungeon", 9, 0, uint.MaxValue, 0, 0, empty)); //visited room bitfields
-                    memoryLocations.Add(new MemoryLocation(stageOffset + 28, 4, "visited a new room in " + stageNames[i] + "*9", "dungeon", 9, 0, uint.MaxValue, 0, 0, empty));
+                    memoryLocations.Add(new MemoryLocation(stageOffset + 20, 4, "picked up an item in " + stageNames[i] + "*9", "stage" + i, 9, 0, uint.MaxValue, 0, 0, empty)); //item pickup bitfield
+                    memoryLocations.Add(new MemoryLocation(stageOffset + 24, 4, "visited a new room in " + stageNames[i] + "*9", "stage" + i, 9, 0, uint.MaxValue, 0, 0, empty)); //visited room bitfields
+                    memoryLocations.Add(new MemoryLocation(stageOffset + 28, 4, "visited a new room in " + stageNames[i] + "*9", "stage" + i, 9, 0, uint.MaxValue, 0, 0, empty));
 
                     if (true)
-                        memoryLocations.Add(new MemoryLocation(stageOffset + 32, 1, "small key to " + stageNames[i] + "*1", "dungeon", 0, 0, 255, 0, 0, empty)); //number of small keys
-                    memoryLocations.Add(new MemoryLocation(stageOffset + 33, 1, "important*9", "dungeon", 9, 0, 255, 0, 0,
+                        memoryLocations.Add(new MemoryLocation(stageOffset + 32, 1, "small key to " + stageNames[i] + "*1", "stage" + i, 0, 0, 255, 0, 0, empty)); //number of small keys
+                    memoryLocations.Add(new MemoryLocation(stageOffset + 33, 1, "important*9", "stage" + i, 9, 0, 255, 0, 0,
                         new ComparisonData(new uint[] { 0, 1, 2, 3, 4 }, new string[] { "map to " + stageNames[i] + "*0", "compass to " + stageNames[i] + "*0", "big key to " + stageNames[i] + "*0",
                                 "defeated the boss of " + stageNames[i] + "*9", "heart container in " + stageNames[i] + "*0" }, true))); //important dungeon flags bitfield
                     memoryLocations.Add(new MemoryLocation(stageOffset + 34, 2, "changed a stageInfoBuffer - you should not see this!*9", "buffer", 0, 0, ushort.MaxValue, 0, 0, empty));
