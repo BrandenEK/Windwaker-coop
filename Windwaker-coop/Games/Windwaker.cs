@@ -217,7 +217,7 @@ namespace Windwaker_coop
                     string sectorName = "ABCDEFG".Substring((int)i / 7, 1) + (i % 7 + 1).ToString();
 
                     memoryLocations.Add(new MemoryLocation(0x803B4D0C + i, 1, "new sector*9", "sector", 9, 0, 3, def, 0,
-                        new ComparisonData(new uint[] { 1, 0 }, new string[] { "visited sector " + sectorName + " for the first time*9", "mapped out sector " + sectorName + "*9" }, true)));
+                        new ComparisonData(new uint[] { 1, 0 }, new string[] { $"visited sector {sectorName} for the first time*9", $"mapped out sector {sectorName}*9" }, true)));
                 }
             }
 
@@ -235,19 +235,21 @@ namespace Windwaker_coop
                 for (uint i = 0; i < 16; i++) //loops through each stage
                 {
                     uint stageOffset = 0x803B4F88 + i * 36;
-                    memoryLocations.Add(new MemoryLocation(stageOffset, 4, "opened a chest in " + stageNames[i] + "*9", "stage" + i, 9, 0, uint.MaxValue, 0, 0, empty)); //chest open bitfield
+                    memoryLocations.Add(new MemoryLocation(stageOffset, 4, $"opened a chest in {stageNames[i]}*9", "stage" + i, 9, 0, uint.MaxValue, 0, 0, empty)); //chest open bitfield
                     for (uint j = 0; j < 4; j++)
-                        memoryLocations.Add(new MemoryLocation(stageOffset + 4 + (4 * j), 4, "triggered an event in " + stageNames[i] + "*9", "stage" + i, 9, 0, uint.MaxValue, 0, 0, empty)); //event flag bitfield
+                        memoryLocations.Add(new MemoryLocation(stageOffset + 4 + (4 * j), 4, $"triggered an event in {stageNames[i]}*9", "stage" + i, 9, 0, uint.MaxValue, 0, 0, empty)); //event flag bitfield
 
-                    memoryLocations.Add(new MemoryLocation(stageOffset + 20, 4, "picked up an item in " + stageNames[i] + "*9", "stage" + i, 9, 0, uint.MaxValue, 0, 0, empty)); //item pickup bitfield
-                    memoryLocations.Add(new MemoryLocation(stageOffset + 24, 4, "visited a new room in " + stageNames[i] + "*9", "stage" + i, 9, 0, uint.MaxValue, 0, 0, empty)); //visited room bitfields
-                    memoryLocations.Add(new MemoryLocation(stageOffset + 28, 4, "visited a new room in " + stageNames[i] + "*9", "stage" + i, 9, 0, uint.MaxValue, 0, 0, empty));
+                    memoryLocations.Add(new MemoryLocation(stageOffset + 20, 4, $"picked up an item in {stageNames[i]}*9", "stage" + i, 9, 0, uint.MaxValue, 0, 0, empty)); //item pickup bitfield
+                    memoryLocations.Add(new MemoryLocation(stageOffset + 24, 4, $"visited a new room in {stageNames[i]}*9", "stage" + i, 9, 0, uint.MaxValue, 0, 0, empty)); //visited room bitfields
+                    memoryLocations.Add(new MemoryLocation(stageOffset + 28, 4, $"visited a new room in {stageNames[i]}*9", "stage" + i, 9, 0, uint.MaxValue, 0, 0, empty));
 
                     if (true)
-                        memoryLocations.Add(new MemoryLocation(stageOffset + 32, 1, "small key to " + stageNames[i] + "*1", "stage" + i, 0, 0, 255, 0, 0, empty)); //number of small keys
+                        memoryLocations.Add(new MemoryLocation(stageOffset + 32, 1, "", "stage" + i, 8, 0, 255, 0, 0, 
+                            new ComparisonData(new uint[] { 0, 1 }, new string[] { $"found a small key to {stageNames[i]}*9", $"used a small key to {stageNames[i]}*9" }, false))); //number of small keys
+
                     memoryLocations.Add(new MemoryLocation(stageOffset + 33, 1, "important*9", "stage" + i, 9, 0, 255, 0, 0,
-                        new ComparisonData(new uint[] { 0, 1, 2, 3, 4 }, new string[] { "map to " + stageNames[i] + "*0", "compass to " + stageNames[i] + "*0", "big key to " + stageNames[i] + "*0",
-                                "defeated the boss of " + stageNames[i] + "*9", "heart container in " + stageNames[i] + "*0" }, true))); //important dungeon flags bitfield
+                        new ComparisonData(new uint[] { 0, 1, 2, 3, 4 }, new string[] { $"map to {stageNames[i]}*0", $"compass to {stageNames[i]}*0", $"big key to {stageNames[i]}*0",
+                        $"defeated the boss of {stageNames[i]}*9", $"heart container in {stageNames[i]}*0" }, true))); //important dungeon flags bitfield
                     memoryLocations.Add(new MemoryLocation(stageOffset + 34, 2, "changed a stageInfoBuffer - you should not see this!*9", "buffer", 0, 0, ushort.MaxValue, 0, 0, empty));
                 }
 

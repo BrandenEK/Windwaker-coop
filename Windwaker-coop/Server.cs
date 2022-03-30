@@ -81,6 +81,8 @@ namespace Windwaker_coop
                     if (hostValue == 255 || playerValue > hostValue && playerValue != 255) overwriteMemory(); return;
                 case 3:
                     if (hostValue == 255) overwriteMemory(); return;
+                case 8:
+                    overwriteMemory(); return;
                 case 9:
                     if ((playerValue & (playerValue ^ hostValue)) > 0) overwriteMemory(); return;
                 default:
@@ -112,6 +114,13 @@ namespace Windwaker_coop
                         }
                     }
                     return;
+                }
+
+                //Locations with compareId 8 have two options - increased or decreased (0 or 1)
+                if (memLoc.compareId == 8)
+                {
+                    if (newValue > oldValue)  newValue = 0;
+                    else  newValue = 1;
                 }
 
                 if (memLoc.cd.values == null || memLoc.cd.text == null)
