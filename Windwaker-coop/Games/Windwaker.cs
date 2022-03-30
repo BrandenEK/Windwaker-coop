@@ -161,13 +161,14 @@ namespace Windwaker_coop
                 uint spoilBase = 0x803B4C7E;  uint snumBase = 0x803B4CA4;
                 uint baitBase = 0x803B4C86;  uint bnumBase = 0x803B4CAC;
                 uint deliveryBase = 0x803B4C8E;
+                string[] spoils = new string[] { "Skull Necklace", "Boko Baba Seed", "Golden Feather", "Knight's Crest", "Red Chu Jelly", "Green Chu Jelly", "Blue Chu Jelly", "Joy Pendant" };
 
                 for (uint i = 0; i < 8; i++)
                 {
                     memoryLocations.Add(new MemoryLocation(spoilBase + i, 1, "", "bag", 8, 0, 255, 255, 0, empty)); //Spoils Bag items
-                    memoryLocations.Add(new MemoryLocation(baitBase + i, 1, "", "bag", 8, 0, 255, 255, 0, empty)); //Bait Bag Items
-                    memoryLocations.Add(new MemoryLocation(deliveryBase + i, 1, "", "bag", 8, 0, 255, 255, 0, empty)); //Bait Bag Items
-                    memoryLocations.Add(new MemoryLocation(snumBase + i, 1, "", "bag", 8, 0, 99, 0, 0, empty)); //Spoils Bag counts
+                    memoryLocations.Add(new MemoryLocation(baitBase + i, 1, "", "bag", 8, 0, 255, 255, 0, new ComparisonData(new uint[] { 0x82, 0x83 }, new string[] { "bought All-Purpose Bait*9", "bought a Hyoi Pear*9" }, true))); //Bait Bag Items
+                    memoryLocations.Add(new MemoryLocation(deliveryBase + i, 1, "", "bag", 8, 0, 255, 255, 0, empty)); //Delivery Bag Items
+                    memoryLocations.Add(new MemoryLocation(snumBase + i, 1, "", "bag", 8, 0, 99, 0, 0, new ComparisonData(new uint[] { 0, 1 }, new string[] { $"found a {spoils[i]}*9", $"spent some {spoils[i]}s*9" }, false))); //Spoils Bag counts
                     memoryLocations.Add(new MemoryLocation(bnumBase + i, 1, "", "bag", 8, 0, 3, 0, 0, empty)); //Bait Bag counts
                 }
             }

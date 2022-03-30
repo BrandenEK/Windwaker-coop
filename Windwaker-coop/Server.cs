@@ -103,7 +103,7 @@ namespace Windwaker_coop
             //Determines whether or not to send a notification & calculates what it should be
             void calculateNotification(uint newValue, uint oldValue, MemoryLocation memLoc)
             {
-                if (memLoc.cd.bitfield)
+                if (memLoc.compareId == 9 && memLoc.cd.bitfield)
                 {
                     //checks each bit and only sends notification if the player just set it
                     for (int i = 0; i < memLoc.cd.values.Length; i++)
@@ -116,8 +116,8 @@ namespace Windwaker_coop
                     return;
                 }
 
-                //Locations with compareId 8 have two options - increased or decreased (0 or 1)
-                if (memLoc.compareId == 8)
+                //If compareId 8 item only needs to know increased / decreased (0 or 1)
+                if (memLoc.compareId == 8 && !memLoc.cd.bitfield)
                 {
                     if (newValue > oldValue)  newValue = 0;
                     else  newValue = 1;
