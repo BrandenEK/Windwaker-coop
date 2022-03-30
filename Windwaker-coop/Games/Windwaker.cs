@@ -155,6 +155,23 @@ namespace Windwaker_coop
                     new ComparisonData(new uint[] { 30, 60, 99 }, new string[] { "small bomb bag*1", "medium bomb bag*1", "large bomb bag*1" }, false)));
             }
 
+            //Bag Contents
+            if (syncSettings.getSetting("Bag Contents"))
+            {
+                uint spoilBase = 0x803B4C7E;  uint snumBase = 0x803B4CA4;
+                uint baitBase = 0x803B4C86;  uint bnumBase = 0x803B4CAC;
+                uint deliveryBase = 0x803B4C8E;
+
+                for (uint i = 0; i < 8; i++)
+                {
+                    memoryLocations.Add(new MemoryLocation(spoilBase + i, 1, "", "bag", 8, 0, 255, 255, 0, empty)); //Spoils Bag items
+                    memoryLocations.Add(new MemoryLocation(baitBase + i, 1, "", "bag", 8, 0, 255, 255, 0, empty)); //Bait Bag Items
+                    memoryLocations.Add(new MemoryLocation(deliveryBase + i, 1, "", "bag", 8, 0, 255, 255, 0, empty)); //Bait Bag Items
+                    memoryLocations.Add(new MemoryLocation(snumBase + i, 1, "", "bag", 8, 0, 99, 0, 0, empty)); //Spoils Bag counts
+                    memoryLocations.Add(new MemoryLocation(bnumBase + i, 1, "", "bag", 8, 0, 3, 0, 0, empty)); //Bait Bag counts
+                }
+            }
+
             //More equipment items
             if (syncSettings.getSetting("Equipment Items"))
             {
@@ -227,7 +244,7 @@ namespace Windwaker_coop
                     new string[] { "Triforce Chart 1*4", "Triforce Chart 2*4", "Triforce Chart 3*4", "Triforce Chart 4*4", "Triforce Chart 5*4", "Triforce Chart 6*4", "Triforce Chart 7*4", "Triforce Chart 8*4" }, true))); //deciphered charts bitfield
 
             //Stage infos
-            if (syncSettings.getSetting("Stage Info"))
+            if (syncSettings.getSetting("Stage Infos"))
             {
                 string[] stageNames = new string[] { "the Great Sea", "the Great Sea (alt)", "the Forsaken Fortress", "Dragon Roost Cavern", "the Forbidden Woods", "the Tower of the Gods", "the Earth Temple", "the Wind Temple",
                         "Ganon's Tower", "Flooded Hyrule", "a ship", "a house/misc", "a cave", "a cave/ship", "killing a blue chu chu", "a test map" };
@@ -243,7 +260,7 @@ namespace Windwaker_coop
                     memoryLocations.Add(new MemoryLocation(stageOffset + 24, 4, $"visited a new room in {stageNames[i]}*9", "stage" + i, 9, 0, uint.MaxValue, 0, 0, empty)); //visited room bitfields
                     memoryLocations.Add(new MemoryLocation(stageOffset + 28, 4, $"visited a new room in {stageNames[i]}*9", "stage" + i, 9, 0, uint.MaxValue, 0, 0, empty));
 
-                    if (true)
+                    if (syncSettings.getSetting("Small Keys"))
                         memoryLocations.Add(new MemoryLocation(stageOffset + 32, 1, "", "stage" + i, 8, 0, 255, 0, 0, 
                             new ComparisonData(new uint[] { 0, 1 }, new string[] { $"found a small key to {stageNames[i]}*9", $"used a small key to {stageNames[i]}*9" }, false))); //number of small keys
 
@@ -371,8 +388,8 @@ namespace Windwaker_coop
 
         public override SyncSettings getDefaultSyncSettings()
         {
-            return new SyncSettings(new string[] { "Inventory Items", "Equipment Items", "Story Items", "Player Stats", "Capacity Upgrades",
-                "Charts", "Sea Map", "Stage Info", "Events" }, new bool[] { true, true, true, true, true, true, true, true, true });
+            return new SyncSettings(new string[] { "Inventory Items", "Equipment Items", "Story Items", "Player Stats", "Capacity Upgrades", "Bag Contents",
+                "Charts", "Sea Map", "Stage Infos", "Small Keys", "Events" }, new bool[] { true, true, true, true, true, true, true, true, true, true, true });
         }
     }
 }
