@@ -67,7 +67,7 @@ namespace Windwaker_coop
             }
             if (playerValue > memLoc.higherValue || playerValue < memLoc.lowerValue)
             {
-                Output.debug($"The value at 0x{memLoc.startAddress.ToInt64().ToString("X")} is not inside of an acceptable range ({playerValue}). It was not synced to the host.", 2);
+                Output.debug($"The value at 0x{memLoc.startAddress.ToString("X")} is not inside of an acceptable range ({playerValue}). It was not synced to the host.", 2);
                 return;
             }
 
@@ -108,7 +108,7 @@ namespace Windwaker_coop
                     //checks each bit and only sends notification if the player just set it
                     for (int i = 0; i < memLoc.cd.values.Length; i++)
                     {
-                        if (ReadWrite.bitSet(newValue, memLoc.cd.values[i]) && !ReadWrite.bitSet(oldValue, memLoc.cd.values[i]))
+                        if (ReadWrite.bitSet(newValue, (byte)memLoc.cd.values[i]) && !ReadWrite.bitSet(oldValue, (byte)memLoc.cd.values[i]))
                         {
                             processNotification(memLoc.cd.text[i]);
                         }

@@ -31,30 +31,30 @@ namespace Windwaker_coop
         [DllImport("kernel32.dll")]
         static extern bool ReadProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] lpBuffer, int nSize, out int lpNumberOfBytesWritten);
 
-        public static void Write(int playerNumber, IntPtr address, byte[] bytes)
+        public static void Write(int playerNumber, uint address, byte[] bytes)
         {
             if (!getGameProcess(playerNumber))
                 return;
             int bytesWritten = 0;
 
-            WriteProcessMemory(gameProcess, address, bytes, bytes.Length, out bytesWritten);
+            WriteProcessMemory(gameProcess, (IntPtr)address, bytes, bytes.Length, out bytesWritten);
         }
 
-        public static byte[] Read(int playerNumber, IntPtr address, int size)
+        public static byte[] Read(int playerNumber, uint address, int size)
         {
             if (!getGameProcess(playerNumber))
                 return null;
             int bytesWritten = 0;
             byte[] result = new byte[size];
 
-            ReadProcessMemory(gameProcess, address, result, size, out bytesWritten);
+            ReadProcessMemory(gameProcess, (IntPtr)address, result, size, out bytesWritten);
             return result;
         }
 
         //Checks if a given bit in the number is set
-        public static bool bitSet(uint number, uint bit)
+        public static bool bitSet(uint number, byte bit)
         {
-            return (number & (1 << (int)bit)) != 0;
+            return (number & (1 << bit)) != 0;
         }
 
         public static uint gameToAppNumber(byte[] number)

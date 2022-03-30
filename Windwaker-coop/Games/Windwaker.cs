@@ -8,8 +8,18 @@ namespace Windwaker_coop
     {
         private byte[] lastCurrentStageData;
         private byte lastCurrentStageId;
+        private TimeFlag[] timeFlags;
 
-        public Windwaker() : base(0, "Windwaker", "dolphin", 0x7FFF0000, "GZLE01", true) { }
+        public Windwaker() : base(0, "Windwaker", "dolphin", 0x7FFF0000, "GZLE01", true)
+        {
+            timeFlags = new TimeFlag[]
+            {
+                new TimeFlag(0x803B5234, 27, 300),  //Open Spoils Bag chest
+                new TimeFlag(0x803B5238, 7, 225),   //Wake up on Windfall
+                new TimeFlag(0x803B5248, 15, 0)     //Talked to Quill on Greatfish
+                //Arrive at Hyrule Field (180), FF2
+            };
+        }
 
         public override void beginningFunctions(Client client)
         {
@@ -21,10 +31,10 @@ namespace Windwaker_coop
             
         }
 
-        public override void onReceiveLocationFunctions(Client client, uint newValue, MemoryLocation memLoc)
+        public override void onReceiveLocationFunctions(Client client, uint newValue, uint oldValue, MemoryLocation memLoc)
         {
             updateStageInfo(client, false, memLoc.type);
-            //Check for an event that sets the time
+            checkForNewTime(client, newValue, oldValue, memLoc);
         }
 
         public override void onReceiveListFunctions(Client client, byte[] memory)
@@ -36,7 +46,7 @@ namespace Windwaker_coop
         private void updateStageInfo(Client client, bool currentToStatic, string type)
         {
             //Get current stage id & calculate addresses
-            byte[] stageIdList = client.mr.readFromMemory((IntPtr)0x803B53A4, 1);
+            byte[] stageIdList = client.mr.readFromMemory(0x803B53A4, 1);
             if (stageIdList == null || stageIdList.Length < 1)
                 return;
             byte stageId = stageIdList[0];
@@ -45,7 +55,7 @@ namespace Windwaker_coop
 
             if (currentToStatic)
             {
-                byte[] currentStageData = client.mr.readFromMemory((IntPtr)currentAdr, 35);
+                byte[] currentStageData = client.mr.readFromMemory(currentAdr, 35);
                 if (currentStageData == null)
                     return;
 
@@ -54,7 +64,7 @@ namespace Windwaker_coop
                     return;
 
                 Output.debug("Copying current stage data to static stage data " + stageId, 1);
-                client.mr.saveToMemory(currentStageData, (IntPtr)staticAdr);
+                client.mr.saveToMemory(currentStageData, staticAdr);
                 lastCurrentStageData = currentStageData;
                 lastCurrentStageId = stageId;
             }
@@ -65,12 +75,34 @@ namespace Windwaker_coop
                     return;
 
                 Output.debug("Copying static stage data " + stageId + " to current stage data", 1);
-                byte[] staticStageData = client.mr.readFromMemory((IntPtr)staticAdr, 35);
+                byte[] staticStageData = client.mr.readFromMemory(staticAdr, 35);
                 if (staticStageData != null)
                 {
-                    client.mr.saveToMemory(staticStageData, (IntPtr)currentAdr);
+                    client.mr.saveToMemory(staticStageData, currentAdr);
                     lastCurrentStageData = staticStageData;
                     lastCurrentStageId = stageId;
+                }
+            }
+        }
+
+        //Checks if this memloc has an associated time flag, and sets a new time if the event was just triggered
+        private void checkForNewTime(Client client, uint newValue, uint oldValue, MemoryLocation memLoc)
+        {
+            if (memLoc.type.IndexOf("time") < 0)
+                return;
+
+            foreach (TimeFlag t in timeFlags)
+            {
+                if (t.address == memLoc.startAddress)
+                {
+                    //This memory location has an event that sets the time
+                    if (!ReadWrite.bitSet(newValue, t.bit) || ReadWrite.bitSet(oldValue, t.bit))
+                        return;
+
+                    Output.debug("Setting new time to " + t.newTime, 1);
+                    byte[] timeBytes = BitConverter.GetBytes(t.newTime);
+                    Array.Reverse(timeBytes);
+                    client.mr.saveToMemory(timeBytes, 0x803B4C2C);
                 }
             }
         }

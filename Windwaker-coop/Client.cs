@@ -254,7 +254,7 @@ namespace Windwaker_coop
 
             //Save new value to game memory
             mr.saveToMemory(bytes, memLoc.startAddress);
-            Program.currGame.onReceiveLocationFunctions(this, newValue, memLoc);
+            Program.currGame.onReceiveLocationFunctions(this, newValue, oldValue, memLoc);
         }
 
         protected override void receiveMemoryList(byte[] data)

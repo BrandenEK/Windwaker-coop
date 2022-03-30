@@ -12,7 +12,7 @@ namespace Windwaker_coop
                 return null;
 
             List<byte> memoryList = new List<byte>();
-            IntPtr sequenceStart = memoryLocations[0].startAddress;
+            uint sequenceStart = memoryLocations[0].startAddress;
             int sequenceLength = 0;
 
             for (int i = 0; i < memoryLocations.Count; i++)
@@ -39,7 +39,7 @@ namespace Windwaker_coop
             return memoryList.ToArray();
         }
 
-        public byte[] readFromMemory(IntPtr customStartAddress, int customSize)
+        public byte[] readFromMemory(uint customStartAddress, int customSize)
         {
             if (!checkMemoryInitialized(1))
                 return null;
@@ -61,7 +61,7 @@ namespace Windwaker_coop
 
             List<byte> data = new List<byte>(saveData);
             int byteListIndex = 0;
-            IntPtr sequenceStart = memoryLocations[0].startAddress;
+            uint sequenceStart = memoryLocations[0].startAddress;
             int sequenceStartIndex = 0;
 
             for (int i = 0; i < memoryLocations.Count; i++)
@@ -82,7 +82,7 @@ namespace Windwaker_coop
             }
         }
 
-        public void saveToMemory(byte[] saveData, IntPtr customStartAddress)
+        public void saveToMemory(byte[] saveData, uint customStartAddress)
         {
             //Writes each value in saveData to the player's game's memory
             if (!checkMemoryInitialized(1))
@@ -92,7 +92,7 @@ namespace Windwaker_coop
 
         private bool checkMemoryInitialized(int playerNumber)
         {
-            byte[] identityValue = ReadWrite.Read(playerNumber, (IntPtr)Program.currGame.identityAddress, Program.currGame.identityText.Length);
+            byte[] identityValue = ReadWrite.Read(playerNumber, Program.currGame.identityAddress, Program.currGame.identityText.Length);
             if (identityValue == null)
                 return false;
 

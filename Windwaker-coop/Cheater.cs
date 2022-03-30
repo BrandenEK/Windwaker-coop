@@ -59,7 +59,7 @@ namespace Windwaker_coop
                     }
 
                     foundItem = true;
-                    client.mr.saveToMemory(new byte[] { toWrite }, (IntPtr)cheat.address);
+                    client.mr.saveToMemory(new byte[] { toWrite }, cheat.address);
                 }
             }
             if (foundItem)

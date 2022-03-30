@@ -4,7 +4,7 @@ namespace Windwaker_coop
 {
     struct MemoryLocation
     {
-        public IntPtr startAddress;
+        public uint startAddress;
         public int size;
         public string name;
         public string type;
@@ -19,7 +19,7 @@ namespace Windwaker_coop
 
         public MemoryLocation(uint startAddress, int size, string name, string type, int compareId, uint low, uint high, byte defaultValue, uint indvBits, ComparisonData cd)
         {
-            this.startAddress = (IntPtr)startAddress;
+            this.startAddress = startAddress;
             this.size = size;
             this.name = name;
             this.type = type;
@@ -48,12 +48,11 @@ namespace Windwaker_coop
 
     struct TimeFlag
     {
-        public IntPtr address;
+        public uint address;
         public byte bit;
         public float newTime;
-        //If newtime == -1, then this will actually endTimeZone
 
-        public TimeFlag(IntPtr address, byte bit, float newTime)
+        public TimeFlag(uint address, byte bit, float newTime)
         {
             this.address = address;
             this.bit = bit;
