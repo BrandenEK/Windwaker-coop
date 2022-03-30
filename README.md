@@ -11,7 +11,7 @@ https://trello.com/b/eBKLJlX5/windwaker-coop
 ## Requirements:
 - Dolphin 5.0 Stable Build (https://dolphin-emu.org/download)
 - Microsoft .NET Core 3.1 (https://dotnet.microsoft.com/en-us/download/dotnet/3.1)
-- Each computer running the game and the application must be on the same local network or using Hamachi
+- Each client application must be on the same local network as the server application or be using Hamachi
 
 ## Things to note:
 - You must be using Dolphin 5.0 (Other versions may possibly work, but they changed how memory is initialized after 5.0 and I haven't tested them).
