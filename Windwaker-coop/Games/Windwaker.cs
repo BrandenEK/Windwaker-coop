@@ -13,7 +13,7 @@ namespace Windwaker_coop
 
         public override void beginningFunctions(Client client)
         {
-            updateCurrentStageInfo(client, true, "");
+            updateStageInfo(client, true, "");
         }
 
         public override void endingFunctions(Client client)
@@ -21,14 +21,19 @@ namespace Windwaker_coop
             
         }
 
-        public override void onReceiveFunctions(Client client, uint newValue, MemoryLocation memLoc)
+        public override void onReceiveLocationFunctions(Client client, uint newValue, MemoryLocation memLoc)
         {
-            updateCurrentStageInfo(client, false, memLoc.type);
+            updateStageInfo(client, false, memLoc.type);
             //Check for an event that sets the time
         }
 
+        public override void onReceiveListFunctions(Client client, byte[] memory)
+        {
+
+        }
+
         //Takes the current stageInfo & copies it onto the corresponding unchanging stageInfo or vice versa
-        private void updateCurrentStageInfo(Client client, bool currentToStatic, string type)
+        private void updateStageInfo(Client client, bool currentToStatic, string type)
         {
             //Get current stage id & calculate addresses
             byte[] stageIdList = client.mr.readFromMemory((IntPtr)0x803B53A4, 1);

@@ -36,9 +36,14 @@ namespace Windwaker_coop
             //Called at end of the sync loop
         }
 
-        public virtual void onReceiveFunctions(Client client, uint newValue, MemoryLocation memLoc)
+        public virtual void onReceiveLocationFunctions(Client client, uint newValue, MemoryLocation memLoc)
         {
             //Called when client receives a new memory location
+        }
+
+        public virtual void onReceiveListFunctions(Client client, byte[] memory)
+        {
+            //Called when client receives the memory override when joining server
         }
 
         public void setSyncSettings(string jsonObject)
