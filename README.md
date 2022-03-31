@@ -50,6 +50,7 @@ https://trello.com/b/eBKLJlX5/windwaker-coop
 - Mail?
 
 ## How to set up Hamachi (To simulate a local network):
+If Hamachi doesn't work immediately, you may need to set up an inbound rule through your firewall
 1. Download & install LogMeIn Hamachi (https://www.vpn.net)
 2. Open "Windows Defender Firewall with Advanced Security" (Easiest way is by searching for it in the search bar)
 ![Windows Defender Firewall with Advanced Security](https://docs.microsoft.com/en-us/windows/security/threat-protection/windows-firewall/images/fw01-profiles.png)
