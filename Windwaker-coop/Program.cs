@@ -29,6 +29,7 @@ namespace Windwaker_coop
             {
                 Console.Title = $"{currGame.gameName} Memory Watcher";
                 Output.text("Beginning in memory watcher mode!");
+                programSyncing = true;
                 Watcher watcher = new Watcher();
                 watcher.beginWatching(config.syncDelay);
 
