@@ -22,8 +22,13 @@ namespace Windwaker_coop
         private void createArrays()
         {
             //Windwaker event bitfields
-            addressStarts = new uint[] { 0x803B522C };
-            addressLengths = new int[] { 64 };
+            //addressStarts = new uint[] { 0x803B522C };
+            //addressLengths = new int[] { 64 };
+
+            // OOS Unknown bitfields
+            uint baseAddr = 0x03540600;
+            addressStarts = new uint[] { baseAddr + 0x40, baseAddr + 0x9A, baseAddr + 0xB1, baseAddr + 0xB4, baseAddr + 0xC0, baseAddr + 0x16 };
+            addressLengths = new int[] { 0x35, 0x10, 0x01, 0x02, 0x10, 0x08 };
 
             int totalLength = 0;
             for (int i = 0; i < addressStarts.Length; i++)

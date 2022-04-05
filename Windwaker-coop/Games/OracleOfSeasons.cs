@@ -10,17 +10,17 @@ namespace Windwaker_coop
 
         public override List<MemoryLocation> createMemoryLocations()
         {
-            throw new NotImplementedException();
+            return null;
         }
 
         public override Cheat[] getCheats()
         {
-            throw new NotImplementedException();
+            return null;
         }
 
         public override SyncSettings getDefaultSyncSettings()
         {
-            throw new NotImplementedException();
+            return new SyncSettings();
         }
     }
 }
