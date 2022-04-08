@@ -25,10 +25,18 @@ namespace Windwaker_coop
             //addressStarts = new uint[] { 0x803B522C };
             //addressLengths = new int[] { 64 };
 
-            // OOS Unknown bitfields
-            uint baseAddr = 0x03540600;
-            addressStarts = new uint[] { baseAddr + 0x40, baseAddr + 0x9A, baseAddr + 0xB1, baseAddr + 0xB4, baseAddr + 0xC0, baseAddr + 0x16 };
-            addressLengths = new int[] { 0x33, 0x10, 0x01, 0x02, 0x10, 0x08 };
+            // OOS Unknowns
+            uint baseAddr = 0x07030600;
+            addressStarts = new uint[] { 0x00, 0x07, 0x29, 0x3F, 0x5E, 0x92, 0xBB, 0xC9 };
+            addressLengths = new int[] { 2, 15, 21, 13, 34, 16, 3, 55 };
+            for (int i = 0; i < addressStarts.Length; i++)
+                addressStarts[i] += baseAddr;
+
+
+            // OOA Unknown bitfields
+            //uint baseAddr = 0x03800600;
+            //addressStarts = new uint[] { baseAddr + 0x61, baseAddr + 0x9A, baseAddr + 0xB1, baseAddr + 0xB4, baseAddr + 0xC0, baseAddr + 0x16 };
+            //addressLengths = new int[] { 0x11, 0x10, 0x01, 0x02, 0x10, 0x08 };
 
             int totalLength = 0;
             for (int i = 0; i < addressStarts.Length; i++)
@@ -66,7 +74,7 @@ namespace Windwaker_coop
                         //Compare each byte to its previous value
                         if (memory[i] != previousValues[i])
                         {
-                            Output.text($"Address: 0x{getAddressFromIdx(i).ToString("X")} has changed from {previousValues[i]} to {memory[i]}", ConsoleColor.Green);
+                            Output.text($"Address: 0x{getAddressFromIdx(i).ToString("X")} has changed from 0x{previousValues[i].ToString("X")} to 0x{memory[i].ToString("X")}", ConsoleColor.Green);
                         }
                     }
                 }
