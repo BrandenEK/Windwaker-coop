@@ -10,7 +10,7 @@ namespace Windwaker_coop
         private byte lastCurrentStageId;
         private TimeFlag[] timeFlags;
 
-        public Windwaker() : base(0, "Windwaker", "dolphin", 0x7FFF0000, "GZLE01", true)
+        public Windwaker() : base(0, "Windwaker", "dolphin", new uint[] { 0x803B0000 }, 0x7FFF0000, "GZLE01", true)
         {
             timeFlags = new TimeFlag[]
             {

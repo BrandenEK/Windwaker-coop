@@ -47,7 +47,7 @@ Inventory Items:
 682 (10) - Item on each slot of the inventory screen
 
 ============================================================
-Item bitfields:
+Item Bitfields:
 ============================================================
 
 692 (1) - Inventory bitfield 1
@@ -238,9 +238,28 @@ C68 (1) - Total rings appraised
 04: Darknut (Spring)
 08: Lynel (Winter)
 
+???
+
+============================================================
+Dungeon Data:
+============================================================
+
+900 - ???
+
+Each room is one byte
+01: Opened upper door
+02: Opened right door
+04: Opened lower door
+08: Opened left door
+10: Entered room
+20: Opened chest / Obtained item
+40: 
+80: Triggered event
+
+
+
 
 Extra stuff:
-
 
 ============================================================
 Dungeon Ids:

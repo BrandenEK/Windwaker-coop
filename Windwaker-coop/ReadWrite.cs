@@ -8,6 +8,7 @@ namespace Windwaker_coop
     static class ReadWrite
     {
         static IntPtr gameProcess = IntPtr.Zero;
+        static uint baseAddress;
 
         //Returns whether the game is running or not and sets the processHandle accordingly
         public static bool getGameProcess(int playerNumber)
@@ -16,6 +17,8 @@ namespace Windwaker_coop
             if (processes.Length > playerNumber - 1)
             {
                 gameProcess = processes[playerNumber - 1].Handle;
+                if (baseAddress == 0)
+                    getBaseAddress(Program.currGame.baseAddressOffsets);
                 return true;
             }
             else
@@ -24,6 +27,11 @@ namespace Windwaker_coop
                 gameProcess = IntPtr.Zero;
                 return false;
             }
+        }
+
+        private static void getBaseAddress(uint[] offsets)
+        {
+
         }
 
         [DllImport("kernel32.dll")]
@@ -37,7 +45,7 @@ namespace Windwaker_coop
                 return;
             int bytesWritten = 0;
 
-            WriteProcessMemory(gameProcess, (IntPtr)address, bytes, bytes.Length, out bytesWritten);
+            WriteProcessMemory(gameProcess, (IntPtr)(baseAddress + address), bytes, bytes.Length, out bytesWritten);
         }
 
         public static byte[] Read(int playerNumber, uint address, int size)
@@ -47,7 +55,7 @@ namespace Windwaker_coop
             int bytesWritten = 0;
             byte[] result = new byte[size];
 
-            ReadProcessMemory(gameProcess, (IntPtr)address, result, size, out bytesWritten);
+            ReadProcessMemory(gameProcess, (IntPtr)(baseAddress + address), result, size, out bytesWritten);
             return result;
         }
 
