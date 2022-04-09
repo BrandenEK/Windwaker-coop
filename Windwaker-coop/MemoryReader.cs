@@ -92,7 +92,7 @@ namespace Windwaker_coop
 
         private bool checkMemoryInitialized(int playerNumber)
         {
-            return true;
+            return true; //temporary until every game as an identity address
 
             byte[] identityValue = ReadWrite.Read(playerNumber, Program.currGame.identityAddress, Program.currGame.identityText.Length);
             if (identityValue == null)

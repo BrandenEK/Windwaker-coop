@@ -8,7 +8,7 @@ namespace Windwaker_coop
     static class ReadWrite
     {
         static IntPtr gameProcess = IntPtr.Zero;
-        static uint baseAddress;
+        static uint baseAddress = uint.MaxValue;
 
         //Returns whether the game is running or not and sets the processHandle accordingly
         public static bool getGameProcess(int playerNumber)
@@ -17,7 +17,7 @@ namespace Windwaker_coop
             if (processes.Length > playerNumber - 1)
             {
                 gameProcess = processes[playerNumber - 1].Handle;
-                if (baseAddress == 0)
+                if (baseAddress == uint.MaxValue)
                     getBaseAddress(Program.currGame.baseAddressOffsets);
                 return true;
             }
@@ -29,9 +29,32 @@ namespace Windwaker_coop
             }
         }
 
+        //Reads the games pointer path to find base address - only called once at beginning of sync
         private static void getBaseAddress(uint[] offsets)
         {
+            if (offsets.Length == 1)
+            {
+                baseAddress = offsets[0];
+                Output.debug("Base address: 0x" + baseAddress.ToString("X"), 1);
+                return;
+            }
 
+            baseAddress = 0;
+            uint currAddress = 0;
+
+            for (int i = 0; i < offsets.Length; i++)
+            {
+                byte[] temp = Read(1, currAddress + offsets[i], 4);
+                if (temp == null)
+                {
+                    Output.error("Could not calculate base address");
+                    baseAddress = uint.MaxValue;
+                    return;
+                }
+                currAddress = BitConverter.ToUInt32(temp, 0);
+            }
+            baseAddress = currAddress;
+            Output.debug("Base address: 0x" + baseAddress.ToString("X"), 1);
         }
 
         [DllImport("kernel32.dll")]
@@ -52,6 +75,7 @@ namespace Windwaker_coop
         {
             if (!getGameProcess(playerNumber))
                 return null;
+
             int bytesWritten = 0;
             byte[] result = new byte[size];
 
