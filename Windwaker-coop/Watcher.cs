@@ -26,12 +26,8 @@ namespace Windwaker_coop
             //addressLengths = new int[] { 64 };
 
             // OOS Unknowns
-            uint baseAddr = 0x032E0600;
-            addressStarts = new uint[] { 0x00, 0x07, 0x0E, 0x2A, 0x31, 0x3F, 0x5E, 0x92, 0xBD, 0xCA, 0x100 };
-            addressLengths = new int[] { 2, 2, 8, 1, 7, 13, 4, 16, 1, 54, 256 };
-            for (int i = 0; i < addressStarts.Length; i++)
-                addressStarts[i] += baseAddr;
-
+            addressStarts = new uint[] { 0x5B0, 0x600, 0x610, 0x62A, 0x631, 0x63F, 0x65E, 0x692, 0x6BD, 0x6CA, 0x700 };
+            addressLengths = new int[] { 16, 2, 6, 1, 9, 9, 4, 16, 1, 54, 0x400 };
 
             // OOA Unknown bitfields
             //uint baseAddr = 0x03800600;

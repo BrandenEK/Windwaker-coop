@@ -7,7 +7,21 @@ Oracle of Seasons Ram Map:
 Beginning:
 ============================================================
 
+5B0 (2) - Checksum (Still not sure how it works)
+
+5B2 - 5BF - ???
+
+5C0 (40) - List of unappraised rings
+
+600 (2) - ???
+
 602 (5) - Player name
+607 (1) - 0
+608 (1) - 1
+
+609 (5) - Kid's name
+60E (1) - 0
+60F (1) - ??
 
 ???
 
@@ -17,14 +31,90 @@ Beginning:
 622 (4) - ???
 626 (1) - Number of signs broken
 627 (2) - Total rupees collected
+629 (1) - Text speed
+
+62A (1) - ???
+
+============================================================
+Screen Data:
+============================================================
+
+62B (1) - Spawn stage
+62C (1) - Spawn screen index
+62D (1) - Spawn season
+62E (1) - Spawn direction
+62F (1) - Spawn row
+630 (1) - Spawn column
 
 ???
+
+63A (1) - Current stage
+63B (1) - Current screen index
+63C (1) - Current screen on dungeon map
+63D (1) _ Current floor on dungeon map
+
+============================================================
+World Data:
+============================================================
 
 63E (1) - Enemies killed since Maple meeting
 
+63F (1) - Basement shop
+01: Bought Seed Satchel
+02: Bought Gasha Seed 300
+04: Bought Gasha Seed 500
+08: Bought Treasure Map
+10:
+20:
+40:
+80: Played chest game
+
+640 (1) - Village shop
 ???
 
-64C (10) - Enemies killed since each gasha tree nut
+641 (1) - Maple quest
+???
+
+642 (1) - Subrosia market
+01: Traded ore for ribbon
+02: Bought piece of heart
+04: Bought big bomb bag
+08: 
+10: Bought ring 1
+20: Bought ring 2
+40:
+80:
+
+643 (1) - Ricky quest
+???
+
+644 (1) - Dimitri quest
+01: Talked to kid 1
+02: Talked to kid 2
+04: Talked to kid 3
+08: Gave them bombs
+10: Kids ran off
+20: Caused kids to appear
+40: Revisited kids
+80: Hopped on Dimitri
+
+645 (1) - Moosh quest
+???
+
+646 (1) - Animal hints
+01: Ricky - Jumped over hole
+02: Ricky - Jumped over cliff
+04: Dimitri - Threw him
+08: Dimitri - Swam up waterfall
+10: Moosh - Floated over hole
+20: Moosh - Pounded ground
+40:
+80:
+
+???
+
+64A (2) - Planted gasha seeds
+64C (10) - Enemies killed since planting each gasha seed
 
 ???
 
@@ -240,23 +330,33 @@ C68 (1) - Total rings appraised
 
 ???
 
+6E1 (1) - Jewels bitfield
+01: Placed Round Jewel
+02: Placed Pyramid Jewel
+04: Placed Square Jewel
+08: Placed X-shaped Jewel
+
 ============================================================
-Dungeon Data:
+Stage Infos:
 ============================================================
 
-900 - ???
+700 (100) - Overworld data
+800 (100) - Subrosia & Houses data
+900 (100) - Dungeons data
+A00 (100) - Caves data
 
-Each room is one byte
+
+
+
+Each tile is one byte
 01: Opened upper door
 02: Opened right door
 04: Opened lower door
 08: Opened left door
-10: Entered room
+10: Entered screen
 20: Opened chest / Obtained item
 40: 
 80: Triggered event
-
-
 
 
 Extra stuff:
@@ -266,7 +366,7 @@ Dungeon Ids:
 ============================================================
 
 Low
-01: ?
+01: Hero's Cave (Unlinked)
 02: Gnarled Root Dungeon
 04: Snake's Remains
 08: Poison Moth's Lair
@@ -279,7 +379,7 @@ High
 01: Sword and Shield Dungeon
 02: Onox's Castle
 04: Room of Rites
-08: Hero's Cave
+08: Hero's Cave (Linked)
 10: X
 20: X
 40: X
