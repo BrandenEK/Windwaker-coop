@@ -8,7 +8,8 @@ namespace Windwaker_coop
     static class ReadWrite
     {
         static IntPtr gameProcess = IntPtr.Zero;
-        static uint baseAddress = uint.MaxValue;
+        static uint baseAddress = 0;
+        static bool calculatingBaseAddress = false;
 
         //Returns whether the game is running or not and sets the processHandle accordingly
         public static bool getGameProcess(int playerNumber)
@@ -17,8 +18,11 @@ namespace Windwaker_coop
             if (processes.Length > playerNumber - 1)
             {
                 gameProcess = processes[playerNumber - 1].Handle;
-                if (baseAddress == uint.MaxValue)
+                if (baseAddress == 0 && !calculatingBaseAddress)
+                {
+                    Output.debug("Calculating base address...", 1);
                     getBaseAddress(Program.currGame.baseAddressOffsets);
+                }
                 return true;
             }
             else
@@ -41,6 +45,7 @@ namespace Windwaker_coop
 
             baseAddress = 0;
             uint currAddress = 0;
+            calculatingBaseAddress = true;
 
             for (int i = 0; i < offsets.Length; i++)
             {
@@ -48,12 +53,14 @@ namespace Windwaker_coop
                 if (temp == null)
                 {
                     Output.error("Could not calculate base address");
-                    baseAddress = uint.MaxValue;
+                    baseAddress = 0;
                     return;
                 }
                 currAddress = BitConverter.ToUInt32(temp, 0);
             }
+
             baseAddress = currAddress;
+            calculatingBaseAddress = false;
             Output.debug("Base address: 0x" + baseAddress.ToString("X"), 1);
         }
 
