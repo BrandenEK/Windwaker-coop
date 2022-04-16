@@ -21,18 +21,34 @@ namespace Windwaker_coop
 
         private void createArrays()
         {
-            //Windwaker event bitfields
-            //addressStarts = new uint[] { 0x803B522C };
-            //addressLengths = new int[] { 64 };
+            switch (Program.currGame.gameId)
+            {
+                case 0:
+                    //Windwaker event bitfields
+                    addressStarts = new uint[] { 0x803B522C };
+                    addressLengths = new int[] { 64 };
+                    break;
+                case 1:
 
-            // OOS Unknowns
-            addressStarts = new uint[] { 0x5B0, 0x600, 0x610, 0x62A, 0x631, 0x63F, 0x65E, 0x692, 0x6BD, 0x6CA, 0x700 };
-            addressLengths = new int[] { 16, 2, 6, 1, 9, 9, 4, 16, 1, 54, 0x400 };
+                    break;
+                case 2:
 
-            // OOA Unknown bitfields
-            //uint baseAddr = 0x03800600;
-            //addressStarts = new uint[] { baseAddr + 0x61, baseAddr + 0x9A, baseAddr + 0xB1, baseAddr + 0xB4, baseAddr + 0xC0, baseAddr + 0x16 };
-            //addressLengths = new int[] { 0x11, 0x10, 0x01, 0x02, 0x10, 0x08 };
+                    break;
+                case 3:
+                    // OOS Unknowns
+                    addressStarts = new uint[] { 0x5B0, 0x600, 0x62A, 0x631, 0x63F, 0x65E, 0x692, 0x6BD, 0x6CA, 0x700 };
+                    addressLengths = new int[] { 16, 0x16, 1, 9, 11, 4, 16, 1, 54, 0x400 };
+                    break;
+                case 4:
+                    // OOA Unknown bitfields
+                    addressStarts = new uint[] { 0x5B0, 0x600, 0x642, 0x69A, 0x6C1, 0x6CF, 0x6F0, 0x700 };
+                    addressLengths = new int[] { 0x010, 0x016, 0x00D, 0x010, 0x002, 0x01D, 0x010, 0x400 };
+                    break;
+                default:
+                    addressStarts = new uint[0];
+                    addressLengths = new int[0];
+                    break;
+            }
 
             int totalLength = 0;
             for (int i = 0; i < addressStarts.Length; i++)

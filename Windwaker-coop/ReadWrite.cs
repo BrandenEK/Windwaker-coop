@@ -33,7 +33,7 @@ namespace Windwaker_coop
             }
         }
 
-        //Reads the games pointer path to find base address - only called once at beginning of sync
+        //Reads the games pointer path to find base address - called whenever base address is invalid
         private static void getBaseAddress(uint[] offsets)
         {
             if (offsets.Length == 1)
