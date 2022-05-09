@@ -206,7 +206,8 @@ namespace Windwaker_coop
                 new Windwaker(),
                 new OcarinaOfTime(),
                 new Zelda1(),
-                new OracleOfSeasons()
+                new OracleOfSeasons(),
+                new OracleOfAges()
             };
             Output.debug("Loading " + games.Length + " games", 1);
             return games;

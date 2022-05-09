@@ -41,8 +41,8 @@ namespace Windwaker_coop
                     break;
                 case 4:
                     // OOA Unknown bitfields
-                    addressStarts = new uint[] { 0x5B0, 0x600, 0x642, 0x69A, 0x6C1, 0x6CF, 0x6F0, 0x700 };
-                    addressLengths = new int[] { 0x010, 0x016, 0x00D, 0x010, 0x002, 0x01D, 0x010, 0x400 };
+                    addressStarts = new uint[] { 0x5B0, 0x600, 0x642, 0x662, 0x69A, 0x6C1, 0x6CF, 0x6F0, /*0x700*/ };
+                    addressLengths = new int[] { 0x010, 0x016, 0x00B, 0x010, 0x010, 0x002, 0x01D, 0x010, /*0x400*/ };
                     break;
                 default:
                     addressStarts = new uint[0];
