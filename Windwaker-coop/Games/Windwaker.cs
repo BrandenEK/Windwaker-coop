@@ -101,9 +101,8 @@ namespace Windwaker_coop
 
             foreach (TimeFlag t in timeFlags)
             {
-                if (t.address == memLoc.startAddress)
+                if (t.address == memLoc.startAddress) //This memory location has an event that sets the time
                 {
-                    //This memory location has an event that sets the time
                     if (!ReadWrite.bitSet(newValue, t.bit) || ReadWrite.bitSet(oldValue, t.bit))
                         return;
 
@@ -111,6 +110,7 @@ namespace Windwaker_coop
                     byte[] timeBytes = BitConverter.GetBytes(t.newTime);
                     Array.Reverse(timeBytes);
                     client.mr.saveToMemory(timeBytes, 0x4C2C);
+                    return;
                 }
             }
         }
