@@ -74,30 +74,37 @@ namespace Windwaker_coop
             switch (memLoc.compareId)
             {
                 case 0:
-                    if (playerValue > hostValue) overwriteMemory(); return;
+                    overwriteMemory(playerValue > hostValue); return;
                 case 1:
-                    if (playerValue < hostValue) overwriteMemory(); return;
+                    overwriteMemory(playerValue < hostValue); return;
                 case 2:
-                    if (hostValue == 255 || playerValue > hostValue && playerValue != 255) overwriteMemory(); return;
+                    overwriteMemory(hostValue == 255 || playerValue > hostValue && playerValue != 255); return;
                 case 3:
-                    if (hostValue == 255) overwriteMemory(); return;
+                    overwriteMemory(hostValue == 255); return;
                 case 8:
-                    overwriteMemory(); return;
+                    overwriteMemory(true); return;
                 case 9:
-                    if ((playerValue & (playerValue ^ hostValue)) > 0) overwriteMemory(); return;
+                    overwriteMemory((playerValue & (playerValue ^ hostValue)) > 0); return;
                 default:
                     Output.error("Invalid compareId"); return;
             }
 
-            void overwriteMemory()
+            void overwriteMemory(bool playerHasHigherValue)
             {
-                //Write new value to host data
-                byte[] bytes = ReadWrite.littleToBigEndian(playerValue, memLoc.size);
-                for (int i = 0; i < bytes.Length; i++)
-                    hostdata[byteListIdx + i] = bytes[i];
+                if (playerHasHigherValue)
+                {
+                    byte[] bytes = ReadWrite.littleToBigEndian(playerValue, memLoc.size); //Write new value to host data
+                    for (int i = 0; i < bytes.Length; i++)
+                        hostdata[byteListIdx + i] = bytes[i];
 
-                sendNewMemoryLocation(0, memLocIdx, previousValue, playerValue, true); //change writeType to be in data
-                calculateNotification(playerValue, hostValue, memLoc);
+                    sendNewMemoryLocation(0, memLocIdx, previousValue, playerValue, true); //Send new value to everyone else
+                    calculateNotification(playerValue, hostValue, memLoc);
+                }
+                else
+                {
+                    sendNewMemoryLocation(0, memLocIdx, playerValue, hostValue, false); //Send host value back to player
+                    sendNotification("Received missing data from address 0x" + memLoc.startAddress.ToString("X"), false);
+                }
             }
 
             //Determines whether or not to send a notification & calculates what it should be
