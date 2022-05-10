@@ -114,9 +114,14 @@ namespace Windwaker_coop
             runInWatcherMode = wm;
         }
 
+        public bool isValidConfig()
+        {
+            return debugLevel >= 0 && syncDelay > 0 && defaultPort >= 0 && maxPlayers > 0 && playerNumber > 0 && gameId >= 0;
+        }
+
         public static Config getDefaultConfig()
         {
-            return new Config(0, 2500, 25565, 8, 1, 0, true, false);
+            return new Config(0, 2000, 25565, 8, 1, 0, true, false);
         }
     }
 

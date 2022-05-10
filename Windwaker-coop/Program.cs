@@ -21,10 +21,18 @@ namespace Windwaker_coop
         {
             Console.Title = "The Legend of Zelda Coop Server/Client";
             Output.text("-The Legend of Zelda Coop-\n", ConsoleColor.Green);
-            config = readConfigFile();
 
+            //Process config file
+            config = readConfigFile();
+            if (!config.isValidConfig())
+            {
+                Output.error("Invalid configuration file - Fix the errors or delete the config.json file");
+                EndProgram();
+            }
+
+            //Load games
             games = loadGames();
-            if (config.gameId < 0 || config.gameId >= games.Length)
+            if (config.gameId >= games.Length)
             {
                 Output.error("Invalid game id");
                 EndProgram();
