@@ -93,6 +93,8 @@ namespace Windwaker_coop
         public int defaultPort;
         //Maximum number of players allowed in a server [8]
         public int maxPlayers;
+        //For multiple people playing on the same device, this differentiates them
+        public int playerNumber;
         //The id of the game to load.  0: WW, 1: OOT, 2: Z1 [0]
         public int gameId;
         //Whether or not cheats should be allowed using the 'give' command [true]
@@ -100,12 +102,13 @@ namespace Windwaker_coop
         //Watcher Mode is for memory testing [false]
         public bool runInWatcherMode;
 
-        public Config(int dl, int sd, int dp, int mp, int gi, bool ec, bool wm)
+        public Config(int dl, int sd, int dp, int mp, int pn, int gi, bool ec, bool wm)
         {
             debugLevel = dl;
             syncDelay = sd;
             defaultPort = dp;
             maxPlayers = mp;
+            playerNumber = pn;
             gameId = gi;
             enableCheats = ec;
             runInWatcherMode = wm;
@@ -113,7 +116,7 @@ namespace Windwaker_coop
 
         public static Config getDefaultConfig()
         {
-            return new Config(0, 2500, 25565, 8, 0, true, false);
+            return new Config(0, 2500, 25565, 8, 1, 0, true, false);
         }
     }
 
