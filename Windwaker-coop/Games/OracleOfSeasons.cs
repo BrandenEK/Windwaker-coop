@@ -4,11 +4,37 @@ using System.Text;
 
 namespace Windwaker_coop
 {
-    class OracleOfSeasons : Game
+    class OracleOfSeasons : IGame
     {
-        public OracleOfSeasons() : base(3, "Oracle of Seasons", "mGBA", new uint[] { 0x0217E208, 0x38, 0x10, 0x08, 0x90 }, 0, "idk", false) { }
+        public int gameId { get { return 3; } }
+        public string gameName { get { return "Oracle of Seasons"; } }
+        public string processName { get { return "mGBA"; } }
+        public uint[] baseAddressOffsets { get { return new uint[] { 0x0217E208, 0x38, 0x10, 0x08, 0x90 }; } }
+        public uint identityAddress { get { return 0; } }
+        public string identityText { get { return "idk"; } }
+        public bool bigEndian { get { return false; } }
 
-        public override List<MemoryLocation> createMemoryLocations()
+        public void beginningFunctions(Client client)
+        {
+
+        }
+
+        public void endingFunctions(Client client)
+        {
+
+        }
+
+        public void onReceiveListFunctions(Client client, byte[] memory)
+        {
+
+        }
+
+        public void onReceiveLocationFunctions(Client client, uint newValue, uint oldValue, MemoryLocation memLoc)
+        {
+
+        }
+
+        public List<MemoryLocation> createMemoryLocations()
         {
             List<MemoryLocation> memoryLocations = new List<MemoryLocation>();
             ComparisonData empty = new ComparisonData();
@@ -78,12 +104,12 @@ namespace Windwaker_coop
             return memoryLocations;
         }
 
-        public override Cheat[] getCheats()
+        public Cheat[] getCheats()
         {
             return null;
         }
 
-        public override SyncSettings getDefaultSyncSettings()
+        public SyncSettings getDefaultSyncSettings()
         {
             return new SyncSettings();
         }

@@ -4,13 +4,38 @@ using System.Text;
 
 namespace Windwaker_coop
 {
-    class OcarinaOfTime : Game
+    class OcarinaOfTime : IGame
     {
-        public OcarinaOfTime() : base(1, "Ocarina of Time", "project64", new uint[] { 0xDFF50000 }, 0x7B263D84, "THE LEGEND OF ZELDA", true) { }
+        public int gameId { get { return 1; } }
+        public string gameName { get { return "Ocarine of Time"; } }
+        public string processName { get { return "project64"; } }
+        public uint[] baseAddressOffsets { get { return new uint[] { 0xDFF50000 }; } }
+        public uint identityAddress { get { return 0x7B263D84; } }
+        public string identityText { get { return "THE LEGEND OF ZELDA"; } }
+        public bool bigEndian { get { return true; } }
 
-        //Individual functions
+        public void beginningFunctions(Client client)
+        {
+            
+        }
 
-        public override List<MemoryLocation> createMemoryLocations()
+        public void endingFunctions(Client client)
+        {
+            
+        }
+
+        public void onReceiveListFunctions(Client client, byte[] memory)
+        {
+            
+        }
+
+        public void onReceiveLocationFunctions(Client client, uint newValue, uint oldValue, MemoryLocation memLoc)
+        {
+            
+        }
+
+
+        public List<MemoryLocation> createMemoryLocations()
         {
             List<MemoryLocation> memoryLocations = new List<MemoryLocation>();
             ComparisonData empty = new ComparisonData();
@@ -94,7 +119,7 @@ namespace Windwaker_coop
             return memoryLocations;
         }
 
-        public override Cheat[] getCheats()
+        public Cheat[] getCheats()
         {
             return new Cheat[]
             {
@@ -102,7 +127,7 @@ namespace Windwaker_coop
             };
         }
 
-        public override SyncSettings getDefaultSyncSettings()
+        public SyncSettings getDefaultSyncSettings()
         {
             return new SyncSettings();
         }

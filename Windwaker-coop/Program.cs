@@ -12,9 +12,10 @@ namespace Windwaker_coop
 
         private static User currUser;
 
-        private static Game[] games;
-        public static Game currGame;
+        private static IGame[] games;
+        public static IGame currGame;
         public static Config config;
+        public static SyncSettings syncSettings;
 
         static void Main(string[] args)
         {
@@ -199,9 +200,54 @@ namespace Windwaker_coop
             return c;
         }
 
-        private static Game[] loadGames()
+        //Reads the syncSettings from json file
+        public static SyncSettings GetSyncSettingsFromFile()
         {
-            Game[] games = new Game[]
+            string path = Environment.CurrentDirectory + "/syncSettings.json";
+            SyncSettings s;
+
+            if (File.Exists(path))
+            {
+                string syncString = File.ReadAllText(path);
+                s = JsonConvert.DeserializeObject<SyncSettings>(syncString);
+            }
+            else
+            {
+                s = currGame.getDefaultSyncSettings();
+                File.WriteAllText(path, JsonConvert.SerializeObject(s, Formatting.Indented));
+            }
+            return s;
+        }
+
+        /*public static T readFile<T>(string fileName) where T : IDefaultable
+        {
+            string path = Environment.CurrentDirectory + "/" + fileName;
+            T obj;
+
+            if (File.Exists(path))
+            {
+                string str = File.ReadAllText(path);
+                obj = JsonConvert.DeserializeObject<T>(str);
+            }
+            else
+            {
+                obj = default(T);
+            }
+            return obj;
+        }*/
+
+        public static string toJson<T>(T obj)
+        {
+            return JsonConvert.SerializeObject(obj);
+        }
+        public static T fromJson<T>(string str)
+        {
+            return JsonConvert.DeserializeObject<T>(str);
+        }
+
+        private static IGame[] loadGames()
+        {
+            IGame[] games = new IGame[]
             {
                 new Windwaker(),
                 new OcarinaOfTime(),

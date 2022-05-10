@@ -303,7 +303,7 @@ namespace Windwaker_coop
         protected override void receiveIntroData(byte[] data)
         {
             string jsonObject = Encoding.UTF8.GetString(data);
-            Program.currGame.setSyncSettings(jsonObject);
+            Program.syncSettings = Program.fromJson<SyncSettings>(jsonObject);
 
             memoryLocations = Program.currGame.createMemoryLocations();
             mr = new MemoryReader();

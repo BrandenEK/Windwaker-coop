@@ -4,13 +4,21 @@ using System.Text;
 
 namespace Windwaker_coop
 {
-    class Windwaker : Game
+    class Windwaker : IGame
     {
+        public int gameId { get { return 0; } }
+        public string gameName { get { return "Windwaker"; } }
+        public string processName { get { return "dolphin"; } }
+        public uint[] baseAddressOffsets { get { return new uint[] { 0x803B0000 }; } }
+        public uint identityAddress { get { return 0x7FFF0000; } }
+        public string identityText { get { return "GZLE01"; } }
+        public bool bigEndian { get { return true; } }
+
         private byte[] lastCurrentStageData;
         private byte lastCurrentStageId;
         private TimeFlag[] timeFlags;
 
-        public Windwaker() : base(0, "Windwaker", "dolphin", new uint[] { 0x803B0000 }, 0x7FFF0000, "GZLE01", true)
+        public Windwaker()
         {
             timeFlags = new TimeFlag[]
             {
@@ -21,23 +29,23 @@ namespace Windwaker_coop
             };
         }
 
-        public override void beginningFunctions(Client client)
+        public void beginningFunctions(Client client)
         {
             updateStageInfo(client, true, "");
         }
 
-        public override void endingFunctions(Client client)
+        public void endingFunctions(Client client)
         {
             
         }
 
-        public override void onReceiveLocationFunctions(Client client, uint newValue, uint oldValue, MemoryLocation memLoc)
+        public void onReceiveLocationFunctions(Client client, uint newValue, uint oldValue, MemoryLocation memLoc)
         {
             updateStageInfo(client, false, memLoc.type);
             checkForNewTime(client, newValue, oldValue, memLoc);
         }
 
-        public override void onReceiveListFunctions(Client client, byte[] memory)
+        public void onReceiveListFunctions(Client client, byte[] memory)
         {
             updateStageInfo(client, false, "stage255"); //copy static to current regardless
         }
@@ -107,10 +115,11 @@ namespace Windwaker_coop
             }
         }
 
-        public override List<MemoryLocation> createMemoryLocations()
+        public List<MemoryLocation> createMemoryLocations()
         {
             //Min & Max values are in decimal format
             List<MemoryLocation> memoryLocations = new List<MemoryLocation>();
+            SyncSettings syncSettings = Program.syncSettings;
             ComparisonData empty = new ComparisonData();
 
             //Stat upgrades
@@ -353,7 +362,7 @@ namespace Windwaker_coop
             //Bag items - id & number - might sync
         }
 
-        public override Cheat[] getCheats()
+        public Cheat[] getCheats()
         {
             uint baseItem = 0x4C44, baseOwner = 0x4C59;
             return new Cheat[]
@@ -419,7 +428,7 @@ namespace Windwaker_coop
             };
         }
 
-        public override SyncSettings getDefaultSyncSettings()
+        public SyncSettings getDefaultSyncSettings()
         {
             return new SyncSettings(new string[] { "Inventory Items", "Equipment Items", "Story Items", "Player Stats", "Capacity Upgrades", "Bag Contents",
                 "Charts", "Sea Map", "Stage Infos", "Small Keys", "Events" }, new bool[] { true, true, true, true, true, true, true, true, true, true, true });

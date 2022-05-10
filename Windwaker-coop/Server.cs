@@ -45,7 +45,7 @@ namespace Windwaker_coop
             bannedIps = new List<string>();
 
             //Set sync settings, create memory locations, and then start server
-            Program.currGame.syncSettings = Program.currGame.GetSyncSettingsFromFile();
+            Program.syncSettings = Program.GetSyncSettingsFromFile();
             memoryLocations = Program.currGame.createMemoryLocations();
 
             Start();
@@ -330,7 +330,7 @@ namespace Windwaker_coop
 
         public override void sendIntroData()
         {
-            Send(currIp, Encoding.UTF8.GetBytes(Program.currGame.getSyncSettings()), 'i');
+            Send(currIp, Encoding.UTF8.GetBytes(Program.toJson(Program.syncSettings)), 'i');
         }
         #endregion
 
