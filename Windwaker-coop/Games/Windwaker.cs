@@ -67,12 +67,12 @@ namespace Windwaker_coop
                 if (currentStageData == null)
                     return;
 
-                //Only update if you are in the same stage and the currentStageData has changed (lastCurrentStageData should never be null after receiveMemoryList)
-                if (client.compareToPreviousMemory(currentStageData, lastCurrentStageData, 0, 35) || lastCurrentStageId != stageId)
-                    return;
-
-                Output.debug("Copying current stage data to static stage data " + stageId, 1);
-                client.mr.saveToMemory(currentStageData, staticAdr);
+                //Only update if you haven't changed stages and the currentStageData has changed (lastCurrentStageData should never be null after receiveMemoryList)
+                if (lastCurrentStageId == stageId && !client.compareToPreviousMemory(currentStageData, lastCurrentStageData, 0, 35))
+                {
+                    Output.debug("Copying current stage data to static stage data " + stageId, 1);
+                    client.mr.saveToMemory(currentStageData, staticAdr);
+                }
                 lastCurrentStageData = currentStageData;
                 lastCurrentStageId = stageId;
             }
