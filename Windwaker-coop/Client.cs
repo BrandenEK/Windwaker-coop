@@ -240,10 +240,14 @@ namespace Windwaker_coop
             byte writeType = data[10];
             MemoryLocation memLoc = memoryLocations[memLocIdx];
 
+            //Old value is from the player who sent the data
+            //To compare idv bits we need to compare with this player's previous memory
+            uint previousValue = ReadWrite.bigToLittleEndian(lastReadMemory, getByteIndexOfMemLocs(memLocIdx), memLoc.size);
+
             //Calculate the new value if some bits are individual
             if (memLoc.individualBits > 0 && memLoc.individualBits != uint.MaxValue)
             {
-                newValue = (oldValue & memLoc.individualBits) + (newValue & ~memLoc.individualBits);
+                newValue = (previousValue & memLoc.individualBits) + (newValue & ~memLoc.individualBits);
             }
             byte[] bytes = ReadWrite.littleToBigEndian(newValue, memLoc.size);
 

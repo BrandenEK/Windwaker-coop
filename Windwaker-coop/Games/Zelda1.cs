@@ -65,7 +65,7 @@ namespace Windwaker_coop
             memoryLocations.Add(new MemoryLocation(0x7A, 1, "map to Dungeon 9*0", "item", 0, 0, 1, 0, 0, empty));
 
             //hearts
-            memoryLocations.Add(new MemoryLocation(0x7F, 1, "more health*9", "health", 0, 0, 255, 0, 0x0F, empty));
+            memoryLocations.Add(new MemoryLocation(0x7F, 1, "more health*2", "health", 0, 0, 255, 0, 0x0F, empty));
             //keys
 
             memoryLocations.Add(new MemoryLocation(0x81, 1, "triforce*0", "item", 9, 0, 255, 0, 0,
