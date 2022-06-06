@@ -62,7 +62,6 @@ namespace Windwaker_coop
                 memoryLocations.Add(new MemoryLocation(0x73, 1, "Stepladder*0", "item", 0, 0, 1, 0, 0, empty));
                 memoryLocations.Add(new MemoryLocation(0x74, 1, "Magical Key*0", "item", 0, 0, 1, 0, 0, empty));
                 memoryLocations.Add(new MemoryLocation(0x75, 1, "Power Bracelet*0", "item", 0, 0, 1, 0, 0, empty));
-
             }
 
             if (s.getSetting("Inventory Items"))
@@ -80,7 +79,6 @@ namespace Windwaker_coop
                     "map to Dungeon 5*0", "map to Dungeon 6*0", "map to Dungeon 7*0", "map to Dungeon 8*0" }, true)));
                 memoryLocations.Add(new MemoryLocation(0x79, 1, "compass to Dungeon 9*0", "item", 0, 0, 1, 0, 0, empty));
                 memoryLocations.Add(new MemoryLocation(0x7A, 1, "map to Dungeon 9*0", "item", 0, 0, 1, 0, 0, empty));
-
             }
 
             if (s.getSetting("Equipment Items"))
@@ -89,7 +87,6 @@ namespace Windwaker_coop
                 memoryLocations.Add(new MemoryLocation(0x81, 1, "triforce*0", "item", 9, 0, 255, 0, 0,
                     new ComparisonData(new uint[] { 0, 1, 2, 3, 4, 5, 6, 7 }, new string[] { "Triforce piece from Dungeon 1*0", "Triforce piece from Dungeon 2*0", "Triforce piece from Dungeon 3*0", "Triforce piece from Dungeon 4*0",
                     "Triforce piece from Dungeon 5*0", "Triforce piece from Dungeon 6*0", "Triforce piece from Dungeon 7*0", "Triforce piece from Dungeon 8*0" }, true)));
-
             }
 
             if (s.getSetting("Inventory Items"))
