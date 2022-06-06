@@ -211,7 +211,7 @@ namespace Windwaker_coop
         //Reads the syncSettings from json file
         public static SyncSettings GetSyncSettingsFromFile()
         {
-            string path = Environment.CurrentDirectory + "/syncSettings.json";
+            string path = Environment.CurrentDirectory + $"/syncSettings-{currGame.gameId}.json";
             SyncSettings s;
 
             if (File.Exists(path))
