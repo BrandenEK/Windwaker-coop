@@ -78,21 +78,45 @@ namespace Windwaker_coop
 
             memoryLocations.Add(new MemoryLocation(0x8C, 1, "bomb bag*0", "item", 0, 8, 16, 8, 0, new ComparisonData(new uint[] { 12, 16 }, new string[] { "12 bomb maximum*1", "16 bomb maximum*1" }, false)));
 
+            //Overworld screen data
+            for (uint i = 0; i < 128; i++)
+                memoryLocations.Add(new MemoryLocation(0x8F + i, 1, "", "screenData", 9, 0, 255, 0, 0x0F, empty));
+            //Dungeon screen data
+            for (uint i = 0; i < 256; i++)
+                memoryLocations.Add(new MemoryLocation(0x10F + i, 1, "", "screenData", 9, 0, 255, 0, 0xC0, empty));
+
             return memoryLocations;
         }
 
         public Cheat[] getCheats()
         {
-            return new Cheat[] 
-            { 
+            return new Cheat[]
+            {
+                new Cheat("sword", 0x67, 0, true, 3, new byte[] { 1, 2, 3 }),
+                new Cheat("arrows", 0x69, 0, true, 2, new byte[] { 1, 2 }),
+                new Cheat("bow", 0x6A, 1, false),
+                new Cheat("candle", 0x6B, 0, true, 2, new byte[] { 1, 2 }),
+                new Cheat("whistle", 0x6C, 1, false),
+                new Cheat("magical-rod", 0x6F, 1, false),
+                new Cheat("raft", 0x70, 1, false),
+                new Cheat("magic-book", 0x71, 1, false),
+                new Cheat("ring", 0x72, 0, true, 2, new byte[] { 1, 2 }),
+                new Cheat("stepladder", 0x73, 1, false),
+                new Cheat("magical-key", 0x74, 1, false),
+                new Cheat("power-bracelet", 0x75, 1, false),
+                new Cheat("letter", 0x76, 1, false),
                 new Cheat("health", 0x7F, 0, true, 16, new byte[] { 0, 17, 34, 51, 68, 85, 102, 119, 136, 153, 170, 187, 204, 221, 238, 255 }),
-                new Cheat("sword", 0x67, 0, true, 3, new byte[] { 1, 2, 3 })
+                new Cheat("triforce", 0x81, 0, true, 8, new byte[] { 1, 3, 7, 15, 31, 63, 127, 255 }),
+                new Cheat("boomerang", 0x84, 1, false),
+                new Cheat("magical-boomerang", 0x85, 1, false),
+                new Cheat("magical-shield", 0x86, 1, false),
+                new Cheat("bomb-bag", 0x8C, 0, true, 2, new byte[] { 12, 16 })
             };
         }
 
         public SyncSettings getDefaultSyncSettings()
         {
-            return new SyncSettings(new string[] { "Inventory Items", "Equipment Items", "Dungeon Data" }, new bool[] { true, true, true });
+            return new SyncSettings(new string[] { "Inventory Items", "Equipment Items", "Tilemap" }, new bool[] { true, true, true });
         }
     }
 }
