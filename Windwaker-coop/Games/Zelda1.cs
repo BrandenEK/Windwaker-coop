@@ -26,12 +26,12 @@ namespace Windwaker_coop
 
         public void onReceiveListFunctions(Client client, byte[] memory)
         {
-
+            //If ring is greater than 0, set color byte
         }
 
         public void onReceiveLocationFunctions(Client client, uint newValue, uint oldValue, MemoryLocation memLoc)
         {
-
+            //If memLoc is ring, set color byte
         }
 
         public List<MemoryLocation> createMemoryLocations()
