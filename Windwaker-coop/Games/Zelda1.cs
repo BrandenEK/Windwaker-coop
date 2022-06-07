@@ -7,7 +7,7 @@ namespace Windwaker_coop
     class Zelda1 : IGame
     {
         public int gameId { get { return 2; } }
-        public string gameName { get { return "Zelda 1"; } }
+        public string gameName { get { return "Zelda I"; } }
         public string processName { get { return "fceu"; } }
         public uint[] baseAddressOffsets { get { return new uint[] { 0x59FE00 }; } }
         public uint identityAddress { get { return 0; } }
