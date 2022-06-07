@@ -36,6 +36,42 @@ namespace Windwaker_coop
             ComparisonData empty = new ComparisonData();
             SyncSettings s = Program.syncSettings;
 
+            //tilemap
+            //skill level
+
+            if (s.getSetting("Spells"))
+            {
+                memoryLocations.Add(new MemoryLocation(0x18B, 1, "Shield Magic*3", "spell", 0, 0, 1, 0, 0, empty));
+                memoryLocations.Add(new MemoryLocation(0x18C, 1, "Jump Magic*3", "spell", 0, 0, 1, 0, 0, empty));
+                memoryLocations.Add(new MemoryLocation(0x18D, 1, "Life Magic*3", "spell", 0, 0, 1, 0, 0, empty));
+                memoryLocations.Add(new MemoryLocation(0x18E, 1, "Fairy Magic*3", "spell", 0, 0, 1, 0, 0, empty));
+                memoryLocations.Add(new MemoryLocation(0x18F, 1, "Fire Magic*3", "spell", 0, 0, 1, 0, 0, empty));
+                memoryLocations.Add(new MemoryLocation(0x190, 1, "Reflect Magic*3", "spell", 0, 0, 1, 0, 0, empty));
+                memoryLocations.Add(new MemoryLocation(0x191, 1, "Spell Magic*3", "spell", 0, 0, 1, 0, 0, empty));
+                memoryLocations.Add(new MemoryLocation(0x192, 1, "Thunder Magic*3", "spell", 0, 0, 1, 0, 0, empty));
+            }
+
+            if (s.getSetting("Stats"))
+            {
+                memoryLocations.Add(new MemoryLocation(0x193, 1, "magic container*1", "stat", 0, 0, 8, 0, 0, empty));
+                memoryLocations.Add(new MemoryLocation(0x194, 1, "heart container*1", "stat", 0, 0, 8, 0, 0, empty));
+            }
+
+            if (s.getSetting("Equipment"))
+            {
+                memoryLocations.Add(new MemoryLocation(0x195, 1, "Candle*0", "equipment", 0, 0, 1, 0, 0, empty));
+                memoryLocations.Add(new MemoryLocation(0x196, 1, "Glove*0", "equipment", 0, 0, 1, 0, 0, empty));
+                memoryLocations.Add(new MemoryLocation(0x197, 1, "Raft*0", "equipment", 0, 0, 1, 0, 0, empty));
+                memoryLocations.Add(new MemoryLocation(0x198, 1, "Boots*0", "equipment", 0, 0, 1, 0, 0, empty));
+                memoryLocations.Add(new MemoryLocation(0x199, 1, "Flute*0", "equipment", 0, 0, 1, 0, 0, empty));
+                memoryLocations.Add(new MemoryLocation(0x19A, 1, "Cross*0", "equipment", 0, 0, 1, 0, 0, empty));
+                memoryLocations.Add(new MemoryLocation(0x19B, 1, "Hammer*0", "equipment", 0, 0, 1, 0, 0, empty));
+                memoryLocations.Add(new MemoryLocation(0x19C, 1, "Magic Key*0", "equipment", 0, 0, 1, 0, 0, empty));
+
+                memoryLocations.Add(new MemoryLocation(0x1A4, 1, "a crystal*5", "story", 1, 0, 6, 6, 0, empty));
+            }
+
+            //quests
 
             return memoryLocations;
         }
@@ -47,7 +83,7 @@ namespace Windwaker_coop
 
         public SyncSettings getDefaultSyncSettings()
         {
-            return new SyncSettings(new string[] { "Stats", "Equipment", "Spells", "Quests" }, new bool[] { true, true, true, true });
+            return new SyncSettings(new string[] { "Stats", "Equipment", "Spells", "Quests", "Tilemap" }, new bool[] { true, true, true, true, true });
         }
     }
 }
