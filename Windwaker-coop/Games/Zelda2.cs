@@ -14,6 +14,13 @@ namespace Windwaker_coop
         public string identityText { get { return "idk"; } }
         public bool bigEndian { get { return true; } }
 
+        private ushort[][] expTable = new ushort[][]
+        {
+            new ushort[] { 200, 500, 1000, 2000, 3000, 5000, 8000, 9000 },
+            new ushort[] { 100, 300, 700, 1200, 2200, 3500, 6000, 9000 },
+            new ushort[] { 50, 150, 400, 800, 1500, 2500, 4000, 9000 }
+        };
+
         public void beginningFunctions(Client client)
         {
         }
@@ -24,6 +31,7 @@ namespace Windwaker_coop
 
         public void onReceiveListFunctions(Client client, byte[] memory)
         {
+            //Update exp needed when joining initially
         }
 
         public void onReceiveLocationFunctions(Client client, uint newValue, uint oldValue, MemoryLocation memLoc)
@@ -31,7 +39,18 @@ namespace Windwaker_coop
             //If they received an increased skill, then maybe increase the exp needed
             if (memLoc.type == "skill")
             {
-                Output.text("Recieved new skill point");
+                //Get necessary values
+                ushort expNeeded = (ushort)ReadWrite.bigToLittleEndian(client.mr.readFromMemory(0x180, 2), 0, 2);
+                byte[] currSkills = client.mr.readFromMemory(0x187, 3);
+                uint skillReceived = memLoc.startAddress - 0x187;
+
+                //If the skill recieved was of the lowest cost, then increase the exp needed
+                if (expNeeded == expTable[skillReceived][currSkills[skillReceived] - 2])
+                {
+                    ushort minExp = Math.Min(expTable[0][currSkills[0] - 1], Math.Min(expTable[1][currSkills[1] - 1], expTable[2][currSkills[2] - 1]));
+                    client.mr.saveToMemory(ReadWrite.littleToBigEndian(minExp, 2), 0x180);
+                    Output.debug("Updated EXP needed for level up to " + minExp, 1);
+                }
             }
         }
 
@@ -45,9 +64,9 @@ namespace Windwaker_coop
             
             if (s.getSetting("Stats"))
             {
-                memoryLocations.Add(new MemoryLocation(0x187, 1, "increased the attack power*9", "skill", 0, 0, 8, 0, 0, empty));
-                memoryLocations.Add(new MemoryLocation(0x188, 1, "increased the magic power*9", "skill", 0, 0, 8, 0, 0, empty));
-                memoryLocations.Add(new MemoryLocation(0x189, 1, "increased the life power*9", "skill", 0, 0, 8, 0, 0, empty));
+                memoryLocations.Add(new MemoryLocation(0x187, 1, "increased the attack skill*9", "skill", 0, 0, 8, 0, 0, empty));
+                memoryLocations.Add(new MemoryLocation(0x188, 1, "increased the magic skill*9", "skill", 0, 0, 8, 0, 0, empty));
+                memoryLocations.Add(new MemoryLocation(0x189, 1, "increased the life skill*9", "skill", 0, 0, 8, 0, 0, empty));
             }
 
             if (s.getSetting("Spells"))
