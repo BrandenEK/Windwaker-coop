@@ -28,6 +28,11 @@ namespace Windwaker_coop
 
         public void onReceiveLocationFunctions(Client client, uint newValue, uint oldValue, MemoryLocation memLoc)
         {
+            //If they received an increased skill, then maybe increase the exp needed
+            if (memLoc.type == "skill")
+            {
+                Output.text("Recieved new skill point");
+            }
         }
 
         public List<MemoryLocation> createMemoryLocations()
@@ -37,7 +42,13 @@ namespace Windwaker_coop
             SyncSettings s = Program.syncSettings;
 
             //tilemap
-            //skill level
+            
+            if (s.getSetting("Stats"))
+            {
+                memoryLocations.Add(new MemoryLocation(0x187, 1, "increased the attack power*9", "skill", 0, 0, 8, 0, 0, empty));
+                memoryLocations.Add(new MemoryLocation(0x188, 1, "increased the magic power*9", "skill", 0, 0, 8, 0, 0, empty));
+                memoryLocations.Add(new MemoryLocation(0x189, 1, "increased the life power*9", "skill", 0, 0, 8, 0, 0, empty));
+            }
 
             if (s.getSetting("Spells"))
             {
