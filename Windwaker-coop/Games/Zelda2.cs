@@ -60,7 +60,11 @@ namespace Windwaker_coop
             ComparisonData empty = new ComparisonData();
             SyncSettings s = Program.syncSettings;
 
-            //tilemap
+            if (s.getSetting("Tilemap"))
+            {
+                for (uint i = 0x10; i < 0xF0; i += 4)
+                    memoryLocations.Add(new MemoryLocation(i, 4, "", "tilemap", 1, 0, 0xFF, 0xFF, 0, empty));
+            }
             
             if (s.getSetting("Stats"))
             {
