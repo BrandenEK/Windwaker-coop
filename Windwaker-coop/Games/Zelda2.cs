@@ -105,9 +105,21 @@ namespace Windwaker_coop
                 memoryLocations.Add(new MemoryLocation(0x19C, 1, "Magic Key*0", "equipment", 0, 0, 1, 0, 0, empty));
 
                 memoryLocations.Add(new MemoryLocation(0x1A4, 1, "a crystal*5", "story", 1, 0, 6, 6, 0, empty));
+
+                memoryLocations.Add(new MemoryLocation(0x1A6, 1, "", "skills", 9, 0, 255, 0, 3, new ComparisonData(new uint[] { 2, 4 }, new string[] { "the Upwards Stab*3", "the Downwards Stab*3" }, true)));
             }
 
-            //quests
+            if (s.getSetting("Quests"))
+            {
+                memoryLocations.Add(new MemoryLocation(0x1A7, 1, "", "quest", 9, 0, 255, 0, 0, empty));
+                memoryLocations.Add(new MemoryLocation(0x1A8, 1, "", "quest", 9, 0, 255, 0, 0, new ComparisonData(new uint[] { 4 }, new string[] { "trophy (quest)*0" }, true)));
+                memoryLocations.Add(new MemoryLocation(0x1A9, 1, "", "quest", 9, 0, 255, 0, 0, new ComparisonData(new uint[] { 0 }, new string[] { "mirror (quest)*0" }, true)));
+                memoryLocations.Add(new MemoryLocation(0x1AA, 1, "", "quest", 9, 0, 255, 0, 0, new ComparisonData(new uint[] { 3, 6 }, new string[] { "river note*0", "medicine (quest)*0" }, true)));
+                memoryLocations.Add(new MemoryLocation(0x1AB, 1, "", "quest", 9, 0, 255, 0, 0, new ComparisonData(new uint[] { }, new string[] { }, true)));
+                memoryLocations.Add(new MemoryLocation(0x1AC, 1, "", "quest", 9, 0, 255, 0, 0, new ComparisonData(new uint[] { }, new string[] { }, true)));
+                memoryLocations.Add(new MemoryLocation(0x1AD, 1, "", "quest", 9, 0, 255, 0, 0, new ComparisonData(new uint[] { }, new string[] { }, true)));
+                memoryLocations.Add(new MemoryLocation(0x1AE, 1, "", "quest", 9, 0, 255, 0, 0, new ComparisonData(new uint[] { }, new string[] { }, true)));
+            }
 
             return memoryLocations;
         }
