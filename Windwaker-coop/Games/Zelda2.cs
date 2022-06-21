@@ -115,10 +115,10 @@ namespace Windwaker_coop
                 memoryLocations.Add(new MemoryLocation(0x1A8, 1, "", "quest", 9, 0, 255, 0, 0, new ComparisonData(new uint[] { 4 }, new string[] { "trophy (quest)*0" }, true)));
                 memoryLocations.Add(new MemoryLocation(0x1A9, 1, "", "quest", 9, 0, 255, 0, 0, new ComparisonData(new uint[] { 0 }, new string[] { "mirror (quest)*0" }, true)));
                 memoryLocations.Add(new MemoryLocation(0x1AA, 1, "", "quest", 9, 0, 255, 0, 0, new ComparisonData(new uint[] { 3, 6 }, new string[] { "river note*0", "medicine (quest)*0" }, true)));
-                memoryLocations.Add(new MemoryLocation(0x1AB, 1, "", "quest", 9, 0, 255, 0, 0, new ComparisonData(new uint[] { }, new string[] { }, true)));
-                memoryLocations.Add(new MemoryLocation(0x1AC, 1, "", "quest", 9, 0, 255, 0, 0, new ComparisonData(new uint[] { }, new string[] { }, true)));
-                memoryLocations.Add(new MemoryLocation(0x1AD, 1, "", "quest", 9, 0, 255, 0, 0, new ComparisonData(new uint[] { }, new string[] { }, true)));
-                memoryLocations.Add(new MemoryLocation(0x1AE, 1, "", "quest", 9, 0, 255, 0, 0, new ComparisonData(new uint[] { }, new string[] { }, true)));
+                memoryLocations.Add(new MemoryLocation(0x1AB, 1, "", "quest", 9, 0, 255, 0, 0, new ComparisonData(new uint[] { 0 }, new string[] { "fountain water (quest)*0" }, true)));
+                memoryLocations.Add(new MemoryLocation(0x1AC, 1, "", "quest", 9, 0, 255, 0, 0, new ComparisonData(new uint[] { 5 }, new string[] { "rescued the kid (quest)*9"}, true)));
+                memoryLocations.Add(new MemoryLocation(0x1AD, 1, "", "quest", 9, 0, 255, 0, 0, empty));
+                memoryLocations.Add(new MemoryLocation(0x1AE, 1, "", "quest", 9, 0, 255, 0, 0, empty));
             }
 
             return memoryLocations;
