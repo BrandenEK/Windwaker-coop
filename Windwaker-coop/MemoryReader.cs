@@ -8,11 +8,11 @@ namespace Windwaker_coop
     {
         public byte[] readFromMemory(List<MemoryLocation> memoryLocations)
         {
-            if (!checkMemoryInitialized(1))
+            if (!checkMemoryInitialized())
                 return null;
 
             List<byte> memoryList = new List<byte>();
-            IntPtr sequenceStart = memoryLocations[0].startAddress;
+            uint sequenceStart = memoryLocations[0].startAddress;
             int sequenceLength = 0;
 
             for (int i = 0; i < memoryLocations.Count; i++)
@@ -24,7 +24,7 @@ namespace Windwaker_coop
                 {
                     //reads the entire sequence then resets the sequence
                     Output.debug("Reading contiguous region of " + sequenceLength + " bytes", 2);
-                    byte[] value = ReadWrite.Read(1, sequenceStart, sequenceLength);
+                    byte[] value = ReadWrite.Read(sequenceStart, sequenceLength);
                     if (value == null)
                     {
                         Output.error("Aborting \"ReadFromMemory()\" due to null byte[]");
@@ -39,12 +39,12 @@ namespace Windwaker_coop
             return memoryList.ToArray();
         }
 
-        public byte[] readFromMemory(IntPtr customStartAddress, int customSize)
+        public byte[] readFromMemory(uint customStartAddress, int customSize)
         {
-            if (!checkMemoryInitialized(1))
+            if (!checkMemoryInitialized())
                 return null;
 
-            byte[] value = ReadWrite.Read(1, customStartAddress, customSize);
+            byte[] value = ReadWrite.Read(customStartAddress, customSize);
             if (value == null)
             {
                 Output.error("Aborting \"ReadFromMemory\" due to null byte[]");
@@ -56,12 +56,12 @@ namespace Windwaker_coop
         public void saveToMemory(byte[] saveData, List<MemoryLocation> memoryLocations)
         {
             //Writes each value in saveData to the player's game's memory
-            if (!checkMemoryInitialized(1))
+            if (!checkMemoryInitialized())
                 return;
 
             List<byte> data = new List<byte>(saveData);
             int byteListIndex = 0;
-            IntPtr sequenceStart = memoryLocations[0].startAddress;
+            uint sequenceStart = memoryLocations[0].startAddress;
             int sequenceStartIndex = 0;
 
             for (int i = 0; i < memoryLocations.Count; i++)
@@ -72,7 +72,7 @@ namespace Windwaker_coop
                 if (!(i < memoryLocations.Count - 1 && memoryLocations[i + 1].startAddress == loc.startAddress + loc.size))
                 {
                     Output.debug("Writing contiguous region of " + (byteListIndex - sequenceStartIndex) + " bytes", 2);
-                    ReadWrite.Write(1, sequenceStart, data.GetRange(sequenceStartIndex, byteListIndex - sequenceStartIndex).ToArray());
+                    ReadWrite.Write(sequenceStart, data.GetRange(sequenceStartIndex, byteListIndex - sequenceStartIndex).ToArray());
                     if (i < memoryLocations.Count - 1)
                     {
                         sequenceStartIndex = byteListIndex;
@@ -82,17 +82,19 @@ namespace Windwaker_coop
             }
         }
 
-        public void saveToMemory(byte[] saveData, IntPtr customStartAddress)
+        public void saveToMemory(byte[] saveData, uint customStartAddress)
         {
             //Writes each value in saveData to the player's game's memory
-            if (!checkMemoryInitialized(1))
+            if (!checkMemoryInitialized())
                 return;
-            ReadWrite.Write(1, customStartAddress, saveData);
+            ReadWrite.Write(customStartAddress, saveData);
         }
 
-        private bool checkMemoryInitialized(int playerNumber)
+        private bool checkMemoryInitialized()
         {
-            byte[] identityValue = ReadWrite.Read(playerNumber, (IntPtr)Program.currGame.identityAddress, Program.currGame.identityText.Length);
+            return true; //temporary until every game as an identity address
+
+            byte[] identityValue = ReadWrite.Read(Program.currGame.identityAddress, Program.currGame.identityText.Length);
             if (identityValue == null)
                 return false;
 

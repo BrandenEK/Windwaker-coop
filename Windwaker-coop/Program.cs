@@ -12,16 +12,31 @@ namespace Windwaker_coop
 
         private static User currUser;
 
-        private static Game[] games;
-        public static Game currGame;
+        private static IGame[] games;
+        public static IGame currGame;
         public static Config config;
+        public static SyncSettings syncSettings;
 
         static void Main(string[] args)
         {
             Console.Title = "The Legend of Zelda Coop Server/Client";
             Output.text("-The Legend of Zelda Coop-\n", ConsoleColor.Green);
+
+            //Process config file
             config = readConfigFile();
+            if (!config.isValidConfig())
+            {
+                Output.error("Invalid configuration file - Fix the errors or delete the config.json file");
+                EndProgram();
+            }
+
+            //Load games
             games = loadGames();
+            if (config.gameId >= games.Length)
+            {
+                Output.error("Invalid game id");
+                EndProgram();
+            }
             currGame = games[config.gameId];
 
             //Run in memory watcher mode
@@ -29,6 +44,7 @@ namespace Windwaker_coop
             {
                 Console.Title = $"{currGame.gameName} Memory Watcher";
                 Output.text("Beginning in memory watcher mode!");
+                programSyncing = true;
                 Watcher watcher = new Watcher();
                 watcher.beginWatching(config.syncDelay);
 
@@ -192,13 +208,61 @@ namespace Windwaker_coop
             return c;
         }
 
-        private static Game[] loadGames()
+        //Reads the syncSettings from json file
+        public static SyncSettings GetSyncSettingsFromFile()
         {
-            Game[] games = new Game[]
+            string path = Environment.CurrentDirectory + $"/syncSettings-{currGame.gameId}.json";
+            SyncSettings s;
+
+            if (File.Exists(path))
+            {
+                string syncString = File.ReadAllText(path);
+                s = JsonConvert.DeserializeObject<SyncSettings>(syncString);
+            }
+            else
+            {
+                s = currGame.getDefaultSyncSettings();
+                File.WriteAllText(path, JsonConvert.SerializeObject(s, Formatting.Indented));
+            }
+            return s;
+        }
+
+        /*public static T readFile<T>(string fileName) where T : IDefaultable
+        {
+            string path = Environment.CurrentDirectory + "/" + fileName;
+            T obj;
+
+            if (File.Exists(path))
+            {
+                string str = File.ReadAllText(path);
+                obj = JsonConvert.DeserializeObject<T>(str);
+            }
+            else
+            {
+                obj = default(T);
+            }
+            return obj;
+        }*/
+
+        public static string toJson<T>(T obj)
+        {
+            return JsonConvert.SerializeObject(obj);
+        }
+        public static T fromJson<T>(string str)
+        {
+            return JsonConvert.DeserializeObject<T>(str);
+        }
+
+        private static IGame[] loadGames()
+        {
+            IGame[] games = new IGame[]
             {
                 new Windwaker(),
                 new OcarinaOfTime(),
-                new Zelda1()
+                new Zelda1(),
+                new OracleOfSeasons(),
+                new OracleOfAges(),
+                new Zelda2()
             };
             Output.debug("Loading " + games.Length + " games", 1);
             return games;

@@ -4,7 +4,7 @@ namespace Windwaker_coop
 {
     struct MemoryLocation
     {
-        public IntPtr startAddress;
+        public uint startAddress;
         public int size;
         public string name;
         public string type;
@@ -19,7 +19,7 @@ namespace Windwaker_coop
 
         public MemoryLocation(uint startAddress, int size, string name, string type, int compareId, uint low, uint high, byte defaultValue, uint indvBits, ComparisonData cd)
         {
-            this.startAddress = (IntPtr)startAddress;
+            this.startAddress = startAddress;
             this.size = size;
             this.name = name;
             this.type = type;
@@ -48,12 +48,11 @@ namespace Windwaker_coop
 
     struct TimeFlag
     {
-        public IntPtr address;
+        public uint address;
         public byte bit;
         public float newTime;
-        //If newtime == -1, then this will actually endTimeZone
 
-        public TimeFlag(IntPtr address, byte bit, float newTime)
+        public TimeFlag(uint address, byte bit, float newTime)
         {
             this.address = address;
             this.bit = bit;
@@ -94,6 +93,8 @@ namespace Windwaker_coop
         public int defaultPort;
         //Maximum number of players allowed in a server [8]
         public int maxPlayers;
+        //For multiple people playing on the same device, this differentiates them
+        public int playerNumber;
         //The id of the game to load.  0: WW, 1: OOT, 2: Z1 [0]
         public int gameId;
         //Whether or not cheats should be allowed using the 'give' command [true]
@@ -101,20 +102,26 @@ namespace Windwaker_coop
         //Watcher Mode is for memory testing [false]
         public bool runInWatcherMode;
 
-        public Config(int dl, int sd, int dp, int mp, int gi, bool ec, bool wm)
+        public Config(int dl, int sd, int dp, int mp, int pn, int gi, bool ec, bool wm)
         {
             debugLevel = dl;
             syncDelay = sd;
             defaultPort = dp;
             maxPlayers = mp;
+            playerNumber = pn;
             gameId = gi;
             enableCheats = ec;
             runInWatcherMode = wm;
         }
 
+        public bool isValidConfig()
+        {
+            return debugLevel >= 0 && syncDelay > 0 && defaultPort >= 0 && maxPlayers > 0 && playerNumber > 0 && gameId >= 0;
+        }
+
         public static Config getDefaultConfig()
         {
-            return new Config(0, 2500, 25565, 8, 0, true, false);
+            return new Config(0, 2000, 25565, 8, 1, 0, true, false);
         }
     }
 

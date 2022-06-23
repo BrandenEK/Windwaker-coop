@@ -45,7 +45,7 @@ namespace Windwaker_coop
             bannedIps = new List<string>();
 
             //Set sync settings, create memory locations, and then start server
-            Program.currGame.syncSettings = Program.currGame.GetSyncSettingsFromFile();
+            Program.syncSettings = Program.GetSyncSettingsFromFile();
             memoryLocations = Program.currGame.createMemoryLocations();
 
             Start();
@@ -67,51 +67,67 @@ namespace Windwaker_coop
             }
             if (playerValue > memLoc.higherValue || playerValue < memLoc.lowerValue)
             {
-                Output.debug($"The value at 0x{memLoc.startAddress.ToInt64().ToString("X")} is not inside of an acceptable range ({playerValue}). It was not synced to the host.", 2);
+                Output.debug($"The value at 0x{memLoc.startAddress.ToString("X")} is not inside of an acceptable range ({playerValue}). It was not synced to the host.", 2);
                 return;
             }
 
             switch (memLoc.compareId)
             {
                 case 0:
-                    if (playerValue > hostValue) overwriteMemory(); return;
+                    overwriteMemory(playerValue > hostValue); return;
                 case 1:
-                    if (playerValue < hostValue) overwriteMemory(); return;
+                    overwriteMemory(playerValue < hostValue); return;
                 case 2:
-                    if (hostValue == 255 || playerValue > hostValue && playerValue != 255) overwriteMemory(); return;
+                    overwriteMemory(hostValue == 255 || playerValue > hostValue && playerValue != 255); return;
                 case 3:
-                    if (hostValue == 255) overwriteMemory(); return;
+                    overwriteMemory(hostValue == 255); return;
+                case 8:
+                    overwriteMemory(true); return;
                 case 9:
-                    if ((playerValue & (playerValue ^ hostValue)) > 0) overwriteMemory(); return;
+                    overwriteMemory((playerValue & (playerValue ^ hostValue)) > 0); return;
                 default:
                     Output.error("Invalid compareId"); return;
             }
 
-            void overwriteMemory()
+            void overwriteMemory(bool playerHasHigherValue)
             {
-                //Write new value to host data
-                byte[] bytes = ReadWrite.littleToBigEndian(playerValue, memLoc.size);
-                for (int i = 0; i < bytes.Length; i++)
-                    hostdata[byteListIdx + i] = bytes[i];
+                if (playerHasHigherValue)
+                {
+                    byte[] bytes = ReadWrite.littleToBigEndian(playerValue, memLoc.size); //Write new value to host data
+                    for (int i = 0; i < bytes.Length; i++)
+                        hostdata[byteListIdx + i] = bytes[i];
 
-                sendNewMemoryLocation(0, memLocIdx, previousValue, playerValue, true); //change writeType to be in data
-                calculateNotification(playerValue, hostValue, memLoc);
+                    sendNewMemoryLocation(0, memLocIdx, previousValue, playerValue, true); //Send new value to everyone else
+                    calculateNotification(playerValue, hostValue, memLoc);
+                }
+                else
+                {
+                    sendNewMemoryLocation(0, memLocIdx, playerValue, hostValue, false); //Send host value back to player
+                    sendNotification("Received missing data from address 0x" + memLoc.startAddress.ToString("X"), false);
+                }
             }
 
             //Determines whether or not to send a notification & calculates what it should be
             void calculateNotification(uint newValue, uint oldValue, MemoryLocation memLoc)
             {
-                if (memLoc.cd.bitfield)
+                if (memLoc.compareId == 9 && memLoc.cd.bitfield)
                 {
                     //checks each bit and only sends notification if the player just set it
                     for (int i = 0; i < memLoc.cd.values.Length; i++)
                     {
-                        if (ReadWrite.bitSet(newValue, memLoc.cd.values[i]) && !ReadWrite.bitSet(oldValue, memLoc.cd.values[i]))
+                        if (ReadWrite.bitSet(newValue, (byte)memLoc.cd.values[i]) && !ReadWrite.bitSet(oldValue, (byte)memLoc.cd.values[i]))
                         {
                             processNotification(memLoc.cd.text[i]);
                         }
                     }
                     return;
+                }
+
+                //If compareId 8 item only needs to know increased / decreased (0 or 1)
+                if (memLoc.compareId == 8 && !memLoc.cd.bitfield)
+                {
+                    if (newValue > oldValue)  newValue = 0;
+                    else  newValue = 1;
                 }
 
                 if (memLoc.cd.values == null || memLoc.cd.text == null)
@@ -321,7 +337,7 @@ namespace Windwaker_coop
 
         public override void sendIntroData()
         {
-            Send(currIp, Encoding.UTF8.GetBytes(Program.currGame.getSyncSettings()), 'i');
+            Send(currIp, Encoding.UTF8.GetBytes(Program.toJson(Program.syncSettings)), 'i');
         }
         #endregion
 

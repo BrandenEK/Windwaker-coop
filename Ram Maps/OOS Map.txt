@@ -1,0 +1,542 @@
+Oracle of Seasons Ram Map:
+
+*Using C000 as a base*
+*Every value is in hexadecimal*
+
+============================================================
+Beginning:
+============================================================
+
+5B0 (2) - Checksum (Still not sure how it works)
+
+5B2 - 5BF - ???
+
+5C0 (40) - List of unappraised rings
+
+600 (2) - ???
+
+602 (5) - Player name
+607 (1) - 0
+608 (1) - 1
+
+609 (5) - Kid's name
+60E (1) - 0
+60F (1) - ??
+
+???
+
+616 (8) - Obtained rings bitfield
+61E (2) - Number of deaths
+620 (2) - Total enemies killed
+622 (4) - ???
+626 (1) - Number of signs broken
+627 (2) - Total rupees collected
+629 (1) - Text speed
+
+62A (1) - ???
+
+============================================================
+Screen Data:
+============================================================
+
+62B (1) - Spawn stage
+62C (1) - Spawn screen index
+62D (1) - Spawn season
+62E (1) - Spawn direction
+62F (1) - Spawn row
+630 (1) - Spawn column
+
+???
+
+63A (1) - Current stage
+63B (1) - Current screen index
+63C (1) - Current screen on dungeon map
+63D (1) _ Current floor on dungeon map
+
+============================================================
+World Data:
+============================================================
+
+63E (1) - Enemies killed since Maple meeting
+
+63F (1) - Basement shop
+01: Bought Seed Satchel
+02: Bought Gasha Seed 300
+04: Bought Gasha Seed 500
+08: Bought Treasure Map
+10:
+20:
+40:
+80: Played chest game
+
+640 (1) - Village shop
+???
+
+641 (1) - Maple quest
+???
+
+642 (1) - Subrosia market
+01: Traded ore for ribbon
+02: Bought piece of heart
+04: Bought big bomb bag
+08: 
+10: Bought ring 1
+20: Bought ring 2
+40:
+80:
+
+643 (1) - Ricky quest
+???
+
+644 (1) - Dimitri quest
+01: Talked to kid 1
+02: Talked to kid 2
+04: Talked to kid 3
+08: Gave them bombs
+10: Kids ran off
+20: Caused kids to appear
+40: Revisited kids
+80: Hopped on Dimitri
+
+645 (1) - Moosh quest
+???
+
+646 (1) - Animal hints
+01: Ricky - Jumped over hole
+02: Ricky - Jumped over cliff
+04: Dimitri - Threw him
+08: Dimitri - Swam up waterfall
+10: Moosh - Floated over hole
+20: Moosh - Pounded ground
+40:
+80:
+
+???
+
+64A (2) - Planted gasha seeds
+64C (10) - Enemies killed since planting each gasha seed
+
+???
+
+============================================================
+Dungeon Info:
+============================================================
+
+662 (C) - Floors visited in each dungeon
+66E (C) - Keys collected in each dungeon
+67A (2) - Big Key bitfield
+67C (2) - Compass bitfield
+67E (2) - Map bitfield
+
+============================================================
+Inventory Items:
+============================================================
+
+680 (1) - Item on 'B' button
+681 (1) - Item on 'A' button
+682 (10) - Item on each slot of the inventory screen
+
+============================================================
+Item Bitfields:
+============================================================
+
+692 (1) - Inventory bitfield 1
+01: 
+02: Shield
+04: On start ?
+08: Bombs
+10: 
+20: On start ?
+40: Boomerang
+80: Rod of Seasons
+
+693 (1) - Inventory bitfield 2
+01: Magnetic Gloves
+02:
+04:
+08:
+10:
+20:
+40: Animal Flute
+80:
+
+694 (1) - Inventory bitfield 3
+01: Roc's Feather
+02:
+04:
+08: Slingshot
+10:
+20: Shovel
+40: Power Bracelet
+80:
+
+695 (1) - Inventory bitfield 4
+01:
+02: Seed Satchel
+04:
+08:
+10:
+20:
+40: Fool's Ore
+80:
+
+696 (1) - Seeds bitfield
+01: Has Ember Seeds
+02: Has Scent Seeds
+04: Has Pegasus Seeds
+08: Has Gale Seeds
+10: Has Mystery Seeds
+
+697 (1) - ??? bitfield
+01: something in d1 ?
+02: something in d1 ?
+04: Obtained a heart container
+08: Obtained a piece of heart
+10: Obtained a ring box
+20: Obtained a ring
+40: Zora's Flippers
+80: Magic Potion
+
+698 (1) - ??? bitfield
+01: something in d1 ?
+02: Obtained a big key
+04: Obtained a compass
+08: Obtained a map
+10: Obtained a gasha seed
+20: 
+40: Huge Maku Seed
+80: Dug Subrosia ground or found ore chunk ??
+
+699 (1) - ????
+
+69A (1) - Equipment bitfield 1
+01: Obtained an essence ?
+02: Trading sequence in progress
+04: Gnarled Key
+08: Floodgate Key
+10: Dragon Key
+20: Star-shaped Ore
+40: Ribbon
+80: Spring Banana
+
+69B (1) - Equipment bitfield 2
+01: Ricky's Gloves
+02: Bomb Flower (Top half)
+04: Rusty Bell
+08: Treasure Map
+10: Round Jewel
+20: Pyramid Jewel
+40: Square Jewel
+80: X-shaped Jewel
+
+69C (1) - Equipment bitfield 3
+01: Red Ore
+02: Blue Ore
+04: Hard Ore
+08: Member's Card
+10: Master's Plaque
+20: 
+40: 
+80:
+
+69D (1) - Equipment bitfield 4
+01: Bomb Flower (Bottom half)
+
+69E - 6A1 (4) - ????
+
+============================================================
+Player Stats:
+============================================================
+
+6A2 (1) - Current health
+6A3 (1) - Max health
+6A4 (1) - Pieces of heart
+6A5 (2) - Rupee count
+6A7 (2) - Ore chunk count
+6A9 (1) - Shield level
+6AA (1) - Number of bombs
+6AB (1) - Max number of bombs
+6AC (1) - Sword level
+6AD (1) - Number of bombchus
+6AE (1) - Seed Satchel level
+6AF (1) - Animal companion
+0 - None
+1 - Ricky
+2 - Dimitri
+3 - Moosh
+
+6B0 (1) - Obtained seasons bitfield
+01: Spring
+02: Summer
+04: Autumn
+08: Winter
+10: Has rod
+
+6B1 (1) - Boomerang Level
+6B2 (1) - Magnetic direction
+0 - South
+1 - North
+
+6B3 (1) - Slingshot level
+6B4 (1) - Roc's Feather level
+
+============================================================
+Seed Bag:
+============================================================
+
+6B5 (1) - Number of Ember Seeds
+6B6 (1) - Number of Scent Seeds
+6B7 (1) - Number of Pegasus Seeds
+6B8 (1) - Number of Gale Seeds
+6B9 (1) - Number of Mystery Seeds
+
+============================================================
+Player Equipment:
+============================================================
+
+6BA (1) - Number of Gasha Seeds
+6BB (1) - Essences bitfield
+6BC (1) - Trading sequence item
+0 - Cuccodex
+1 - Lon Lon Egg
+2 - Ghastly Doll
+3 - Iron Pot
+4 - Lava Soup
+5 - Goron Vase
+6 - Fish
+7 - Megaphone
+8 - Mushroom
+9 - Wooden Bird
+A - Engine Grease
+B - Phonograph
+
+6BD (1) - ???
+6BE (1) - Current seed for satchel
+6BF (1) - Current seed for slingshot
+6C0 (1) - Ring slot 1
+6C1 (1) - Ring slot 2
+6C2 (1) - Ring slot 3
+6C3 (1) - Ring slot 4
+6C4 (1) - Ring slot 5
+6C5 (1) - Equipped rings
+6C6 (1) - Ring box level
+6C7 (1) - Number of rings to be appraised
+C68 (1) - Total rings appraised
+6C9 (1) - Golden enemies killed bitfield
+01: Octorok (Summer)
+02: Moblin (Autumn)
+04: Darknut (Spring)
+08: Lynel (Winter)
+
+???
+
+6E1 (1) - Jewels bitfield
+01: Placed Round Jewel
+02: Placed Pyramid Jewel
+04: Placed Square Jewel
+08: Placed X-shaped Jewel
+
+============================================================
+Stage Infos:
+============================================================
+
+700 (100) - Overworld data
+800 (100) - Subrosia & Houses data
+900 (100) - Dungeons data
+A00 (100) - Caves data
+
+
+
+
+Each tile is one byte
+01: Opened upper door
+02: Opened right door
+04: Opened lower door
+08: Opened left door
+10: Entered screen
+20: Opened chest / Obtained item
+40: 
+80: Triggered event
+
+
+Extra stuff:
+
+============================================================
+Dungeon Ids:
+============================================================
+
+Low
+01: Hero's Cave (Unlinked)
+02: Gnarled Root Dungeon
+04: Snake's Remains
+08: Poison Moth's Lair
+10: Dancing Dragon Dungeon
+20: Unicorn's Cave
+40: Ancient Ruins
+80: Explorer's Crypt
+
+High
+01: Sword and Shield Dungeon
+02: Onox's Castle
+04: Room of Rites
+08: Hero's Cave (Linked)
+10: X
+20: X
+40: X
+80: X
+
+============================================================
+Item Ids (Shared between games):
+============================================================
+
+00 - Both: Empty
+01 - Both: Shield
+02 - Both: Unused (Punch)
+03 - Both: Bombs
+04 - Ages: Cane of Somaria
+05 - Both: Sword
+06 - ????: Boomerang
+07 - Seas: Rod of Seasons
+08 - Seas: Magnetic Gloves
+09 - Both: Unused
+0A - Ages: Switch Hook
+0B - Both: Unused
+0C - Both: Biggoron's Sword
+0D - Both: Bombchu
+0E - Both: Animal Flute
+0F - Ages: Seed Shooter
+10 - Both: Unused
+11 - Ages: Harp of Ages
+12 - Both: Unused
+13 - Seas: Slingshot
+14 - Both: Unused
+15 - Both: Shovel
+16 - Both: Power Bracelet
+17 - Both: Roc's Feather
+18 - Both: Unused
+19 - Both: Seed Satchel
+1A - Both: Unused
+1B - Both: Unused
+1C - Both: Unused
+1D - Both: Unused
+1E - Seas: Fool's Ore
+1F - Both: Unused
+
+============================================================
+Characters (Shared between games):
+============================================================
+
+00-0F - ??
+10 - 'Circle'
+11 - 'Club'
+12 - 'Diamond'
+13 - 'Spade'
+14 - 'Heart ?? (Not pass)'
+15 - 'Up'
+16 - 'Down'
+17 - 'Left'
+18 - 'Right'
+19 - 'Times ? (x)'
+1A - 'Quotes (Tail up)'
+1B - 'Top Left Corner'
+1C - 'Bottom Right Corner'
+1D - 'Period slightly raised' ???
+1E - '2 Pixels' ???
+1F - 'Period with hole' ???
+20 - 'Space'
+21 - '!'
+22 - 'Quotes (Tail down)'
+23 - '#'
+24 - '$'
+25 - '%'
+26 - '&'
+27 - 'Apostrophe (Tail down)'
+28 - '('
+29 - ')'
+2A - '*'
+2B - '+'
+2D - '-'
+2E - '.'
+2F - '/'
+30 - 0
+31 - 1
+32 - 2
+33 - 3
+34 - 4
+35 - 5
+36 - 6
+37 - 7
+38 - 8
+39 - 9
+3A - ':'
+3B - ';'
+3C - '('
+3D - '='
+3E - ')'
+3F - '?'
+40 - '@'
+41 - A
+42 - B
+43 - C
+44 - D
+45 - E
+46 - F
+47 - G
+48 - H
+49 - I
+4A - J
+4B - K
+4C - L
+4D - M
+4E - N
+4F - O
+50 - P
+51 - Q
+52 - R
+53 - S
+54 - T
+55 - U
+56 - V
+57 - W
+58 - X
+59 - Y
+5A - Z
+5B - '['
+5C - '~'
+5D - ']'
+5E - '^'
+5F - 'Middle dot'
+60 - 'Apostrophe (Tail up)'
+61 - a
+62 - b
+63 - c
+64 - d
+65 - e
+66 - f
+67 - g
+68 - h
+69 - i
+6A - j
+6B - k
+6C - l
+6D - m
+6E - n
+6F - o
+70 - p
+71 - q
+72 - r
+73 - s
+74 - t
+75 - u
+76 - v
+77 - w
+78 - x
+79 - y
+7A - z
+7B - '{'
+7C - 'Yen'
+7D - '}'
+7E - 'Triangle'
+7F - 'Square'
+80+ - Special characters
+BD - 'Heart'

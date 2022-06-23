@@ -132,14 +132,207 @@ Warp Pots:
 ============================================================
 
 52CB (1) - Wind Temple Warp Pots
-52CC (1) - DRC-FW-TOTG Warp Pots (Rando)
+52CC (1) - DRC-FW-TOTG Warp Pots (Randomizer)
 52CD (1) - Forbidden Woods Warp Pots
 52CE (1) - Dragon Roost Cavern Warp Pots
 52CF (1) - Earth Temple Warp Pots
-52D0 (1) - FF-ET-WT Warp Pots (Rando)
+52D0 (1) - FF-ET-WT Warp Pots (Randomizer)
 
 ============================================================
 Stage Infos:
 ============================================================
 
-4F88 - ??
+4F88 - 51C7
+
+
+
+============================================================
+Item Ids:
+============================================================
+
+00 - 
+01 -
+02 -
+03 -
+04 -
+05 -
+06 -
+07 -
+08 -
+09 -
+0A -
+0B -
+0C -
+0D -
+0E -
+0F -
+
+10 - 
+11 -
+12 -
+13 -
+14 -
+15 -
+16 -
+17 -
+18 -
+19 -
+1A -
+1B -
+1C -
+1D -
+1E -
+1F -
+
+20 - Telescope
+21 - Tingle Tuner
+22 - Windwaker
+23 - Picto Box
+24 - Spoils Bag
+25 - Grappling Hook
+26 - Deluxe Picto Box
+27 - Hero's Bow
+28 - Power Bracelets
+29 - Iron Boots
+2A - Magic Armor
+2B - ...
+2C - Bait Bag
+2D - Boomerang
+2E - ...
+2F - Hookshot
+
+30 - Delivery Bag
+31 - Bombs
+32 - ...
+33 - Skull Hammer
+34 - Deku Leaf
+35 - Bow with Fire & Ice Arrows
+36 - Bow with Fire, Ice, & Light Arrows
+37 - ...
+38 - Hero's Sword
+39 - Master Sword (Unpowered)
+3A - Master Sword (Half power)
+3B - Hero's Shield
+3C - Mirror Shield
+3D - ...
+3E - Master Sword (Full power)
+3F - Piece of Heart
+
+40 - ... crash
+41 - ...
+42 - Pirate's Charm
+43 - Hero's Charm
+44 - ...
+45 - Skull Necklace
+46 - Boko Baba Seed
+47 - Golden Feather
+48 - Knight's Crest
+49 - Red Chu Jelly
+4A - Green Chu Jelly
+4B - Blue Chu Jelly
+4C - Dungeon Map
+4D - Compass
+4E - Big Key
+4F - ...
+
+50 - Empty Bottle
+51 - Red Potion
+52 - Green Potion
+53 - Blue Potion
+54 - Elixir Soup (1/2)
+55 - Elixir Soup
+56 - Water
+57 - Fairy
+58 - Forest Firefly
+59 - Forest Water
+5A - ...
+5B - ...
+5C - ...
+5D - ...
+5E - ...
+5F - ...
+
+60 - ...
+61 - Triforce Shard 1
+62 - Triforce Shard 2
+63 - Triforce Shard 3
+64 - Triforce Shard 4
+65 - Triforce Shard 5
+66 - Triforce Shard 6
+67 - Triforce Shard 7
+68 - Triforce Shard 8
+69 - Nayru's Pearl
+6A - Din's Pearl
+6B - Farore's Pearl
+6C - ...
+6D - Wind's Requiem
+6E - Ballad of Gales
+6F - Song of Passing
+
+70 - Command Melody
+71 - Earth God's Lyric
+72 - Wind God's Aria
+73 - ...
+74 - ...
+75 - ...
+76 - ...
+77 - ...
+78 - Sail
+79 - ...
+7A - ...
+7B - ... Tri charts ?
+7C - ...
+7D - ...
+7E - ...
+7F - ...
+
+80 - ...
+81 - ...
+82 - All-Purpose Bait
+83 - Hyoi Pear
+84 - ...
+85 - ...
+86 - ...
+87 - ...
+88 - ...
+89 - ...
+8A - ...
+8B - ...
+8C - Town Flower
+8D - Sea Flower
+8E - Exotic Flower
+8F - Hero's Flag
+
+90 - Big Catch Flag
+91 - Big Sale Flag
+92 - Pinwheel
+93 - Sickle Moon Flag
+94 - Skull Tower Idol
+95 - Fountain Idol
+96 - Postman Statue
+97 - Shop Guru Statue
+98 - Father's Letter
+99 - Note to Mom
+9A - Maggie's Letter
+9B - Moblin's Letter
+9C - Cabana Deed
+9D - Complimentary ID
+9E - Fill-up Coupon
+9F - ... picto?
+
+A0 - 
+A1 -
+A2 -
+A3 -
+A4 -
+A5 -
+A6 -
+A7 -
+A8 -
+A9 -
+AA -
+AB - ... bag upgrades ?
+AC -
+AD -
+AE -
+AF -
