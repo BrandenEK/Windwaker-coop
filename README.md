@@ -46,6 +46,7 @@ https://trello.com/b/eBKLJlX5/windwaker-coop
 
 ### Things that will sync soon
 - Figurines
+- Tingle Statues
 - Bag contents
 - Mail?
 
