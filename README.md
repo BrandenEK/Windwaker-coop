@@ -1,6 +1,10 @@
 # Windwaker Co-op
-A multiplayer program for The Legend of Zelda: The Wind Waker that syncs player progress throughout the game
+![Release version](https://img.shields.io/github/v/release/BrandenEK/Windwaker-coop)
+![Last commit](https://img.shields.io/github/last-commit/BrandenEK/Windwaker-coop?color=important)
+![Downloads](https://img.shields.io/github/downloads/BrandenEK/Windwaker-coop/total?color=success)
 
+A multiplayer program for The Legend of Zelda: The Wind Waker that syncs player progress throughout the game
+<br>
 Progress board:
 https://trello.com/b/eBKLJlX5/windwaker-coop
 
