@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net7.0-windows</TargetFramework>
+    <Nullable>disable</Nullable>
+    <Description>The client application for Windwaker Co-op</Description>
+    <Version>0.1.0</Version>
+    <Authors>BrandenEK</Authors>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ApplicationIcon>windwaker.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="windwaker.ico" />
+  </ItemGroup>
+
+</Project>
