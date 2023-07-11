@@ -18,8 +18,8 @@ https://trello.com/b/eBKLJlX5/windwaker-coop
 - Each client application must be on the same local network as the server application or be using Hamachi
 
 ## Things to note:
-- You must be using Dolphin 5.0 (Other versions may possibly work, but they changed how memory is initialized after 5.0 and I haven't tested them).
-- Each computer can only be running one instance of the Windwaker-coop application.
+- You must be using Dolphin 5.0 Legacy (Other versions may possibly work, but they changed how memory is initialized after 5.0 and I haven't tested them).
+- ~~Each computer can only be running one instance of the Windwaker-coop application.~~ (This might not be true anymore)
 - As of now, you can not see other players in your game; the program only syncs inventory and story/dungeon progress.
 - Most events in the game such as cutscenes being triggered/watched or chests being opened require a room transition to take effect.  For example, in Dragon Roost Cavern, once somebody unlocks the first locked door, other players must enter this room after the event has synced in order for the change to take place.
 - You can change some of the settings by editing the "config.json" file.
@@ -37,6 +37,7 @@ https://trello.com/b/eBKLJlX5/windwaker-coop
 - Sea map
 - Dungeon progress (Unlocked doors, events, chests, etc)
 - Story progression
+- Tingle Statues
 
 ### Things that sync but are not perfect:
 - Heart containers/pieces
@@ -50,7 +51,6 @@ https://trello.com/b/eBKLJlX5/windwaker-coop
 
 ### Things that will sync soon
 - Figurines
-- Tingle Statues
 - Bag contents
 - Mail?
 
