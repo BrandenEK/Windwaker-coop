@@ -6,10 +6,10 @@
     <RootNamespace>Windwaker_coop</RootNamespace>
     <ApplicationIcon>ww-coop-icon.ico</ApplicationIcon>
     <Authors>BrandenEK</Authors>
-    <Description>A coop program for The Legend of Zelda: The Wind Waker that syncs player progress throughout the game</Description>
+    <Description>A multiplayer program for The Legend of Zelda: The Wind Waker that syncs player progress throughout the game</Description>
     <PackageProjectUrl>https://github.com/BrandenEK/Windwaker-coop</PackageProjectUrl>
     <PackageIcon>mirrorshield.png</PackageIcon>
-    <Version>0.3.0</Version>
+    <Version>0.7.4</Version>
     <AssemblyName>Windwaker-coop</AssemblyName>
   </PropertyGroup>
 

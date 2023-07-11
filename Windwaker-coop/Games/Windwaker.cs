@@ -224,6 +224,9 @@ namespace Windwaker_coop
                     new ComparisonData(new uint[] { 0 }, new string[] { "Pirate's Charm*0" }, true))); //pirate's charm bitfield
                 memoryLocations.Add(new MemoryLocation(0x4CC0, 1, "hero's charm*0", "item", 9, 0, 3, 0, 2,
                     new ComparisonData(new uint[] { 0 }, new string[] { "Hero's Charm*0" }, true))); //hero's charm bitfield
+
+                memoryLocations.Add(new MemoryLocation(0x5296, 1, "tingle-statue*0", "item", 9, 0, 255, 0, 0,
+                    new ComparisonData(new uint[] { 2, 3, 4, 5, 6 }, new string[] { "Dragon Tingle Statue*0", "Forbidden Tingle Statue*0", "Goddess Tingle Statue*0", "Earth Tingle Statue*0", "Wind Tingle Statue*0" }, true)));
             }
 
             //Progression items
