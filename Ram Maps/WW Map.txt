@@ -128,8 +128,17 @@ Event Bitfields:
 522C - ??
 
 ============================================================
-Warp Pots:
+More stuff:
 ============================================================
+
+5296 (1) - Collected tingle statues (Randomizer)
+04 - Dragon Tingle Statue
+08 - Forbidden Tingle Statue
+10 - Goddess Tingle Statue
+20 - Earth Tingle Statue
+40 - Wind Tingle Statue
+
+Warp pots
 
 52CB (1) - Wind Temple Warp Pots
 52CC (1) - DRC-FW-TOTG Warp Pots (Randomizer)
