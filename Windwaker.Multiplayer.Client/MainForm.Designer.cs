@@ -84,7 +84,7 @@ namespace Windwaker.Multiplayer.Client
             debugText.Multiline = true;
             debugText.Name = "debugText";
             debugText.ReadOnly = true;
-            debugText.Size = new Size(200, 250);
+            debugText.Size = new Size(300, 250);
             debugText.TabIndex = 4;
             // 
             // MainForm

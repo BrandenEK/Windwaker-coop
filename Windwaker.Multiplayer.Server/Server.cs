@@ -30,7 +30,7 @@ namespace Windwaker.Multiplayer.Server
                 return false;
             }
 
-            Console.WriteLine($"Successfully started server at {ipPort}!");
+            Console.WriteLine($"Successfully started server at {ipPort}");
             return true;
         }
 

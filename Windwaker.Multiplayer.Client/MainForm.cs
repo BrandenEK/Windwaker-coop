@@ -13,17 +13,30 @@ namespace Windwaker.Multiplayer.Client
             instance ??= this;
         }
 
+        private readonly Client client = new();
+
         private void OnClickConnect(object sender, EventArgs e)
         {
-            string ipPort = serverText.Text;
-            if (ipPort == string.Empty)
+            if (client.IsConnected)
             {
-                Log("Enter an ip port to connect!");
-                return;
+                client.Disconnect();
             }
+            else
+            {
+                string ipPort = serverText.Text;
+                if (ipPort == string.Empty)
+                {
+                    Log("Enter an ip port to connect!");
+                    return;
+                }
 
-            var client = new Client();
-            client.Connect(ipPort);
+                client.Connect(ipPort);
+            }
+        }
+
+        public static void UpdateUI()
+        {
+            instance.connectBtn.Text = instance.client.IsConnected ? "Disconnect" : "Connect";
         }
 
         public static void Log(string message)

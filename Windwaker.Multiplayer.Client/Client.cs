@@ -28,11 +28,10 @@ namespace Windwaker.Multiplayer.Client
             }
             catch (SocketException)
             {
-                MainForm.Log($"Failed to connect to {ipPort}!");
+                MainForm.Log($"Failed to connect to {ipPort}");
                 return false;
             }
 
-            MainForm.Log($"Successfully connected to {ipPort}!");
             return true;
         }
 
@@ -47,12 +46,14 @@ namespace Windwaker.Multiplayer.Client
 
         private void OnServerConnected(object sender, ConnectionEventArgs e)
         {
-            MainForm.Log("Server connected: " + e.IpPort);
+            MainForm.Log($"Connected to {e.IpPort}");
+            MainForm.UpdateUI();
         }
 
         private void OnServerDisconnected(object sender, ConnectionEventArgs e)
         {
-            MainForm.Log("Server disconnected: " + e.IpPort);
+            MainForm.Log($"Disconnected from {e.IpPort}");
+            MainForm.UpdateUI();
         }
 
         private void OnDataReceived(object sender, DataReceivedEventArgs e)
