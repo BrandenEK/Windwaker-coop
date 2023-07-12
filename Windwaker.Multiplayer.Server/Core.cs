@@ -18,7 +18,7 @@ namespace Windwaker.Multiplayer.Server
         }
 
         /// <summary>
-        /// Loads the server settings from the file exists, or creates a new file with default settings
+        /// Loads the server settings from the file if it exists, or creates a new file with default settings
         /// </summary>
         /// <returns>The configuration object</returns>
         private static Config LoadConfig()

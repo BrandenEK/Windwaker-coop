@@ -15,4 +15,8 @@
     <Content Include="windwaker.ico" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="SuperSimpleTcp" Version="3.0.11" />
+  </ItemGroup>
+
 </Project>
