@@ -6,13 +6,17 @@ namespace Windwaker.Multiplayer.Server
 {
     public class Core
     {
+        public static Config ServerSettings { get; private set; }
+
         public static void Main(string[] args)
         {
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine("Program started");
 
-            Config cfg = LoadConfig();
-            Console.WriteLine("Port: " + cfg.port);
+            ServerSettings = LoadConfig();
+            Console.WriteLine("Port: " + ServerSettings.port);
+
+            var server = new Server();
 
             Console.ReadKey(true);
         }
@@ -26,12 +30,12 @@ namespace Windwaker.Multiplayer.Server
             string path = Environment.CurrentDirectory + "/multiplayer.cfg";
             if (File.Exists(path))
             {
-                Config cfg = JsonConvert.DeserializeObject<Config>(File.ReadAllText(path));
+                var cfg = JsonConvert.DeserializeObject<Config>(File.ReadAllText(path));
                 return cfg;
             }
             else
             {
-                Config cfg = new Config();
+                var cfg = new Config();
                 File.WriteAllText(path, JsonConvert.SerializeObject(cfg, Formatting.Indented));
                 return cfg;
             }
