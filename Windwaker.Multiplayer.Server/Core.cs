@@ -17,7 +17,11 @@ namespace Windwaker.Multiplayer.Server
             var server = new Server();
             server.Start("*:" + ServerSettings.port);
 
-            Console.ReadKey(true);
+            while (true)
+            {
+                // Infinite loop to keep the server alive
+                Console.ReadKey(true);
+            }
         }
 
         /// <summary>
