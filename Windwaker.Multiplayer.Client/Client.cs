@@ -64,6 +64,7 @@ namespace Windwaker.Multiplayer.Client
         {
             MainForm.Log($"Connected to {e.IpPort}");
             MainForm.UpdateUI();
+            SendIntro();
         }
 
         /// <summary>
@@ -170,6 +171,11 @@ namespace Windwaker.Multiplayer.Client
         private void ReceiveUnknown(byte[] message)
         {
 
+        }
+
+        private void SendIntro()
+        {
+            QueueMesssage(new byte[] { 1, 2, 3 }, NetworkType.Position);
         }
 
         private void ReceiveIntro(byte[] message)

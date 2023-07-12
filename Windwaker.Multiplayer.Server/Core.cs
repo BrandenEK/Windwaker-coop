@@ -14,7 +14,7 @@ namespace Windwaker.Multiplayer.Server
             Console.Title = "Windwaker Multiplayer Server";
             ServerSettings = LoadConfig();
 
-            var server = new Server();
+            var server = new MainServer();
             server.Start("*:" + ServerSettings.port);
 
             while (true)

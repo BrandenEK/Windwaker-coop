@@ -10,9 +10,6 @@ namespace Windwaker.Multiplayer.Server
 {
     internal class Server
     {
-        /// <summary>
-        /// The tcp server that handles sending messages to the client
-        /// </summary>
         private SimpleTcpServer _server;
 
         /// <summary>
@@ -48,7 +45,6 @@ namespace Windwaker.Multiplayer.Server
         private void OnClientConnected(object sender, ConnectionEventArgs e)
         {
             Console.WriteLine("Client connected: " + e.IpPort);
-            Send(e.IpPort, new byte[] { 1, 2, 3 }, NetworkType.Intro);
         }
 
         /// <summary>
@@ -129,6 +125,7 @@ namespace Windwaker.Multiplayer.Server
         private void ReceiveIntro(string playerIp, byte[] message)
         {
             Console.WriteLine("Received intro: " + message.Length);
+            Send(playerIp, new byte[] { 4, 5, 6 }, NetworkType.Intro);
         }
     }
 }
