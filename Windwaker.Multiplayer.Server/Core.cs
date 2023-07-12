@@ -4,11 +4,11 @@ using System.IO;
 
 namespace Windwaker.Multiplayer.Server
 {
-    public class Core
+    internal static class Core
     {
         public static Config ServerSettings { get; private set; }
 
-        public static void Main(string[] args)
+        public static void Main()
         {
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine("Program started");
@@ -17,6 +17,7 @@ namespace Windwaker.Multiplayer.Server
             Console.WriteLine("Port: " + ServerSettings.port);
 
             var server = new Server();
+            server.Connect("192.168.1.166:" + ServerSettings.port);
 
             Console.ReadKey(true);
         }

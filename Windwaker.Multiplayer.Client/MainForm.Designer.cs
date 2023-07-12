@@ -33,6 +33,10 @@ namespace Windwaker.Multiplayer.Client
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             mainLbl = new Label();
+            connectBtn = new Button();
+            serverText = new TextBox();
+            serverLbl = new Label();
+            debugText = new TextBox();
             SuspendLayout();
             // 
             // mainLbl
@@ -46,20 +50,66 @@ namespace Windwaker.Multiplayer.Client
             mainLbl.Text = "Windwaker-coop";
             mainLbl.TextAlign = ContentAlignment.MiddleCenter;
             // 
+            // connectBtn
+            // 
+            connectBtn.Location = new Point(622, 74);
+            connectBtn.Name = "connectBtn";
+            connectBtn.Size = new Size(120, 24);
+            connectBtn.TabIndex = 1;
+            connectBtn.Text = "Connect";
+            connectBtn.UseVisualStyleBackColor = true;
+            connectBtn.Click += OnClickConnect;
+            // 
+            // serverText
+            // 
+            serverText.Location = new Point(604, 45);
+            serverText.Name = "serverText";
+            serverText.Size = new Size(154, 23);
+            serverText.TabIndex = 2;
+            serverText.Text = "192.168.1.166:8989";
+            // 
+            // serverLbl
+            // 
+            serverLbl.AutoSize = true;
+            serverLbl.Location = new Point(604, 27);
+            serverLbl.Name = "serverLbl";
+            serverLbl.Size = new Size(77, 15);
+            serverLbl.TabIndex = 3;
+            serverLbl.Text = "Server IpPort:";
+            // 
+            // debugText
+            // 
+            debugText.BackColor = SystemColors.ControlLight;
+            debugText.Location = new Point(12, 300);
+            debugText.Multiline = true;
+            debugText.Name = "debugText";
+            debugText.ReadOnly = true;
+            debugText.Size = new Size(200, 250);
+            debugText.TabIndex = 4;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(984, 561);
+            Controls.Add(debugText);
+            Controls.Add(serverLbl);
+            Controls.Add(serverText);
+            Controls.Add(connectBtn);
             Controls.Add(mainLbl);
             Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "MainForm";
             Text = "Windwaker Multiplayer Client";
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
 
         private Label mainLbl;
+        private Button connectBtn;
+        private TextBox serverText;
+        private Label serverLbl;
+        private TextBox debugText;
     }
 }
