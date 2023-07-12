@@ -11,13 +11,10 @@ namespace Windwaker.Multiplayer.Server
         public static void Main()
         {
             Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine("Program started");
-
             ServerSettings = LoadConfig();
-            Console.WriteLine("Port: " + ServerSettings.port);
 
             var server = new Server();
-            server.Connect("192.168.1.166:" + ServerSettings.port);
+            server.Connect("*:" + ServerSettings.port);
 
             Console.ReadKey(true);
         }
