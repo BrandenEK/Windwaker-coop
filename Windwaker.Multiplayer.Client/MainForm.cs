@@ -17,6 +17,9 @@ namespace Windwaker.Multiplayer.Client
 
         private string _lastValidIp;
 
+        /// <summary>
+        /// When the connect button is clicked, either connect/disconnect from the server
+        /// </summary>
         private void OnClickConnect(object sender, EventArgs e)
         {
             if (client.IsConnected)
@@ -38,6 +41,9 @@ namespace Windwaker.Multiplayer.Client
             }
         }
 
+        /// <summary>
+        /// Ensures that an 'ip:port' string follows a valid syntax
+        /// </summary>
         private bool ValidateIpPort(string ipPort)
         {
             if (string.IsNullOrEmpty(ipPort))
@@ -47,28 +53,38 @@ namespace Windwaker.Multiplayer.Client
             return colon > 0 && colon < ipPort.Length - 1;
         }
 
+        /// <summary>
+        /// Whenever the connection status is changed, update the button UI
+        /// </summary>
         public static void UpdateUI()
         {
             instance.connectBtn.Text = instance.client.IsConnected ? "Disconnect" : "Connect";
         }
 
-        public static void Log(string message)
-        {
-            instance.debugText.Text += message + "\r\n";
-        }
-
+        /// <summary>
+        /// When the form is opened, load the last used ip from settings
+        /// </summary>
         private void OnFormOpen(object sender, EventArgs e)
         {
-            // Load the last valid serveripport into the text box
             _lastValidIp = Properties.Settings.Default.ServerIpPort;
             serverText.Text = _lastValidIp;
         }
 
+        /// <summary>
+        /// When the form is closed, save the last used ip to settings
+        /// </summary>
         private void OnFormClose(object sender, FormClosingEventArgs e)
         {
-            // Save the last valid serveripport to settings
             Properties.Settings.Default.ServerIpPort = _lastValidIp;
             Properties.Settings.Default.Save();
+        }
+
+        /// <summary>
+        /// Logs a message to the debug console
+        /// </summary>
+        public static void Log(string message)
+        {
+            instance.debugText.Text += message + "\r\n";
         }
     }
 }

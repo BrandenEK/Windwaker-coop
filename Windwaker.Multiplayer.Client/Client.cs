@@ -1,10 +1,10 @@
-﻿using System;
+﻿using SuperSimpleTcp;
+using System;
+using System.Net.Sockets;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SuperSimpleTcp;
-using System.Net.Sockets;
 
 namespace Windwaker.Multiplayer.Client
 {
@@ -14,6 +14,9 @@ namespace Windwaker.Multiplayer.Client
 
         public bool IsConnected => _client != null && _client.IsConnected;
 
+        /// <summary>
+        /// Attempts to connect to a server at the specified ip port
+        /// </summary>
         public bool Connect(string ipPort)
         {
             try
@@ -35,6 +38,9 @@ namespace Windwaker.Multiplayer.Client
             return true;
         }
 
+        /// <summary>
+        /// Disconnects from the current server
+        /// </summary>
         public void Disconnect()
         {
             if (_client != null)
@@ -44,18 +50,30 @@ namespace Windwaker.Multiplayer.Client
             }
         }
 
+        /// <summary>
+        /// Called whenever the client connects to the server
+        /// ???
+        /// </summary>
         private void OnServerConnected(object sender, ConnectionEventArgs e)
         {
             MainForm.Log($"Connected to {e.IpPort}");
             MainForm.UpdateUI();
         }
 
+        /// <summary>
+        /// Called whenever the client disconnects from the server
+        /// ???
+        /// </summary>
         private void OnServerDisconnected(object sender, ConnectionEventArgs e)
         {
             MainForm.Log($"Disconnected from {e.IpPort}");
             MainForm.UpdateUI();
         }
 
+        /// <summary>
+        /// Called whenever data is received from the server
+        /// ???
+        /// </summary>
         private void OnDataReceived(object sender, DataReceivedEventArgs e)
         {
             MainForm.Log("Data count: " + e.Data.Count);
