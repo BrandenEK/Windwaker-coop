@@ -1,7 +1,7 @@
 ﻿using SuperSimpleTcp;
 using System;
-using System.Net.Sockets;
 using System.Collections.Generic;
+using System.Net.Sockets;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -42,6 +42,25 @@ namespace Windwaker.Multiplayer.Server
         }
 
         /// <summary>
+        /// Called whenever a client connects to the server
+        /// ???
+        /// </summary>
+        private void OnClientConnected(object sender, ConnectionEventArgs e)
+        {
+            Console.WriteLine("Client connected: " + e.IpPort);
+            Send(e.IpPort, new byte[] { 1, 2, 3 }, NetworkType.Intro);
+        }
+
+        /// <summary>
+        /// Called whenever a client disconnects from the server
+        /// ???
+        /// </summary>
+        private void OnClientDisconnected(object sender, ConnectionEventArgs e)
+        {
+            Console.WriteLine("Client disconnected: " + e.IpPort);
+        }
+
+        /// <summary>
         /// Sends a message to the client at the specified ip port
         /// </summary>
         private void Send(string ip, byte[] data, NetworkType dataType)
@@ -65,25 +84,6 @@ namespace Windwaker.Multiplayer.Server
         }
 
         /// <summary>
-        /// Called whenever a client connects to the server
-        /// ???
-        /// </summary>
-        private void OnClientConnected(object sender, ConnectionEventArgs e)
-        {
-            Console.WriteLine("Client connected: " + e.IpPort);
-            Send(e.IpPort, new byte[] { 1, 2, 3 }, NetworkType.Intro);
-        }
-
-        /// <summary>
-        /// Called whenever a client disconnects from the server
-        /// ???
-        /// </summary>
-        private void OnClientDisconnected(object sender, ConnectionEventArgs e)
-        {
-            Console.WriteLine("Client disconnected: " + e.IpPort);
-        }
-
-        /// <summary>
         /// Converts received data into a type and message and then processes it
         /// </summary>
         private void OnDataReceived(object sender, DataReceivedEventArgs e)
@@ -91,7 +91,7 @@ namespace Windwaker.Multiplayer.Server
             byte[] data = e.Data.ToArray();
             int startIdx = 0;
 
-            while (startIdx < e.Data.Count - 3)
+            while (startIdx < data.Length - 3)
             {
                 ushort length = BitConverter.ToUInt16(data, startIdx);
                 NetworkType type = (NetworkType)data[startIdx + 2];
@@ -117,7 +117,7 @@ namespace Windwaker.Multiplayer.Server
                 startIdx += 3 + length;
             }
 
-            if (startIdx != e.Data.Count)
+            if (startIdx != data.Length)
                 Console.WriteLine("*** Received data was formatted incorrectly ***");
         }
 
