@@ -11,6 +11,7 @@ namespace Windwaker.Multiplayer.Server
         public static void Main()
         {
             Console.ForegroundColor = ConsoleColor.White;
+            Console.Title = "Windwaker Multiplayer Server";
             ServerSettings = LoadConfig();
 
             var server = new Server();
