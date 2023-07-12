@@ -24,7 +24,7 @@ namespace Windwaker.Multiplayer.Server
 
                 _server.Start();
             }
-            catch (SocketException)
+            catch (Exception e) when (e is SocketException || e is TimeoutException)
             {
                 Console.WriteLine($"Failed to start server at {ipPort}");
                 return false;

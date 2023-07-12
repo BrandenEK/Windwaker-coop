@@ -26,7 +26,7 @@ namespace Windwaker.Multiplayer.Client
 
                 _client.Connect();
             }
-            catch (SocketException)
+            catch (Exception e) when (e is SocketException || e is TimeoutException)
             {
                 MainForm.Log($"Failed to connect to {ipPort}");
                 return false;

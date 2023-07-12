@@ -23,15 +23,25 @@ namespace Windwaker.Multiplayer.Client
             }
             else
             {
-                string ipPort = serverText.Text;
-                if (ipPort == string.Empty)
+                string ipPort = serverText.Text.Trim();
+                if (ValidateIpPort(ipPort))
                 {
-                    Log("Enter an ip port to connect!");
-                    return;
+                    client.Connect(ipPort);
                 }
-
-                client.Connect(ipPort);
+                else
+                {
+                    Log("Enter a valid ip port!");
+                }
             }
+        }
+
+        private bool ValidateIpPort(string ipPort)
+        {
+            if (string.IsNullOrEmpty(ipPort))
+                return false;
+
+            int colon = ipPort.IndexOf(':');
+            return colon > 0 && colon < ipPort.Length - 1;
         }
 
         public static void UpdateUI()
