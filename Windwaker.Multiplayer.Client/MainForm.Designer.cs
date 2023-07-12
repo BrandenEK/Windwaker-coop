@@ -100,6 +100,8 @@ namespace Windwaker.Multiplayer.Client
             Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "MainForm";
             Text = "Windwaker Multiplayer Client";
+            FormClosing += OnFormClose;
+            Load += OnFormOpen;
             ResumeLayout(false);
             PerformLayout();
         }

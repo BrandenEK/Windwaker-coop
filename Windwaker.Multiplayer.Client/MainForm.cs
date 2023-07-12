@@ -15,6 +15,8 @@ namespace Windwaker.Multiplayer.Client
 
         private readonly Client client = new();
 
+        private string _lastValidIp;
+
         private void OnClickConnect(object sender, EventArgs e)
         {
             if (client.IsConnected)
@@ -26,6 +28,7 @@ namespace Windwaker.Multiplayer.Client
                 string ipPort = serverText.Text.Trim();
                 if (ValidateIpPort(ipPort))
                 {
+                    _lastValidIp = ipPort;
                     client.Connect(ipPort);
                 }
                 else
@@ -52,6 +55,20 @@ namespace Windwaker.Multiplayer.Client
         public static void Log(string message)
         {
             instance.debugText.Text += message + "\r\n";
+        }
+
+        private void OnFormOpen(object sender, EventArgs e)
+        {
+            // Load the last valid serveripport into the text box
+            _lastValidIp = Properties.Settings.Default.ServerIpPort;
+            serverText.Text = _lastValidIp;
+        }
+
+        private void OnFormClose(object sender, FormClosingEventArgs e)
+        {
+            // Save the last valid serveripport to settings
+            Properties.Settings.Default.ServerIpPort = _lastValidIp;
+            Properties.Settings.Default.Save();
         }
     }
 }
