@@ -15,7 +15,7 @@ namespace Windwaker.Multiplayer.Server
             ServerSettings = LoadConfig();
 
             var server = new Server();
-            server.Connect("*:" + ServerSettings.port);
+            server.Start("*:" + ServerSettings.port);
 
             Console.ReadKey(true);
         }
@@ -23,7 +23,6 @@ namespace Windwaker.Multiplayer.Server
         /// <summary>
         /// Loads the server settings from the file if it exists, or creates a new file with default settings
         /// </summary>
-        /// <returns>The configuration object</returns>
         private static Config LoadConfig()
         {
             string path = Environment.CurrentDirectory + "/multiplayer.cfg";

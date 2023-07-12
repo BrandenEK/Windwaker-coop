@@ -1,18 +1,25 @@
-﻿using System;
+﻿using SuperSimpleTcp;
+using System;
+using System.Net.Sockets;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SuperSimpleTcp;
-using System.Net.Sockets;
 
 namespace Windwaker.Multiplayer.Server
 {
     internal class Server
     {
+        /// <summary>
+        /// The tcp server that handles sending messages to the client
+        /// </summary>
         private SimpleTcpServer _server;
 
-        public bool Connect(string ipPort)
+        /// <summary>
+        /// Starts the server at the specified ip port.  
+        /// Is called on application start and should never be disconnected
+        /// </summary>
+        public bool Start(string ipPort)
         {
             try
             {
@@ -34,25 +41,28 @@ namespace Windwaker.Multiplayer.Server
             return true;
         }
 
-        public void Disconnect()
-        {
-            if (_server != null)
-            {
-                _server.Stop();
-                _server = null;
-            }
-        }
-
+        /// <summary>
+        /// Called whenever a client connects to the server
+        /// ???
+        /// </summary>
         private void OnClientConnected(object sender, ConnectionEventArgs e)
         {
             Console.WriteLine("Client connected: " + e.IpPort);
         }
 
+        /// <summary>
+        /// Called whenever a client disconnects from the server
+        /// ???
+        /// </summary>
         private void OnClientDisconnected(object sender, ConnectionEventArgs e)
         {
             Console.WriteLine("Client disconnected: " + e.IpPort);
         }
 
+        /// <summary>
+        /// Called whenever data is received from a client
+        /// ???
+        /// </summary>
         private void OnDataReceived(object sender, DataReceivedEventArgs e)
         {
             Console.WriteLine("Data amount: " + e.Data.Count);
