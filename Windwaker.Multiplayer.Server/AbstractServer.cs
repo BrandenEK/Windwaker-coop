@@ -5,7 +5,7 @@ using System.Net.Sockets;
 
 namespace Windwaker.Multiplayer.Server
 {
-    internal abstract class AbstractServer<T> where T : Enum
+    internal abstract class AbstractServer<T> : IServer where T : Enum
     {
         private SimpleTcpServer _server;
 

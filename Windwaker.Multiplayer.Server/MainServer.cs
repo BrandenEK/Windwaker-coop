@@ -27,15 +27,25 @@ namespace Windwaker.Multiplayer.Server
 
         // Intro
 
-        private void SendIntro(string playerIp, byte[] intro)
+        private void SendIntro(string playerIp, byte response, ushort port)
         {
-            Send(playerIp, intro, MainType.Intro);
+            byte[] portBytes = BitConverter.GetBytes(port);
+
+            byte[] message = new byte[] { response, portBytes[0], portBytes[1] };
+            Send(playerIp, message, MainType.Intro);
         }
 
         private void ReceiveIntro(string playerIp, byte[] message)
         {
             Console.WriteLine("Received intro");
-            SendIntro(playerIp, Core.ValidateAndGetIntro());
+
+            string roomName = "Test Room";
+            string playerName = "Test Player";
+            string game = "Windwaker";
+            string password = null;
+
+            byte response = Core.ValidatePlayerIntro(playerIp, roomName, playerName, game, password, out ushort port);
+            SendIntro(playerIp, response, port);
         }
     }
 

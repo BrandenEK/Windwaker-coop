@@ -8,17 +8,25 @@ namespace Windwaker.Multiplayer.Server
 {
     internal class Room
     {
-        private readonly string _game;
-        private readonly string _password;
+        public string Game => _game;
+        public string PassWord => _password;
 
-        private readonly AbstractServer<AbstractType> gameServer;
+        public void AllowPlayer(string playerIp) => allowedIps.Add(playerIp);
 
-        public Room(string game, string password)
+        public Room(string ipPort, string game, string password)
         {
             _game = game;
             _password = password;
-            gameServer = null;
-            // Start server at first available port
+            gameServer = new WindwakerServer();
+            gameServer.Start(ipPort);
+            Console.WriteLine("Created new room for " + _game);
         }
+
+        private readonly IServer gameServer;
+
+        private readonly List<string> allowedIps = new();
+
+        private readonly string _game;
+        private readonly string _password;
     }
 }

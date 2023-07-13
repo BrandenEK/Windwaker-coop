@@ -28,14 +28,28 @@ namespace Windwaker.Multiplayer.Server
             }
         }
 
-        public static byte[] ValidateAndGetIntro()
+        /// <summary>
+        /// Takes in the data sent from an initial client connection, and either creates a new room for the player, adds them to an existing room, or rejects them
+        /// </summary>
+        public static byte ValidatePlayerIntro(string playerIp, string roomName, string playerName, string game, string password, out ushort port)
         {
-            // if new room, create it and add this player
-
-            // Else, make sure all info is valid, then add the player
+            if (rooms.TryGetValue(roomName, out Room existingRoom))
+            {
+                // Validate player info before adding them to the room
+                existingRoom.AllowPlayer(playerIp);
+            }
+            else
+            {
+                // Create a new room for this player
+                string tempIp = "*:8990";
+                Room newRoom = new Room(tempIp, game, password);
+                newRoom.AllowPlayer(playerIp);
+                rooms[roomName] = newRoom;
+            }
 
             // Regardless, send back a response and possibly a port
-            return new byte[] { 0 };
+            port = 8990;
+            return 0;
         }
 
 
