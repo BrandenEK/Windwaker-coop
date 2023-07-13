@@ -11,6 +11,8 @@ namespace Windwaker.Multiplayer.Server
 
         private Dictionary<T, Action<string, byte[]>> _receivers;
 
+        public int Port => _server == null ? 0 : _server.Port;
+
         /// <summary>
         /// Initializes the server with the given receive methods
         /// </summary>

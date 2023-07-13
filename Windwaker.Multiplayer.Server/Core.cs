@@ -37,20 +37,20 @@ namespace Windwaker.Multiplayer.Server
             {
                 // Validate player info before adding them to the room
                 existingRoom.AllowPlayer(playerIp);
-                Console.WriteLine($"Adding '{playerName}' to existing room '{roomName}' on port 8990");
+                port = existingRoom.Port;
+                Console.WriteLine($"Adding '{playerName}' to existing room '{roomName}' on port {port}");
             }
             else
             {
                 // Create a new room for this player
-                string tempIp = "*:8990";
-                Room newRoom = new Room(tempIp, game, password);
+                Room newRoom = new Room("*:0", game, password);
                 newRoom.AllowPlayer(playerIp);
                 rooms[roomName] = newRoom;
-                Console.WriteLine($"Creating new room '{roomName}' on port 8990 for '{playerName}'");
+                port = newRoom.Port;
+                Console.WriteLine($"Creating new room '{roomName}' on port {port} for '{playerName}'");
             }
 
             // Regardless, send back a response and possibly a port
-            port = 8990;
             return 0;
         }
 

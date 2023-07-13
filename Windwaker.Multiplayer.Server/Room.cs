@@ -9,7 +9,8 @@ namespace Windwaker.Multiplayer.Server
     internal class Room
     {
         public string Game => _game;
-        public string PassWord => _password;
+        public string Password => _password;
+        public ushort Port => (ushort)gameServer.Port;
 
         public void AllowPlayer(string playerIp) => allowedIps.Add(playerIp);
 

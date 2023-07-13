@@ -6,5 +6,7 @@ namespace Windwaker.Multiplayer.Server
         public bool Start(string ipPort);
 
         public void Stop();
+
+        public int Port { get; }
     }
 }

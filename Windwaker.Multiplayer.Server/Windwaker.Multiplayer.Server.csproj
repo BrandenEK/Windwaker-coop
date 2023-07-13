@@ -12,7 +12,13 @@
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="SuperSimpleTcp" Version="3.0.11" />
+    <!--<PackageReference Include="SuperSimpleTcp" Version="3.0.11" />-->
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="SuperSimpleTcp">
+      <HintPath>..\..\BrandenEK\SuperSimpleTcp\src\SuperSimpleTcp\bin\Release\net7.0\SuperSimpleTcp.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <Target Name="Development" AfterTargets="PostBuildEvent">
@@ -25,7 +31,7 @@
       <ExportFolder>$(SolutionDir)Export\$(AssemblyName)</ExportFolder>
     </PropertyGroup>
     <Copy SourceFiles="@(BuildFolder)" DestinationFolder="$(ExportFolder)" />
-    <ZipDirectory SourceDirectory="$(OutDir)" DestinationFile="$(ExportFolder)\..\$(TargetName).zip" Overwrite="true"/>
+    <ZipDirectory SourceDirectory="$(OutDir)" DestinationFile="$(ExportFolder)\..\$(TargetName).zip" Overwrite="true" />
 
   </Target>
 
