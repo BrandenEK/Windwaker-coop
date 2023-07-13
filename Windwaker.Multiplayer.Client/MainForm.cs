@@ -13,7 +13,7 @@ namespace Windwaker.Multiplayer.Client
             instance ??= this;
         }
 
-        private readonly Client client = new();
+        private readonly MainClient client = new();
 
         private string _lastValidIp;
 

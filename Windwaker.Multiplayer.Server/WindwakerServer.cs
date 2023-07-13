@@ -8,25 +8,24 @@ namespace Windwaker.Multiplayer.Server
 {
     internal class WindwakerServer : AbstractServer<WindwakerType>
     {
-        public override void Start(string ipPort)
+        public WindwakerServer()
         {
-            Dictionary<WindwakerType, Action<string, byte[]>> receivers = new()
+            Initialize(new Dictionary<WindwakerType, Action<string, byte[]>>()
             {
                 { WindwakerType.Position, ReceivePosition },
                 { WindwakerType.MemoryLocation, ReceiveMemoryLocation },
                 { WindwakerType.FullMemory, ReceiveFullMemory },
-            };
-            Initialize(ipPort, receivers);
+            });
         }
 
         // Connection
 
-        protected override void ClientConnected(string playerIp)
+        protected override void ClientConnected(string clientIp)
         {
             
         }
 
-        protected override void ClientDisconnected(string playerIp)
+        protected override void ClientDisconnected(string clientIp)
         {
             
         }

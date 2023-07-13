@@ -5,41 +5,41 @@ namespace Windwaker.Multiplayer.Server
 {
     internal class MainServer : AbstractServer<MainType>
     {
-        public override void Start(string ipPort)
+        public MainServer()
         {
-            Dictionary<MainType, Action<string, byte[]>> receivers = new()
+            Initialize(new Dictionary<MainType, Action<string, byte[]>>()
             {
                 { MainType.Intro, ReceiveIntro },
-            };
-            Initialize(ipPort, receivers);
+            });
         }
 
         // Connection
 
-        protected override void ClientConnected(string playerIp)
+        protected override void ClientConnected(string clientIp)
         {
             Console.WriteLine("client connected");
         }
 
-        protected override void ClientDisconnected(string playerIp)
+        protected override void ClientDisconnected(string clientIp)
         {
 
         }
 
-        // Position
+        // Intro
 
         private void SendIntro(string playerIp)
         {
-
+            Send(playerIp, new byte[] { 2, 5, 5, 6, 5 }, MainType.Intro);
         }
 
         private void ReceiveIntro(string playerIp, byte[] message)
         {
             Console.WriteLine(message.Length);
+            SendIntro(playerIp);
         }
     }
 
-    internal enum MainType
+    internal enum MainType : byte
     {
         Intro = 0,
     }

@@ -12,9 +12,13 @@ namespace Windwaker.Multiplayer.Server
 
         private Dictionary<T, Action<string, byte[]>> _receivers;
 
-        protected bool Initialize(string ipPort, Dictionary<T, Action<string, byte[]>> receivers)
+        protected void Initialize(Dictionary<T, Action<string, byte[]>> receivers)
         {
             _receivers = receivers;
+        }
+
+        public bool Start(string ipPort)
+        {
             try
             {
                 _server = new SimpleTcpServer(ipPort);
@@ -34,8 +38,6 @@ namespace Windwaker.Multiplayer.Server
             Console.WriteLine($"Started server at {ipPort}");
             return true;
         }
-
-        public abstract void Start(string ipPort);
 
         /// <summary>
         /// Starts the server at the specified ip port.  
@@ -84,12 +86,12 @@ namespace Windwaker.Multiplayer.Server
             ClientConnected(e.IpPort);
         }
 
-        protected virtual void ClientConnected(string playerIp)
+        protected virtual void ClientConnected(string clientIp)
         {
 
         }
 
-        protected virtual void ClientDisconnected(string playerIp)
+        protected virtual void ClientDisconnected(string clientIp)
         {
 
         }
@@ -109,21 +111,21 @@ namespace Windwaker.Multiplayer.Server
         /// </summary>
         protected void Send(string ip, byte[] message, T type)
         {
-            if (message != null && message.Length > 0)
-            {
-                var list = new List<byte>();
-                list.AddRange(BitConverter.GetBytes((ushort)message.Length));
-                list.Add((byte)(object)type);
-                list.AddRange(message);
+            if (message == null || message.Length == 0)
+                return;
 
-                try
-                {
-                    _server.Send(ip, list.ToArray());
-                }
-                catch (Exception)
-                {
-                    Console.WriteLine($"*** Couldn't send data to {ip} ***");
-                }
+            var list = new List<byte>();
+            list.AddRange(BitConverter.GetBytes((ushort)message.Length));
+            list.Add((byte)(object)type);
+            list.AddRange(message);
+
+            try
+            {
+                _server.Send(ip, list.ToArray());
+            }
+            catch (Exception)
+            {
+                Console.WriteLine($"*** Couldn't send data to {ip} ***");
             }
         }
 
@@ -134,36 +136,14 @@ namespace Windwaker.Multiplayer.Server
         {
             byte[] data = e.Data.ToArray();
             int startIdx = 0;
-            Console.WriteLine("Received data");
 
             while (startIdx < data.Length - 3)
             {
-                Console.WriteLine("Processing message");
                 ushort length = BitConverter.ToUInt16(data, startIdx);
-                //NetworkType type = (NetworkType)data[startIdx + 2];
                 T type = (T)Enum.Parse(typeof(T), data[startIdx + 2].ToString());
                 byte[] message = data[(startIdx + 3)..(startIdx + 3 + length)];
-                Console.WriteLine(type.ToString());
+                
                 _receivers[type](e.IpPort, message);
-                //Receive(e.IpPort, message, );
-
-                //switch (type)
-                //{
-                //    case NetworkType.Position: ReceivePosition(e.IpPort, message); break;
-                //    case NetworkType.Animation: ReceiveAnimation(e.IpPort, message); break;
-                //    case NetworkType.Direction: ReceiveDirection(e.IpPort, message); break;
-                //    case NetworkType.EnterScene: ReceiveEnterScene(e.IpPort, message); break;
-                //    case NetworkType.LeaveScene: ReceiveLeaveScene(e.IpPort, message); break;
-                //    case NetworkType.Skin: ReceiveSkin(e.IpPort, message); break;
-                //    case NetworkType.Team: ReceiveTeam(e.IpPort, message); break;
-                //    case NetworkType.Connection: ReceiveConnection(e.IpPort, message); break;
-                //    case NetworkType.Intro: ReceiveIntro(e.IpPort, message); break;
-                //    case NetworkType.Progress: ReceiveProgress(e.IpPort, message); break;
-                //    case NetworkType.Attack: ReceiveAttack(e.IpPort, message); break;
-                //    case NetworkType.Effect: ReceiveEffect(e.IpPort, message); break;
-                //    default:
-                //        Console.WriteLine($"*** Data type '{type}' is not valid ***"); break;
-                //}
                 startIdx += 3 + length;
             }
 
