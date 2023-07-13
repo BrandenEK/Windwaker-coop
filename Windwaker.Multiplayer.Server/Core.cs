@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Windwaker.Multiplayer.Server
@@ -8,14 +9,17 @@ namespace Windwaker.Multiplayer.Server
     {
         public static Config ServerSettings { get; private set; }
 
+        private static readonly MainServer mainServer = new();
+
+        private static readonly Dictionary<string, Room> rooms = new();
+
         public static void Main()
         {
             Console.ForegroundColor = ConsoleColor.White;
             Console.Title = "Windwaker Multiplayer Server";
             ServerSettings = LoadConfig();
 
-            var server = new MainServer();
-            server.Start("*:" + ServerSettings.port);
+            mainServer.Start("*:" + ServerSettings.port);
 
             while (true)
             {
@@ -23,6 +27,18 @@ namespace Windwaker.Multiplayer.Server
                 Console.ReadKey(true);
             }
         }
+
+        public static byte[] ValidateAndGetIntro()
+        {
+            // if new room, create it and add this player
+
+            // Else, make sure all info is valid, then add the player
+
+            // Regardless, send back a response and possibly a port
+            return new byte[] { 0 };
+        }
+
+
 
         /// <summary>
         /// Loads the server settings from the file if it exists, or creates a new file with default settings

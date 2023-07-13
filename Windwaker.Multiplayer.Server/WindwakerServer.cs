@@ -67,7 +67,7 @@ namespace Windwaker.Multiplayer.Server
         }
     }
 
-    internal enum WindwakerType
+    internal enum WindwakerType : byte
     {
         Position,
         MemoryLocation,
