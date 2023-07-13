@@ -14,6 +14,11 @@ namespace Windwaker.Multiplayer.Server
 
         public void AllowPlayer(string playerIp) => allowedIps.Add(playerIp);
 
+        // Not implemented yet
+        public bool IsNameTaken(string name) => false;
+        public bool IsIpTaken(string ip) => false;
+        public int PlayerCount => 0;
+
         public Room(string ipPort, string game, string password)
         {
             _game = game;
