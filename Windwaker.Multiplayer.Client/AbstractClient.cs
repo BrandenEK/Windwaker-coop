@@ -13,11 +13,17 @@ namespace Windwaker.Multiplayer.Client
 
         public bool IsConnected => _client != null && _client.IsConnected;
 
+        /// <summary>
+        /// Initializes the client with the given receive methods
+        /// </summary>
         protected void Initialize(Dictionary<T, Action<byte[]>> receivers)
         {
             _receivers = receivers;
         }
 
+        /// <summary>
+        /// Attempts to connect to a server at the specified ip port
+        /// </summary>
         public bool Connect(string ipPort)
         {
             try
@@ -52,33 +58,8 @@ namespace Windwaker.Multiplayer.Client
         }
 
         /// <summary>
-        /// Called whenever the client connects to the server
-        /// ???
+        /// Sends a message to the server
         /// </summary>
-        private void OnServerConnected(object sender, ConnectionEventArgs e)
-        {
-            ServerConnected(e.IpPort);
-        }
-
-        protected virtual void ServerConnected(string serverIp)
-        {
-
-        }
-
-        protected virtual void ServerDisconnected(string serverIp)
-        {
-
-        }
-
-        /// <summary>
-        /// Called whenever the client disconnects from the server
-        /// ???
-        /// </summary>
-        private void OnServerDisconnected(object sender, ConnectionEventArgs e)
-        {
-            ServerDisconnected(e.IpPort);
-        }
-
         protected void Send(byte[] message, T type)
         {
             if (message == null || message.Length == 0 || !IsConnected)
@@ -100,7 +81,7 @@ namespace Windwaker.Multiplayer.Client
         }
 
         /// <summary>
-        /// Adds a message to the receiving queue to be processed soon
+        /// Receives a message from the server and calls the specific receive method to process it
         /// </summary>
         private void Receive(object sender, DataReceivedEventArgs e)
         {
@@ -120,5 +101,23 @@ namespace Windwaker.Multiplayer.Client
             if (startIdx != data.Length)
                 MainForm.Log("*** Received data was formatted incorrectly ***");
         }
+
+        /// <summary>
+        /// Called whenever the client connects to the server
+        /// </summary>
+        protected virtual void ServerConnected(string serverIp)
+        {
+
+        }
+        private void OnServerConnected(object sender, ConnectionEventArgs e) => ServerConnected(e.IpPort);
+
+        /// <summary>
+        /// Called whenever the client disconnects from the server
+        /// </summary>
+        protected virtual void ServerDisconnected(string serverIp)
+        {
+
+        }
+        private void OnServerDisconnected(object sender, ConnectionEventArgs e) => ServerDisconnected(e.IpPort);
     }
 }
