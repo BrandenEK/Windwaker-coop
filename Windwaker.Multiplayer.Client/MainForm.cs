@@ -13,18 +13,21 @@ namespace Windwaker.Multiplayer.Client
             instance ??= this;
         }
 
-        private readonly MainClient client = new();
+        private readonly MainClient mainClient = new();
+        private AbstractClient<AbstractType> gameClient;
 
         private string _lastValidIp;
+
+        private bool IsConnectedToGame => gameClient != null && gameClient.IsConnected;
 
         /// <summary>
         /// When the connect button is clicked, either connect/disconnect from the server
         /// </summary>
         private void OnClickConnect(object sender, EventArgs e)
         {
-            if (client.IsConnected)
+            if (IsConnectedToGame)
             {
-                client.Disconnect();
+                gameClient.Disconnect();
             }
             else
             {
@@ -32,7 +35,7 @@ namespace Windwaker.Multiplayer.Client
                 if (ValidateIpPort(ipPort))
                 {
                     _lastValidIp = ipPort;
-                    client.Connect(ipPort);
+                    mainClient.Connect(ipPort);
                 }
                 else
                 {
@@ -58,7 +61,7 @@ namespace Windwaker.Multiplayer.Client
         /// </summary>
         public static void UpdateUI()
         {
-            instance.connectBtn.Text = instance.client.IsConnected ? "Disconnect" : "Connect";
+            instance.connectBtn.Text = instance.IsConnectedToGame ? "Disconnect" : "Connect";
         }
 
         /// <summary>

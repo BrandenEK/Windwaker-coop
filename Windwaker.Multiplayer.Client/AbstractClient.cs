@@ -120,4 +120,9 @@ namespace Windwaker.Multiplayer.Client
         }
         private void OnServerDisconnected(object sender, ConnectionEventArgs e) => ServerDisconnected(e.IpPort);
     }
+
+    internal enum AbstractType
+    {
+        None = 0,
+    }
 }
