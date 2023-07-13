@@ -37,7 +37,7 @@ namespace Windwaker.Multiplayer.Server
             {
                 // Create a new room for this player
                 Room newRoom = new Room("*:0", game, password);
-                newRoom.AllowPlayer(playerIp);
+                newRoom.QueuePlayer(playerIp, playerName);
                 rooms[roomName] = newRoom;
                 port = newRoom.Port;
                 Console.WriteLine($"Creating new room '{roomName}' on port {port} for '{playerName}'");
@@ -55,7 +55,7 @@ namespace Windwaker.Multiplayer.Server
             }
 
             // Ensure that the room doesn't already have the max number of players
-            if (existingRoom.PlayerCount >= ServerSettings.maxPlayers)
+            if (existingRoom.AllPlayers.Count >= ServerSettings.maxPlayers)
             {
                 Console.WriteLine("Player connection rejected: Player limit reached");
                 return 2;
@@ -75,7 +75,7 @@ namespace Windwaker.Multiplayer.Server
                 return 4;
             }
 
-            existingRoom.AllowPlayer(playerIp);
+            existingRoom.QueuePlayer(playerIp, playerName);
             port = existingRoom.Port;
             Console.WriteLine($"Adding '{playerName}' to existing room '{roomName}' on port {port}");
             return 0;
