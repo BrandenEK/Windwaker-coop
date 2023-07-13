@@ -17,7 +17,7 @@ namespace Windwaker.Multiplayer.Server
 
         protected override void ClientConnected(string clientIp)
         {
-            Console.WriteLine("client connected");
+            Console.WriteLine("Received connection to Main server");
         }
 
         protected override void ClientDisconnected(string clientIp)
@@ -37,8 +37,6 @@ namespace Windwaker.Multiplayer.Server
 
         private void ReceiveIntro(string playerIp, byte[] message)
         {
-            Console.WriteLine("Received intro");
-
             string roomName = "Test Room";
             string playerName = "Test Player";
             string game = "Windwaker";

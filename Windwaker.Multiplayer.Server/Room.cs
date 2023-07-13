@@ -19,7 +19,6 @@ namespace Windwaker.Multiplayer.Server
             _password = password;
             gameServer = new WindwakerServer();
             gameServer.Start(ipPort);
-            Console.WriteLine("Created new room for " + _game);
         }
 
         private readonly IServer gameServer;
