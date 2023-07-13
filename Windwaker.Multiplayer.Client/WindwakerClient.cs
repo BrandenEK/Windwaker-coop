@@ -22,6 +22,7 @@ namespace Windwaker.Multiplayer.Client
 
         protected override void ServerConnected(string serverIp)
         {
+            MainForm.Log("Connected to windwaker server");
         }
 
         protected override void ServerDisconnected(string serverIp)

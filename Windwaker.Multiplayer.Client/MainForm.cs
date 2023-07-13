@@ -14,7 +14,7 @@ namespace Windwaker.Multiplayer.Client
         }
 
         private readonly MainClient mainClient = new();
-        private AbstractClient<AbstractType> gameClient;
+        private IClient gameClient;
 
         private string _lastValidIp;
 
@@ -42,6 +42,14 @@ namespace Windwaker.Multiplayer.Client
                     Log("Enter a valid ip port!");
                 }
             }
+        }
+
+        public static void ReceiveGamePort(ushort port)
+        {
+            string ip = instance._lastValidIp.Split(':')[0];
+
+            instance.gameClient = new WindwakerClient();
+            instance.gameClient.Connect(ip + ":" + port);
         }
 
         /// <summary>

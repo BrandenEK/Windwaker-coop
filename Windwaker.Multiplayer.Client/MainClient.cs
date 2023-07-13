@@ -21,14 +21,14 @@ namespace Windwaker.Multiplayer.Client
         protected override void ServerConnected(string serverIp)
         {
             MainForm.Log($"Connected to {serverIp}");
-            MainForm.UpdateUI();
+            //MainForm.UpdateUI();
             SendIntro();
         }
 
         protected override void ServerDisconnected(string serverIp)
         {
             MainForm.Log($"Disconnected from {serverIp}");
-            MainForm.UpdateUI();
+            //MainForm.UpdateUI();
         }
 
         // Intro
@@ -41,6 +41,20 @@ namespace Windwaker.Multiplayer.Client
         private void ReceiveIntro(byte[] message)
         {
             MainForm.Log("Intro: " + message.Length);
+
+            byte response = message[0];
+            ushort port = BitConverter.ToUInt16(message, 1);
+
+            if (response == 0)
+            {
+                MainForm.ReceiveGamePort(port);
+            }
+            else
+            {
+                MainForm.Log("Connection refused");
+            }
+
+            Disconnect();
         }
     }
 
