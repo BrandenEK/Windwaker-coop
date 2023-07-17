@@ -14,11 +14,11 @@ namespace Windwaker.Multiplayer.Client
         /// <summary>
         /// Attempts to connect to a server at the specified ip port
         /// </summary>
-        public bool Connect(string ipPort)
+        public bool Connect(string ip, int port)
         {
             try
             {
-                _client = new SimpleTcpClient(ipPort);
+                _client = new SimpleTcpClient(ip, port);
 
                 _client.Events.Connected += OnServerConnected;
                 _client.Events.Disconnected += OnServerDisconnected;
@@ -28,7 +28,7 @@ namespace Windwaker.Multiplayer.Client
             }
             catch (Exception e) when (e is SocketException || e is TimeoutException)
             {
-                MainForm.Log($"Failed to connect to {ipPort}");
+                MainForm.Log($"Failed to connect to {ip}:{port}");
                 return false;
             }
 

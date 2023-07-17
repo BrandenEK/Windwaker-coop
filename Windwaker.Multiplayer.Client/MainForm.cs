@@ -15,7 +15,7 @@ namespace Windwaker.Multiplayer.Client
 
         private readonly Client _client = new();
 
-        private string _lastValidIp;
+        private ClientSettings _settings;
 
         private bool IsConnectedToGame => _client.IsConnected;
 
@@ -30,29 +30,51 @@ namespace Windwaker.Multiplayer.Client
             }
             else
             {
-                string ipPort = serverText.Text.Trim();
-                if (ValidateIpPort(ipPort))
+                if (ValidateAndUpdateSettings())
                 {
-                    _lastValidIp = ipPort;
-                    _client.Connect(ipPort);
+                    _client.Connect(_settings.serverIp, _settings.serverPort);
                 }
                 else
                 {
-                    Log("Enter a valid ip port!");
+                    Log("Enter valid data for the input fields!");
                 }
             }
         }
 
         /// <summary>
-        /// Ensures that an 'ip:port' string follows a valid syntax
+        /// Ensures that the input fields contain valid info, and if so, update the client settings
         /// </summary>
-        private bool ValidateIpPort(string ipPort)
+        /// <returns></returns>
+        private bool ValidateAndUpdateSettings()
         {
-            if (string.IsNullOrEmpty(ipPort))
+            // Ensure that a name is present
+            string playerName = playerNameField.Text.Trim();
+            if (playerName.Length == 0)
+            {
                 return false;
+            }
 
-            int colon = ipPort.IndexOf(':');
-            return colon > 0 && colon < ipPort.Length - 1;
+            // The game will always be ww for now
+            string gameName = "Windwaker";
+
+            // Ensure that an ip is present and doesn't contain a colon
+            string serverIp = serverIpField.Text.Trim();
+            if (serverIp.Length == 0 || serverIp.Contains(':'))
+            {
+                return false;
+            }
+
+            // Ensure that the port is a valid number
+            if (!int.TryParse(serverPortField.Text.Trim(), out int serverPort))
+            {
+                return false;
+            }
+
+            // No validation for password, it doesn't need to be present
+            string password = passwordField.Text.Trim();
+
+            _settings = new ClientSettings(playerName, gameName, serverIp, serverPort, password);
+            return true;
         }
 
         /// <summary>
@@ -68,8 +90,18 @@ namespace Windwaker.Multiplayer.Client
         /// </summary>
         private void OnFormOpen(object sender, EventArgs e)
         {
-            _lastValidIp = Properties.Settings.Default.ServerIpPort;
-            serverText.Text = _lastValidIp;
+            string playerName = Properties.Settings.Default.playerName;
+            string gameName = Properties.Settings.Default.gameName;
+            string serverIp = Properties.Settings.Default.serverIp;
+            int serverPort = Properties.Settings.Default.serverPort;
+            string password = Properties.Settings.Default.password;
+
+            _settings = new ClientSettings(playerName, gameName, serverIp, serverPort, password);
+            playerNameField.Text = playerName;
+            // Set game name
+            serverIpField.Text = serverIp;
+            serverPortField.Text = serverPort > 0 ? serverPort.ToString() : string.Empty;
+            passwordField.Text = password;
         }
 
         /// <summary>
@@ -77,7 +109,11 @@ namespace Windwaker.Multiplayer.Client
         /// </summary>
         private void OnFormClose(object sender, FormClosingEventArgs e)
         {
-            Properties.Settings.Default.ServerIpPort = _lastValidIp;
+            Properties.Settings.Default.playerName = _settings.playerName;
+            Properties.Settings.Default.gameName = _settings.gameName;
+            Properties.Settings.Default.serverIp = _settings.serverIp;
+            Properties.Settings.Default.serverPort = _settings.serverPort;
+            Properties.Settings.Default.password = _settings.password;
             Properties.Settings.Default.Save();
         }
 
