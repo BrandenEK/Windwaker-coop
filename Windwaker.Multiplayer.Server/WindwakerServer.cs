@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Windwaker.Multiplayer.Server
 {
-    internal class WindwakerServer : AbstractServer<WindwakerType>
+    internal class WindwakerServer : GameServer<WindwakerType>
     {
-        public WindwakerServer()
+        public WindwakerServer(Room room) : base(room)
         {
             Initialize(new Dictionary<WindwakerType, Action<string, byte[]>>()
             {
@@ -22,11 +22,13 @@ namespace Windwaker.Multiplayer.Server
 
         protected override void ClientConnected(string clientIp)
         {
+            base.ClientConnected(clientIp);
             Console.WriteLine("Received connection to Windwaker server");
         }
 
         protected override void ClientDisconnected(string clientIp)
         {
+            base.ClientDisconnected(clientIp);
             Console.WriteLine("Client disconnected from Windwaker server");
         }
 

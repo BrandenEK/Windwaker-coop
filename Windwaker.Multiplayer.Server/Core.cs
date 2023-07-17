@@ -36,7 +36,7 @@ namespace Windwaker.Multiplayer.Server
             if (!rooms.TryGetValue(roomName, out Room existingRoom))
             {
                 // Create a new room for this player
-                Room newRoom = new Room("*:0", game, password);
+                Room newRoom = new Room("*:0", roomName, game, password);
                 newRoom.QueuePlayer(playerIp, playerName);
                 rooms[roomName] = newRoom;
                 port = newRoom.Port;
@@ -52,6 +52,13 @@ namespace Windwaker.Multiplayer.Server
             {
                 Console.WriteLine("Player connection rejected: Incorrect password");
                 return 1;
+            }
+
+            // Ensure the game is correct
+            if (existingRoom.Game != game)
+            {
+                Console.WriteLine("Player connection rejected: Incorrect game");
+                return 5;
             }
 
             // Ensure that the room doesn't already have the max number of players

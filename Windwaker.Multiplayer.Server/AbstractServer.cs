@@ -1,7 +1,6 @@
 ﻿using SuperSimpleTcp;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Net.Sockets;
 
 namespace Windwaker.Multiplayer.Server
@@ -9,8 +8,6 @@ namespace Windwaker.Multiplayer.Server
     internal abstract class AbstractServer<T> : IServer where T : Enum
     {
         public int Port => _server == null ? 0 : _server.Port;
-
-        public ReadOnlyCollection<string> ConnectedPlayers => _connectedPlayers.AsReadOnly();
 
         /// <summary>
         /// Initializes the server with the given receive methods
@@ -54,6 +51,17 @@ namespace Windwaker.Multiplayer.Server
             {
                 _server.Stop();
                 _server = null;
+            }
+        }
+
+        /// <summary>
+        /// Disconnects the specified client ip from the server
+        /// </summary>
+        public void DisconnectClient(string ipPort)
+        {
+            if (_server != null )
+            {
+                _server.DisconnectClient(ipPort);
             }
         }
 
@@ -109,14 +117,7 @@ namespace Windwaker.Multiplayer.Server
         {
 
         }
-        private void OnClientConnected(object sender, ConnectionEventArgs e)
-        {
-            if (!_connectedPlayers.Contains(e.IpPort))
-            {
-                _connectedPlayers.Add(e.IpPort);
-                ClientConnected(e.IpPort);
-            }
-        }
+        private void OnClientConnected(object sender, ConnectionEventArgs e) => ClientConnected(e.IpPort);
 
         /// <summary>
         /// Called whenever a client disconnects from the server
@@ -125,18 +126,9 @@ namespace Windwaker.Multiplayer.Server
         {
 
         }
-        private void OnClientDisconnected(object sender, ConnectionEventArgs e)
-        {
-            if (_connectedPlayers.Contains(e.IpPort))
-            {
-                _connectedPlayers.Remove(e.IpPort);
-                ClientDisconnected(e.IpPort);
-            }
-        }
+        private void OnClientDisconnected(object sender, ConnectionEventArgs e) => ClientDisconnected(e.IpPort);
 
         private SimpleTcpServer _server;
-
-        private readonly List<string> _connectedPlayers = new();
 
         private Dictionary<T, Action<string, byte[]>> _receivers;
 
