@@ -8,11 +8,11 @@
     <Version>0.1.0</Version>
     <Authors>BrandenEK</Authors>
     <UseWindowsForms>true</UseWindowsForms>
-    <ApplicationIcon>windwaker.ico</ApplicationIcon>
+    <ApplicationIcon>windwaker-client.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="windwaker.ico" />
+    <Content Include="windwaker-client.ico" />
   </ItemGroup>
 
   <ItemGroup>

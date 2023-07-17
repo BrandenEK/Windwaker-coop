@@ -7,8 +7,12 @@
     <Description>The server application for Windwaker Co-op</Description>
     <Version>0.1.0</Version>
     <Authors>BrandenEK</Authors>
-    <ApplicationIcon>windwaker.ico</ApplicationIcon>
+    <ApplicationIcon>windwaker-server.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="windwaker-server.ico" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
