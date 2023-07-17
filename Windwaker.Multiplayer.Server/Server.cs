@@ -1,16 +1,15 @@
 ﻿using SuperSimpleTcp;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Windwaker.Multiplayer.Server
 {
     internal class Server
     {
         private SimpleTcpServer _server;
+
+        private readonly Dictionary<string, PlayerData> _connectedPlayers = new();
 
         /// <summary>
         /// Attempts to start the server at the specified ip port.  
@@ -19,6 +18,7 @@ namespace Windwaker.Multiplayer.Server
         {
             try
             {
+                _connectedPlayers.Clear();
                 _server = new SimpleTcpServer(ipPort);
 
                 _server.Events.ClientConnected += OnClientConnected;
@@ -42,6 +42,7 @@ namespace Windwaker.Multiplayer.Server
         /// </summary>
         public void Stop()
         {
+            _connectedPlayers.Clear(); // Maybe remove this once I have a button to test
             _server?.Stop();
             _server = null;
         }
@@ -54,12 +55,25 @@ namespace Windwaker.Multiplayer.Server
             _server?.DisconnectClient(ipPort);
         }
 
+        private void DisplayPlayers()
+        {
+            Console.WriteLine("Connected players:");
+            foreach (var player in _connectedPlayers)
+            {
+                Console.WriteLine($"{player.Key}: {player.Value?.Name ?? "Unknown"}");
+            }
+            Console.WriteLine();
+        }
+
         /// <summary>
         /// Called whenever a client connects to the server
         /// </summary>
         private void OnClientConnected(object sender, ConnectionEventArgs e)
         {
             Console.WriteLine("Received connection to server");
+            if (!_connectedPlayers.ContainsKey(e.IpPort))
+                _connectedPlayers.Add(e.IpPort, null);
+            DisplayPlayers();
         }
 
         /// <summary>
@@ -67,7 +81,9 @@ namespace Windwaker.Multiplayer.Server
         /// </summary>
         private void OnClientDisconnected(object sender, ConnectionEventArgs e)
         {
-
+            Console.WriteLine("Client disconnected");
+            _connectedPlayers.Remove(e.IpPort);
+            DisplayPlayers();
         }
 
         /// <summary>
@@ -125,6 +141,7 @@ namespace Windwaker.Multiplayer.Server
         public void SendIntro(string playerIp, byte response)
         {
             Send(playerIp, new byte[] { response }, NetworkType.Intro);
+            DisplayPlayers();
         }
 
         private void ReceiveIntro(string playerIp, byte[] message)
@@ -135,7 +152,15 @@ namespace Windwaker.Multiplayer.Server
 
             // Validate information
 
-            SendIntro(playerIp, 200);
+            if (_connectedPlayers.ContainsKey(playerIp))
+            {
+                _connectedPlayers[playerIp] = new PlayerData(player);
+                SendIntro(playerIp, 200);
+            }
+            else
+            {
+                Console.WriteLine("Received data from disconnected player??");
+            }
         }
 
         // Scene

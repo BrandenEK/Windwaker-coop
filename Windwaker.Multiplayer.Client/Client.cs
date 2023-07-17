@@ -49,7 +49,7 @@ namespace Windwaker.Multiplayer.Client
         /// </summary>
         private void OnServerConnected(object sender, ConnectionEventArgs e)
         {
-            MainForm.Log($"Established connection with Main server");
+            MainForm.Log($"Established connection with server");
             SendIntro("Test player", "Windwaker", null);
         }
 
@@ -123,18 +123,18 @@ namespace Windwaker.Multiplayer.Client
         {
             byte response = message[0];
 
-            if (response == 0)
+            if (response == 200)
             {
                 MainForm.Log($"Connection to server was approved");
                 MainForm.UpdateUI();
+                // Start sync
             }
             else
             {
                 // Display real refusal reason
                 MainForm.Log("Connection to server was refused");
+                Disconnect();
             }
-
-            Disconnect();
         }
 
         // Scene
