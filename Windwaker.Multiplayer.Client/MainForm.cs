@@ -30,51 +30,9 @@ namespace Windwaker.Multiplayer.Client
             }
             else
             {
-                if (ValidateAndUpdateSettings())
-                {
-                    _client.Connect(_settings.serverIp, _settings.serverPort);
-                }
-                else
-                {
-                    Log("Enter valid data for the input fields!");
-                }
+                _settings = ValidateInputFields();
+                _client.Connect(_settings.ServerIp, _settings.ServerPort);
             }
-        }
-
-        /// <summary>
-        /// Ensures that the input fields contain valid info, and if so, update the client settings
-        /// </summary>
-        /// <returns></returns>
-        private bool ValidateAndUpdateSettings()
-        {
-            // Ensure that a name is present
-            string playerName = playerNameField.Text.Trim();
-            if (playerName.Length == 0)
-            {
-                return false;
-            }
-
-            // The game will always be ww for now
-            string gameName = "Windwaker";
-
-            // Ensure that an ip is present and doesn't contain a colon
-            string serverIp = serverIpField.Text.Trim();
-            if (serverIp.Length == 0 || serverIp.Contains(':'))
-            {
-                return false;
-            }
-
-            // Ensure that the port is a valid number
-            if (!int.TryParse(serverPortField.Text.Trim(), out int serverPort))
-            {
-                return false;
-            }
-
-            // No validation for password, it doesn't need to be present
-            string password = passwordField.Text.Trim();
-
-            _settings = new ClientSettings(playerName, gameName, serverIp, serverPort, password);
-            return true;
         }
 
         /// <summary>
@@ -86,22 +44,61 @@ namespace Windwaker.Multiplayer.Client
         }
 
         /// <summary>
+        /// Ensures that the input fields contain valid info, and if so, update the client settings
+        /// </summary>
+        private ClientSettings ValidateInputFields()
+        {
+            // Ensure that player name has a valid length
+            string playerName = playerNameField.Text.Trim();
+            if (playerName.Length < 1 || playerName.Length > 16)
+            {
+                playerName = null;
+            }
+
+            // The game will always be ww for now
+            string gameName = null;
+
+            // Ensure that server ip has a valid length and doesn't contain a colon
+            string serverIp = serverIpField.Text.Trim();
+            if (serverIp.Length < 1 || serverIp.Length > 16 || serverIp.Contains(':'))
+            {
+                serverIp = null;
+            }
+
+            // Ensure that the port is a valid number
+            if (!int.TryParse(serverPortField.Text.Trim(), out int serverPort) || serverPort < 0)
+            {
+                serverPort = 0;
+            }
+
+            // Ensure that password is empty or has a valid length
+            string password = passwordField.Text.Trim();
+            if (password.Length > 16)
+            {
+                password = null;
+            }
+
+            playerNameField.Text = playerName;
+            gameNameField.Text = gameName;
+            serverIpField.Text = serverIp;
+            serverPortField.Text = serverPort > 0 ? serverPort.ToString() : null;
+            passwordField.Text = password;
+
+            return new ClientSettings(playerName, gameName, serverIp, serverPort, password);
+        }
+
+        /// <summary>
         /// When the form is opened, load the last used ip from settings
         /// </summary>
         private void OnFormOpen(object sender, EventArgs e)
         {
-            string playerName = Properties.Settings.Default.playerName;
-            string gameName = Properties.Settings.Default.gameName;
-            string serverIp = Properties.Settings.Default.serverIp;
-            int serverPort = Properties.Settings.Default.serverPort;
-            string password = Properties.Settings.Default.password;
+            playerNameField.Text = Properties.Settings.Default.playerName;
+            gameNameField.Text = Properties.Settings.Default.gameName;
+            serverIpField.Text = Properties.Settings.Default.serverIp;
+            serverPortField.Text = Properties.Settings.Default.serverPort.ToString();
+            passwordField.Text = Properties.Settings.Default.password;
 
-            _settings = new ClientSettings(playerName, gameName, serverIp, serverPort, password);
-            playerNameField.Text = playerName;
-            // Set game name
-            serverIpField.Text = serverIp;
-            serverPortField.Text = serverPort > 0 ? serverPort.ToString() : string.Empty;
-            passwordField.Text = password;
+            _settings = ValidateInputFields();
         }
 
         /// <summary>
@@ -109,11 +106,12 @@ namespace Windwaker.Multiplayer.Client
         /// </summary>
         private void OnFormClose(object sender, FormClosingEventArgs e)
         {
-            Properties.Settings.Default.playerName = _settings.playerName;
-            Properties.Settings.Default.gameName = _settings.gameName;
-            Properties.Settings.Default.serverIp = _settings.serverIp;
-            Properties.Settings.Default.serverPort = _settings.serverPort;
-            Properties.Settings.Default.password = _settings.password;
+            ClientSettings settings = ValidateInputFields();
+            Properties.Settings.Default.playerName = settings.TruePlayerName;
+            Properties.Settings.Default.gameName = settings.TrueGameName;
+            Properties.Settings.Default.serverIp = settings.TrueServerIp;
+            Properties.Settings.Default.serverPort = settings.TrueServerPort;
+            Properties.Settings.Default.password = settings.Password;
             Properties.Settings.Default.Save();
         }
 
