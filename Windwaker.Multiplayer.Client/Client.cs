@@ -40,11 +40,8 @@ namespace Windwaker.Multiplayer.Client
         /// </summary>
         public void Disconnect()
         {
-            if (_client != null)
-            {
-                _client.Disconnect();
-                _client = null;
-            }
+            _client?.Disconnect();
+            _client = null;
         }
 
         /// <summary>

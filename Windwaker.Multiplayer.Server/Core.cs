@@ -9,9 +9,7 @@ namespace Windwaker.Multiplayer.Server
     {
         public static Config ServerSettings { get; private set; }
 
-        private static readonly MainServer mainServer = new();
-
-        private static readonly Dictionary<string, Room> rooms = new();
+        private static readonly Server _server = new();
 
         public static void Main()
         {
@@ -19,7 +17,7 @@ namespace Windwaker.Multiplayer.Server
             Console.Title = "Windwaker Multiplayer Server";
             ServerSettings = LoadConfig();
 
-            mainServer.Start("*:" + ServerSettings.port);
+            _server.Start("*:" + ServerSettings.port);
 
             while (true)
             {
@@ -33,58 +31,59 @@ namespace Windwaker.Multiplayer.Server
         /// </summary>
         public static byte ValidatePlayerIntro(string playerIp, string roomName, string playerName, string game, string password, out ushort port)
         {
-            if (!rooms.TryGetValue(roomName, out Room existingRoom))
-            {
-                // Create a new room for this player
-                Room newRoom = new Room("*:0", roomName, game, password);
-                newRoom.QueuePlayer(playerIp, playerName);
-                rooms[roomName] = newRoom;
-                port = newRoom.Port;
-                Console.WriteLine($"Creating new room '{roomName}' on port {port} for '{playerName}'");
-                return 0;
-            }
+            //if (!rooms.TryGetValue(roomName, out Room existingRoom))
+            //{
+            //    // Create a new room for this player
+            //    Room newRoom = new Room("*:0", roomName, game, password);
+            //    newRoom.QueuePlayer(playerIp, playerName);
+            //    rooms[roomName] = newRoom;
+            //    port = newRoom.Port;
+            //    Console.WriteLine($"Creating new room '{roomName}' on port {port} for '{playerName}'");
+            //    return 0;
+            //}
 
-            // Validate player info before adding them to the room
+            //// Validate player info before adding them to the room
+            //port = 0;
+
+            //// Ensure the password is correct
+            //if (!string.IsNullOrEmpty(existingRoom.Password) && password != existingRoom.Password)
+            //{
+            //    Console.WriteLine("Player connection rejected: Incorrect password");
+            //    return 1;
+            //}
+
+            //// Ensure the game is correct
+            //if (existingRoom.Game != game)
+            //{
+            //    Console.WriteLine("Player connection rejected: Incorrect game");
+            //    return 5;
+            //}
+
+            //// Ensure that the room doesn't already have the max number of players
+            //if (existingRoom.AllPlayers.Count >= ServerSettings.maxPlayers)
+            //{
+            //    Console.WriteLine("Player connection rejected: Player limit reached");
+            //    return 2;
+            //}
+
+            //// Ensure there are no duplicate ips
+            //if (existingRoom.IsIpTaken(playerName))
+            //{
+            //    Console.WriteLine("Player connection rejected: Duplicate ip address");
+            //    return 3;
+            //}
+
+            //// Ensure there are no duplicate names
+            //if (existingRoom.IsNameTaken(playerName))
+            //{
+            //    Console.WriteLine("Player connection rejected: Duplicate name");
+            //    return 4;
+            //}
+
+            //existingRoom.QueuePlayer(playerIp, playerName);
+            //port = existingRoom.Port;
+            //Console.WriteLine($"Adding '{playerName}' to existing room '{roomName}' on port {port}");
             port = 0;
-
-            // Ensure the password is correct
-            if (!string.IsNullOrEmpty(existingRoom.Password) && password != existingRoom.Password)
-            {
-                Console.WriteLine("Player connection rejected: Incorrect password");
-                return 1;
-            }
-
-            // Ensure the game is correct
-            if (existingRoom.Game != game)
-            {
-                Console.WriteLine("Player connection rejected: Incorrect game");
-                return 5;
-            }
-
-            // Ensure that the room doesn't already have the max number of players
-            if (existingRoom.AllPlayers.Count >= ServerSettings.maxPlayers)
-            {
-                Console.WriteLine("Player connection rejected: Player limit reached");
-                return 2;
-            }
-
-            // Ensure there are no duplicate ips
-            if (existingRoom.IsIpTaken(playerName))
-            {
-                Console.WriteLine("Player connection rejected: Duplicate ip address");
-                return 3;
-            }
-
-            // Ensure there are no duplicate names
-            if (existingRoom.IsNameTaken(playerName))
-            {
-                Console.WriteLine("Player connection rejected: Duplicate name");
-                return 4;
-            }
-
-            existingRoom.QueuePlayer(playerIp, playerName);
-            port = existingRoom.Port;
-            Console.WriteLine($"Adding '{playerName}' to existing room '{roomName}' on port {port}");
             return 0;
         }
 

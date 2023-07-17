@@ -12,7 +12,7 @@ namespace Windwaker.Multiplayer.Server
         public string Id => _id;
         public string Game => _game;
         public string Password => _password;
-        public ushort Port => (ushort)gameServer.Port;
+        //public ushort Port => (ushort)gameServer.Port;
 
         public ReadOnlyDictionary<string, string> AllPlayers => connectedPlayers.AsReadOnly();
 
@@ -21,8 +21,8 @@ namespace Windwaker.Multiplayer.Server
             _id = id;
             _game = game;
             _password = password;
-            gameServer = new WindwakerServer(this);
-            gameServer.Start(ipPort);
+            //gameServer = new WindwakerServer(this);
+            //gameServer.Start(ipPort);
         }
 
         public void QueuePlayer(string ip, string name)
@@ -76,7 +76,7 @@ namespace Windwaker.Multiplayer.Server
         }
 
 
-        private readonly IServer gameServer;
+        //private readonly IServer gameServer;
 
         private readonly Dictionary<string, string> connectedPlayers = new();
         private readonly Dictionary<string, string> queuedPlayers = new();
