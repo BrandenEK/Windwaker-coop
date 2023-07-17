@@ -5,21 +5,11 @@ using System.Net.Sockets;
 
 namespace Windwaker.Multiplayer.Client
 {
-    internal abstract class AbstractClient<T> : IClient where T : Enum
+    internal class Client
     {
         private SimpleTcpClient _client;
 
-        private Dictionary<T, Action<byte[]>> _receivers;
-
         public bool IsConnected => _client != null && _client.IsConnected;
-
-        /// <summary>
-        /// Initializes the client with the given receive methods
-        /// </summary>
-        protected void Initialize(Dictionary<T, Action<byte[]>> receivers)
-        {
-            _receivers = receivers;
-        }
 
         /// <summary>
         /// Attempts to connect to a server at the specified ip port
@@ -58,16 +48,33 @@ namespace Windwaker.Multiplayer.Client
         }
 
         /// <summary>
+        /// Called whenever the client connects to the server
+        /// </summary>
+        private void OnServerConnected(object sender, ConnectionEventArgs e)
+        {
+            MainForm.Log($"Established connection with Main server");
+            SendIntro("Test player", "Windwaker", null);
+        }
+
+        /// <summary>
+        /// Called whenever the client disconnects from the server
+        /// </summary>
+        private void OnServerDisconnected(object sender, ConnectionEventArgs e)
+        {
+            MainForm.UpdateUI();
+        }
+
+        /// <summary>
         /// Sends a message to the server
         /// </summary>
-        protected void Send(byte[] message, T type)
+        private void Send(byte[] message, NetworkType type)
         {
             if (message == null || message.Length == 0 || !IsConnected)
                 return;
 
             List<byte> bytes = new();
             bytes.AddRange(BitConverter.GetBytes((ushort)message.Length));
-            bytes.Add((byte)((object)type));
+            bytes.Add((byte)type);
             bytes.AddRange(message);
 
             try
@@ -91,10 +98,15 @@ namespace Windwaker.Multiplayer.Client
             while (startIdx < data.Length - 3)
             {
                 ushort length = BitConverter.ToUInt16(data, startIdx);
-                T type = (T)Enum.Parse(typeof(T), data[startIdx + 2].ToString());
+                NetworkType type = (NetworkType)data[startIdx + 2];
                 byte[] message = data[(startIdx + 3)..(startIdx + 3 + length)];
 
-                _receivers[type](message);
+                switch (type)
+                {
+                    case NetworkType.Intro: ReceiveIntro(message); break;
+                    case NetworkType.Scene: ReceiveScene(message); break;
+                    case NetworkType.Progress: ReceiveProgress(message); break;
+                }
                 startIdx += 3 + length;
             }
 
@@ -102,27 +114,54 @@ namespace Windwaker.Multiplayer.Client
                 MainForm.Log("*** Received data was formatted incorrectly ***");
         }
 
-        /// <summary>
-        /// Called whenever the client connects to the server
-        /// </summary>
-        protected virtual void ServerConnected(string serverIp)
+        // Intro
+
+        public void SendIntro(string player, string game, string password)
+        {
+            // Replace with real intro data (Player name, game name, room id, password)
+            Send(new byte[] { 1, 2, 3 }, NetworkType.Intro);
+        }
+
+        private void ReceiveIntro(byte[] message)
+        {
+            byte response = message[0];
+
+            if (response == 0)
+            {
+                MainForm.Log($"Connection to server was approved");
+                MainForm.UpdateUI();
+            }
+            else
+            {
+                // Display real refusal reason
+                MainForm.Log("Connection to server was refused");
+            }
+
+            Disconnect();
+        }
+
+        // Scene
+
+        public void SendScene(string scene)
         {
 
         }
-        private void OnServerConnected(object sender, ConnectionEventArgs e) => ServerConnected(e.IpPort);
 
-        /// <summary>
-        /// Called whenever the client disconnects from the server
-        /// </summary>
-        protected virtual void ServerDisconnected(string serverIp)
+        private void ReceiveScene(byte[] message)
         {
 
         }
-        private void OnServerDisconnected(object sender, ConnectionEventArgs e) => ServerDisconnected(e.IpPort);
-    }
 
-    internal enum AbstractType
-    {
-        None = 0,
+        // Progress
+
+        public void SendProgress(ProgressType type, string progressId, byte progressValue)
+        {
+
+        }
+
+        private void ReceiveProgress(byte[] message)
+        {
+
+        }
     }
 }

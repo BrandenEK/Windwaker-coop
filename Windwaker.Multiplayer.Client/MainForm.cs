@@ -13,12 +13,11 @@ namespace Windwaker.Multiplayer.Client
             instance ??= this;
         }
 
-        private readonly MainClient mainClient = new();
-        private IClient gameClient;
+        private readonly Client _client = new();
 
         private string _lastValidIp;
 
-        private bool IsConnectedToGame => gameClient != null && gameClient.IsConnected;
+        private bool IsConnectedToGame => _client.IsConnected;
 
         /// <summary>
         /// When the connect button is clicked, either connect/disconnect from the server
@@ -27,7 +26,7 @@ namespace Windwaker.Multiplayer.Client
         {
             if (IsConnectedToGame)
             {
-                gameClient.Disconnect();
+                _client.Disconnect();
             }
             else
             {
@@ -35,21 +34,13 @@ namespace Windwaker.Multiplayer.Client
                 if (ValidateIpPort(ipPort))
                 {
                     _lastValidIp = ipPort;
-                    mainClient.Connect(ipPort);
+                    _client.Connect(ipPort);
                 }
                 else
                 {
                     Log("Enter a valid ip port!");
                 }
             }
-        }
-
-        public static void ReceiveGamePort(ushort port)
-        {
-            string ip = instance._lastValidIp.Split(':')[0];
-
-            instance.gameClient = new WindwakerClient();
-            instance.gameClient.Connect(ip + ":" + port);
         }
 
         /// <summary>
