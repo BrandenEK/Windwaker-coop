@@ -8,33 +8,28 @@ namespace Windwaker.Multiplayer.Client
         public const string DEFAULT_SERVER_IP = "127.0.0.1";
         public const int DEFAULT_SERVER_PORT = 8989;
 
-        private readonly string _playerName;
-        public string PlayerName => _playerName ?? DEFAULT_PLAYER_NAME;
-        public string TruePlayerName => _playerName;
+        public readonly string playerName;
+        public string ValidPlayerName => playerName ?? DEFAULT_PLAYER_NAME;
 
-        private readonly string _gameName;
-        public string GameName => _gameName ?? DEFAULT_GAME_NAME;
-        public string TrueGameName => _gameName;
+        public readonly string gameName;
+        public string ValidGameName => gameName ?? DEFAULT_GAME_NAME;
 
-        private readonly string _serverIp;
-        public string ServerIp => _serverIp ?? DEFAULT_SERVER_IP;
-        public string TrueServerIp => _serverIp;
+        public readonly string serverIp;
+        public string ValidServerIp => serverIp ?? DEFAULT_SERVER_IP;
 
-        private readonly int _serverPort;
-        public int ServerPort => _serverPort > 0 ? _serverPort : DEFAULT_SERVER_PORT;
-        public int TrueServerPort => _serverPort;
+        public readonly int serverPort;
+        public int ValidServerPort => serverPort > 0 ? serverPort : DEFAULT_SERVER_PORT;
 
-        private readonly string _password;
-        public string Password => _password;
-
+        public readonly string password;
+        public string ValidPassword => password;
 
         public ClientSettings(string playerName, string gameName, string serverIp, int serverPort, string password)
         {
-            _playerName = playerName;
-            _gameName = gameName;
-            _serverIp = serverIp;
-            _serverPort = serverPort;
-            _password = password;
+            this.playerName = playerName;
+            this.gameName = gameName;
+            this.serverIp = serverIp;
+            this.serverPort = serverPort;
+            this.password = password;
         }
     }
 }

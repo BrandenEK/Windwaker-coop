@@ -32,7 +32,7 @@ namespace Windwaker.Multiplayer.Client
             else
             {
                 _settings = ValidateInputFields();
-                _client.Connect(_settings.ServerIp, _settings.ServerPort);
+                _client.Connect(_settings.ValidServerIp, _settings.ValidServerPort);
             }
         }
 
@@ -108,11 +108,11 @@ namespace Windwaker.Multiplayer.Client
         private void OnFormClose(object sender, FormClosingEventArgs e)
         {
             ClientSettings settings = ValidateInputFields();
-            Properties.Settings.Default.playerName = settings.TruePlayerName;
-            Properties.Settings.Default.gameName = settings.TrueGameName;
-            Properties.Settings.Default.serverIp = settings.TrueServerIp;
-            Properties.Settings.Default.serverPort = settings.TrueServerPort;
-            Properties.Settings.Default.password = settings.Password;
+            Properties.Settings.Default.playerName = settings.playerName;
+            Properties.Settings.Default.gameName = settings.gameName;
+            Properties.Settings.Default.serverIp = settings.serverIp;
+            Properties.Settings.Default.serverPort = settings.serverPort;
+            Properties.Settings.Default.password = settings.password;
             Properties.Settings.Default.Save();
         }
 

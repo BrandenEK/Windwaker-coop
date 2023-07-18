@@ -1,9 +1,7 @@
-﻿using Microsoft.VisualBasic.Logging;
-using SuperSimpleTcp;
+﻿using SuperSimpleTcp;
 using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
-using System.Numerics;
 using System.Text;
 
 namespace Windwaker.Multiplayer.Client
@@ -53,7 +51,7 @@ namespace Windwaker.Multiplayer.Client
         private void OnServerConnected(object sender, ConnectionEventArgs e)
         {
             MainForm.Log($"Established connection with server");
-            SendIntro(MainForm.Settings.PlayerName, MainForm.Settings.GameName, MainForm.Settings.Password);
+            SendIntro(MainForm.Settings.ValidPlayerName, MainForm.Settings.ValidGameName, MainForm.Settings.ValidPassword);
         }
 
         /// <summary>
