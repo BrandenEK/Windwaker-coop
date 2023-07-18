@@ -25,6 +25,16 @@ namespace Windwaker.Multiplayer.Server
         [JsonProperty] public readonly bool allowCheats;
 
         /// <summary>
+        /// The game that the server should expect
+        /// </summary>
+        [JsonProperty] public readonly string gameName;
+
+        /// <summary>
+        /// The password to protect the server
+        /// </summary>
+        [JsonProperty] public readonly string password;
+
+        /// <summary>
         /// Gets the default settings
         /// </summary>
         public Config()
@@ -32,6 +42,8 @@ namespace Windwaker.Multiplayer.Server
             port = 8989;
             maxPlayers = 10;
             allowCheats = true;
+            gameName = "Windwaker";
+            password = null;
         }
     }
 }

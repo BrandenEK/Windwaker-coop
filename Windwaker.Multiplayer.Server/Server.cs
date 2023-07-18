@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
+using System.Text;
 
 namespace Windwaker.Multiplayer.Server
 {
@@ -55,25 +56,12 @@ namespace Windwaker.Multiplayer.Server
             _server?.DisconnectClient(ipPort);
         }
 
-        private void DisplayPlayers()
-        {
-            Console.WriteLine("Connected players:");
-            foreach (var player in _connectedPlayers)
-            {
-                Console.WriteLine($"{player.Key}: {player.Value?.Name ?? "Unknown"}");
-            }
-            Console.WriteLine();
-        }
-
         /// <summary>
         /// Called whenever a client connects to the server
         /// </summary>
         private void OnClientConnected(object sender, ConnectionEventArgs e)
         {
             Console.WriteLine("Received connection to server");
-            if (!_connectedPlayers.ContainsKey(e.IpPort))
-                _connectedPlayers.Add(e.IpPort, null);
-            DisplayPlayers();
         }
 
         /// <summary>
@@ -83,7 +71,6 @@ namespace Windwaker.Multiplayer.Server
         {
             Console.WriteLine("Client disconnected");
             _connectedPlayers.Remove(e.IpPort);
-            DisplayPlayers();
         }
 
         /// <summary>
@@ -141,26 +128,60 @@ namespace Windwaker.Multiplayer.Server
         public void SendIntro(string playerIp, byte response)
         {
             Send(playerIp, new byte[] { response }, NetworkType.Intro);
-            DisplayPlayers();
         }
 
         private void ReceiveIntro(string playerIp, byte[] message)
         {
-            string player = "Test player";
-            string game = "Windwaker";
-            string password = null;
+            string player = DeserializeString(message, 0, out byte playerLength);
+            string game = DeserializeString(message, 0 + playerLength, out byte gameLength);
+            string password = DeserializeString(message, 0 + playerLength + gameLength, out _);
 
-            // Validate information
+            // Ensure the password is correct
+            if (!string.IsNullOrEmpty(Core.ServerSettings.password) && password != Core.ServerSettings.password)
+            {
+                Console.WriteLine("Player connection rejected: Incorrect password");
+                SendIntro(playerIp, 101);
+                return;
+            }
 
+            // Ensure the game is correct
+            if (Core.ServerSettings.gameName != game)
+            {
+                Console.WriteLine("Player connection rejected: Incorrect game");
+                SendIntro(playerIp, 102);
+                return;
+            }
+
+            // Ensure that the room doesn't already have the max number of players
+            if (_connectedPlayers.Count >= Core.ServerSettings.maxPlayers)
+            {
+                Console.WriteLine("Player connection rejected: Player limit reached");
+                SendIntro(playerIp, 103);
+                return;
+            }
+
+            // Ensure there are no duplicate ips
             if (_connectedPlayers.ContainsKey(playerIp))
             {
-                _connectedPlayers[playerIp] = new PlayerData(player);
-                SendIntro(playerIp, 200);
+                Console.WriteLine("Player connection rejected: Duplicate ip address");
+                SendIntro(playerIp, 104);
+                return;
             }
-            else
+
+            // Ensure there are no duplicate names
+            foreach (var data in _connectedPlayers.Values)
             {
-                Console.WriteLine("Received data from disconnected player??");
+                if (data.Name == player)
+                {
+                    Console.WriteLine("Player connection rejected: Duplicate name");
+                    SendIntro(playerIp, 105);
+                    return;
+                }
             }
+
+            // Send acceptance response
+            _connectedPlayers.Add(playerIp, new PlayerData(player));
+            SendIntro(playerIp, 200);
         }
 
         // Scene
@@ -185,6 +206,29 @@ namespace Windwaker.Multiplayer.Server
         private void ReceiveProgress(string playerIp, byte[] message)
         {
 
+        }
+
+        // Helpers
+
+        private byte[] SerializeString(string str)
+        {
+            byte[] stringBytes = Encoding.UTF8.GetBytes(str);
+            byte[] outputBytes = new byte[str.Length + 1];
+
+            outputBytes[0] = (byte)str.Length;
+            for (int i = 0; i < stringBytes.Length; i++)
+            {
+                outputBytes[i + 1] = stringBytes[i];
+            }
+
+            return outputBytes;
+        }
+
+        private string DeserializeString(byte[] bytes, int start, out byte length)
+        {
+            length = (byte)(bytes[start] + 1);
+
+            return length == 1 ? null : Encoding.UTF8.GetString(bytes, start + 1, length - 1);
         }
     }
 }
