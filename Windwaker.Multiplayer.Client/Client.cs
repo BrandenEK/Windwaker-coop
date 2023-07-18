@@ -1,7 +1,9 @@
-﻿using SuperSimpleTcp;
+﻿using Microsoft.VisualBasic.Logging;
+using SuperSimpleTcp;
 using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
+using System.Text;
 
 namespace Windwaker.Multiplayer.Client
 {
@@ -50,7 +52,7 @@ namespace Windwaker.Multiplayer.Client
         private void OnServerConnected(object sender, ConnectionEventArgs e)
         {
             MainForm.Log($"Established connection with server");
-            SendIntro("Test player", "Windwaker", null);
+            SendIntro(MainForm.Settings.PlayerName, MainForm.Settings.GameName, MainForm.Settings.Password);
         }
 
         /// <summary>
@@ -115,8 +117,16 @@ namespace Windwaker.Multiplayer.Client
 
         public void SendIntro(string player, string game, string password)
         {
-            // Replace with real intro data (Player name, game name, room id, password)
-            Send(new byte[] { 1, 2, 3 }, NetworkType.Intro);
+            var bytes = new List<byte>();
+
+            bytes.AddRange(SerializeString(player));
+            bytes.AddRange(SerializeString(game));
+            bytes.AddRange(SerializeString(password));
+
+            foreach (byte b in bytes)
+                MainForm.Log(b.ToString());
+
+            Send(bytes.ToArray(), NetworkType.Intro);
         }
 
         private void ReceiveIntro(byte[] message)
@@ -159,6 +169,28 @@ namespace Windwaker.Multiplayer.Client
         private void ReceiveProgress(byte[] message)
         {
 
+        }
+
+        // Helpers
+
+        private byte[] SerializeString(string str)
+        {
+            byte[] stringBytes = Encoding.UTF8.GetBytes(str);
+            byte[] outputBytes = new byte[str.Length + 1];
+
+            outputBytes[0] = (byte)str.Length;
+            for (int i = 0; i < stringBytes.Length; i++)
+            {
+                outputBytes[i + 1] = stringBytes[i];
+            }
+
+            return outputBytes;
+        }
+
+        private string DeserializeString(byte[] bytes, int start, out byte length)
+        {
+            length = bytes[0];
+            return Encoding.UTF8.GetString(bytes, start, length);
         }
     }
 }

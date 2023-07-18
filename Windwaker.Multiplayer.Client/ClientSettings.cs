@@ -1,7 +1,7 @@
 ﻿
 namespace Windwaker.Multiplayer.Client
 {
-    internal class ClientSettings
+    public class ClientSettings
     {
         public const string DEFAULT_PLAYER_NAME = "New player";
         public const string DEFAULT_GAME_NAME = "Windwaker";

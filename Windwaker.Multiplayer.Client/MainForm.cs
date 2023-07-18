@@ -16,6 +16,7 @@ namespace Windwaker.Multiplayer.Client
         private readonly Client _client = new();
 
         private ClientSettings _settings;
+        public static ClientSettings Settings => instance._settings;
 
         private bool IsConnectedToGame => _client.IsConnected;
 
