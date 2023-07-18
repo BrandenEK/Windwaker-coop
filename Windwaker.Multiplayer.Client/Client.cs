@@ -3,6 +3,7 @@ using SuperSimpleTcp;
 using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
+using System.Numerics;
 using System.Text;
 
 namespace Windwaker.Multiplayer.Client
@@ -123,9 +124,6 @@ namespace Windwaker.Multiplayer.Client
             bytes.AddRange(SerializeString(game));
             bytes.AddRange(SerializeString(password));
 
-            foreach (byte b in bytes)
-                MainForm.Log(b.ToString());
-
             Send(bytes.ToArray(), NetworkType.Intro);
         }
 
@@ -141,8 +139,15 @@ namespace Windwaker.Multiplayer.Client
             }
             else
             {
-                // Display real refusal reason
-                MainForm.Log("Connection to server was refused");
+                switch (response)
+                {
+                    case 101: MainForm.Log("Connection refused: Incorrect password"); break;
+                    case 102: MainForm.Log("Connection refused: Incorrect game"); break;
+                    case 103: MainForm.Log("Connection refused: Player limit reached"); break;
+                    case 104: MainForm.Log("Connection refused: Duplicate ip address"); break;
+                    case 105: MainForm.Log("Connection refused: Duplicate name"); break;
+                }
+
                 Disconnect();
             }
         }
@@ -189,8 +194,9 @@ namespace Windwaker.Multiplayer.Client
 
         private string DeserializeString(byte[] bytes, int start, out byte length)
         {
-            length = bytes[0];
-            return Encoding.UTF8.GetString(bytes, start, length);
+            length = (byte)(bytes[start] + 1);
+
+            return length == 1 ? null : Encoding.UTF8.GetString(bytes, start + 1, length - 1);
         }
     }
 }
