@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Text;
 using System.Windows.Forms;
 
 namespace Windwaker.Multiplayer.Server
@@ -34,6 +36,19 @@ namespace Windwaker.Multiplayer.Server
                 if (_server.Start("*", _settings.ValidServerPort))
                     startButton.Text = "Stop";
             }
+        }
+
+        public static void UpdatePlayerGrid(IEnumerable<PlayerData> players, int count)
+        {
+            var text = new StringBuilder();
+            text.AppendLine($"Connected players: {count}/{Settings.ValidMaxPlayers}\r\n");
+
+            foreach (var player in players)
+            {
+                text.AppendLine($"{player.Name} - {player.CurrentSceneName}");
+            }
+
+            instance.connectedPlayersLabel.Text = text.ToString();
         }
 
         /// <summary>

@@ -74,6 +74,7 @@ namespace Windwaker.Multiplayer.Server
         {
             ServerForm.Log("Client disconnected");
             _connectedPlayers.Remove(e.IpPort);
+            ServerForm.UpdatePlayerGrid(_connectedPlayers.Values, _connectedPlayers.Count);
         }
 
         /// <summary>
@@ -184,6 +185,7 @@ namespace Windwaker.Multiplayer.Server
 
             // Send acceptance response
             _connectedPlayers.Add(playerIp, new PlayerData(player));
+            ServerForm.UpdatePlayerGrid(_connectedPlayers.Values, _connectedPlayers.Count);
             SendIntro(playerIp, 200);
         }
 
@@ -198,6 +200,7 @@ namespace Windwaker.Multiplayer.Server
         {
             byte scene = message[0];
             _connectedPlayers[playerIp].UpdateScene(scene);
+            ServerForm.UpdatePlayerGrid(_connectedPlayers.Values, _connectedPlayers.Count);
             ServerForm.Log("Received new scene: " + _connectedPlayers[playerIp].CurrentSceneName);
         }
 

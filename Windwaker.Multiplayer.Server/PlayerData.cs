@@ -1,7 +1,7 @@
 ﻿
 namespace Windwaker.Multiplayer.Server
 {
-    internal class PlayerData
+    public class PlayerData
     {
         public string Name => _name;
 

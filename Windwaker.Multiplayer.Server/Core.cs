@@ -3,7 +3,7 @@ using System.Windows.Forms;
 
 namespace Windwaker.Multiplayer.Server
 {
-    internal static class Program
+    internal static class Core
     {
         /// <summary>
         ///  The main entry point for the application.
