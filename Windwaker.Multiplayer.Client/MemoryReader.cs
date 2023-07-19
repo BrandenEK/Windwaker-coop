@@ -145,18 +145,35 @@ namespace Windwaker.Multiplayer.Client
 
         private void CheckNewProgress()
         {
-            if (TryRead(0x4C44, 21, out byte[] inventory))
+            byte[] bytes;
+
+            if (TryRead(0x4C16, 6, out bytes))
+
+            if (TryRead(0x4C44, 21, out bytes))
             {
-                if (inventory[0] == 0x20 && !progress.telescope)
-                {
-                    progress.telescope = true;
-                    // Send progress
-                }
-                if (inventory[1] == 0x78 && !progress.sail)
-                {
-                    progress.sail = true;
-                    // Send progress
-                }
+                progress.CheckForTelescope(bytes[0]);
+                progress.CheckForSail(bytes[1]);
+                progress.CheckForWindwaker(bytes[2]);
+                progress.CheckForGrapplingHook(bytes[3]);
+                progress.CheckForSpoilsBag(bytes[4]);
+                progress.CheckForBoomerang(bytes[5]);
+                progress.CheckForDekuLeaf(bytes[6]);
+
+                progress.CheckForTingleTuner(bytes[7]);
+                progress.CheckForPictoBox(bytes[8]);
+                progress.CheckForIronBoots(bytes[9]);
+                progress.CheckForMagicArmor(bytes[10]);
+                progress.CheckForBaitBag(bytes[11]);
+                progress.CheckForBow(bytes[12]);
+                progress.CheckForBombs(bytes[13]);
+
+                progress.CheckForBottle1(bytes[14]);
+                progress.CheckForBottle2(bytes[15]);
+                progress.CheckForBottle3(bytes[16]);
+                progress.CheckForBottle4(bytes[17]);
+                progress.CheckForDeliveryBag(bytes[18]);
+                progress.CheckForHookshot(bytes[19]);
+                progress.CheckForSkullHammer(bytes[20]);
             }
         }
     }
