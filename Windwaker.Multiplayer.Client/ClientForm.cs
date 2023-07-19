@@ -11,12 +11,15 @@ namespace Windwaker.Multiplayer.Client
         {
             InitializeComponent();
             instance ??= this;
+
+            _client = new Client();
+            _reader = new MemoryReader();
         }
 
-        private readonly Client _client = new();
-        public static Client Client => instance._client;
+        private readonly Client _client;
+        private readonly MemoryReader _reader;
 
-        private readonly MemoryReader _reader = new();
+        public static Client Client => instance._client;
         public static MemoryReader Reader => instance._reader;
 
         private ClientSettings _settings;
@@ -135,7 +138,7 @@ namespace Windwaker.Multiplayer.Client
         /// </summary>
         public static void Log(string message)
         {
-            instance.debugText.AppendText(message + "\r\n");
+            instance.BeginInvoke(new MethodInvoker(() => instance.debugText.AppendText(message + "\r\n")));
         }
     }
 }
