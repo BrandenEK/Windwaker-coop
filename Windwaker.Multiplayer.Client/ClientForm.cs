@@ -3,11 +3,11 @@ using System.Windows.Forms;
 
 namespace Windwaker.Multiplayer.Client
 {
-    public partial class MainForm : Form
+    public partial class ClientForm : Form
     {
-        private static MainForm instance;
+        private static ClientForm instance;
 
-        public MainForm()
+        public ClientForm()
         {
             InitializeComponent();
             instance ??= this;

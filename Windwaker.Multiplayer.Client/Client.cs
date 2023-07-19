@@ -29,7 +29,7 @@ namespace Windwaker.Multiplayer.Client
             }
             catch (Exception e) when (e is SocketException || e is TimeoutException)
             {
-                MainForm.Log($"Failed to connect to {ip}:{port}");
+                ClientForm.Log($"Failed to connect to {ip}:{port}");
                 return false;
             }
 
@@ -50,8 +50,8 @@ namespace Windwaker.Multiplayer.Client
         /// </summary>
         private void OnServerConnected(object sender, ConnectionEventArgs e)
         {
-            MainForm.Log($"Established connection with server");
-            SendIntro(MainForm.Settings.ValidPlayerName, MainForm.Settings.ValidGameName, MainForm.Settings.ValidPassword);
+            ClientForm.Log($"Established connection with server");
+            SendIntro(ClientForm.Settings.ValidPlayerName, ClientForm.Settings.ValidGameName, ClientForm.Settings.ValidPassword);
         }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace Windwaker.Multiplayer.Client
         /// </summary>
         private void OnServerDisconnected(object sender, ConnectionEventArgs e)
         {
-            MainForm.OnDisconnect();
+            ClientForm.OnDisconnect();
         }
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace Windwaker.Multiplayer.Client
             }
 
             if (startIdx != data.Length)
-                MainForm.Log("*** Received data was formatted incorrectly ***");
+                ClientForm.Log("*** Received data was formatted incorrectly ***");
         }
 
         // Intro
@@ -131,18 +131,18 @@ namespace Windwaker.Multiplayer.Client
 
             if (response == 200)
             {
-                MainForm.Log($"Connection to server was approved");
-                MainForm.OnConnect();
+                ClientForm.Log($"Connection to server was approved");
+                ClientForm.OnConnect();
             }
             else
             {
                 switch (response)
                 {
-                    case 101: MainForm.Log("Connection refused: Incorrect password"); break;
-                    case 102: MainForm.Log("Connection refused: Incorrect game"); break;
-                    case 103: MainForm.Log("Connection refused: Player limit reached"); break;
-                    case 104: MainForm.Log("Connection refused: Duplicate ip address"); break;
-                    case 105: MainForm.Log("Connection refused: Duplicate name"); break;
+                    case 101: ClientForm.Log("Connection refused: Incorrect password"); break;
+                    case 102: ClientForm.Log("Connection refused: Incorrect game"); break;
+                    case 103: ClientForm.Log("Connection refused: Player limit reached"); break;
+                    case 104: ClientForm.Log("Connection refused: Duplicate ip address"); break;
+                    case 105: ClientForm.Log("Connection refused: Duplicate name"); break;
                 }
 
                 Disconnect();

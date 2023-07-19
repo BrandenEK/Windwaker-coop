@@ -53,11 +53,11 @@ namespace Windwaker.Multiplayer.Client
                 }
                 else
                 {
-                    MainForm.Log("Save file is not loaded yet!");
+                    ClientForm.Log("Save file is not loaded yet!");
                 }
 
                 int timeEnd = Environment.TickCount;
-                MainForm.Log($"Time taken to read from memory: {timeEnd - timeStart} ms");
+                ClientForm.Log($"Time taken to read from memory: {timeEnd - timeStart} ms");
 
                 await Task.Delay(2000);
             }
@@ -76,7 +76,7 @@ namespace Windwaker.Multiplayer.Client
             }
             else
             {
-                MainForm.Log($"Dolphin is not running!");
+                ClientForm.Log($"Dolphin is not running!");
                 process = IntPtr.Zero;
                 return false;
             }
@@ -138,8 +138,8 @@ namespace Windwaker.Multiplayer.Client
             if (currentStage != _progress.stageId)
             {
                 _progress.stageId = currentStage;
-                MainForm.Log("Changed scene: " + currentStage);
-                MainForm.Client.SendScene(currentStage);
+                ClientForm.Log("Changed scene: " + currentStage);
+                ClientForm.Client.SendScene(currentStage);
             }
         }
 

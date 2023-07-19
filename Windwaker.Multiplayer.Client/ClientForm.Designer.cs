@@ -3,7 +3,7 @@ using System.Windows.Forms;
 
 namespace Windwaker.Multiplayer.Client
 {
-    partial class MainForm
+    partial class ClientForm
     {
         /// <summary>
         ///  Required designer variable.
@@ -31,7 +31,7 @@ namespace Windwaker.Multiplayer.Client
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ClientForm));
             connectBtn = new Button();
             serverIpField = new TextBox();
             sideServerHeader = new Label();
