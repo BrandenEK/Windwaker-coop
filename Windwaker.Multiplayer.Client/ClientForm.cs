@@ -103,7 +103,7 @@ namespace Windwaker.Multiplayer.Client
         }
 
         /// <summary>
-        /// When the form is opened, load the last used ip from settings
+        /// When the form is opened, load the last used settings
         /// </summary>
         private void OnFormOpen(object sender, EventArgs e)
         {
@@ -117,7 +117,7 @@ namespace Windwaker.Multiplayer.Client
         }
 
         /// <summary>
-        /// When the form is closed, save the last used ip to settings
+        /// When the form is closed, save the last used settings
         /// </summary>
         private void OnFormClose(object sender, FormClosingEventArgs e)
         {

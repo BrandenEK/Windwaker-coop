@@ -21,7 +21,7 @@ namespace Windwaker.Multiplayer.Client
         public int ValidServerPort => serverPort > 0 ? serverPort : DEFAULT_SERVER_PORT;
 
         public readonly string password;
-        public string ValidPassword => password;
+        public string ValidPassword => password ?? string.Empty;
 
         public ClientSettings(string playerName, string gameName, string serverIp, int serverPort, string password)
         {

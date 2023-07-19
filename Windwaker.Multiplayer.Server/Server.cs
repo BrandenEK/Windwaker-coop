@@ -30,11 +30,11 @@ namespace Windwaker.Multiplayer.Server
             }
             catch (Exception e) when (e is SocketException || e is TimeoutException)
             {
-                Console.WriteLine($"Failed to start server at {ipPort}");
+                ServerForm.Log($"Failed to start server at {ipPort}");
                 return false;
             }
 
-            Console.WriteLine($"Started server at {ipPort}");
+            ServerForm.Log($"Started server at {ipPort}");
             return true;
         }
 
@@ -61,7 +61,7 @@ namespace Windwaker.Multiplayer.Server
         /// </summary>
         private void OnClientConnected(object sender, ConnectionEventArgs e)
         {
-            Console.WriteLine("Received connection to server");
+            ServerForm.Log("Received connection to server");
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace Windwaker.Multiplayer.Server
         /// </summary>
         private void OnClientDisconnected(object sender, ConnectionEventArgs e)
         {
-            Console.WriteLine("Client disconnected");
+            ServerForm.Log("Client disconnected");
             _connectedPlayers.Remove(e.IpPort);
         }
 
@@ -92,7 +92,7 @@ namespace Windwaker.Multiplayer.Server
             }
             catch (Exception)
             {
-                Console.WriteLine($"*** Couldn't send data to {ip} ***");
+                ServerForm.Log($"*** Couldn't send data to {ip} ***");
             }
         }
 
@@ -120,7 +120,7 @@ namespace Windwaker.Multiplayer.Server
             }
 
             if (startIdx != data.Length)
-                Console.WriteLine("*** Received data was formatted incorrectly ***");
+                ServerForm.Log("*** Received data was formatted incorrectly ***");
         }
 
         // Intro
@@ -137,25 +137,25 @@ namespace Windwaker.Multiplayer.Server
             string password = DeserializeString(message, 0 + playerLength + gameLength, out _);
 
             // Ensure the password is correct
-            if (!string.IsNullOrEmpty(ServerForm.Settings.password) && password != ServerForm.Settings.password)
+            if (!string.IsNullOrEmpty(ServerForm.Settings.ValidPassword) && password != ServerForm.Settings.ValidPassword)
             {
-                Console.WriteLine("Player connection rejected: Incorrect password");
+                ServerForm.Log("Player connection rejected: Incorrect password");
                 SendIntro(playerIp, 101);
                 return;
             }
 
             // Ensure the game is correct
-            if (ServerForm.Settings.gameName != game)
+            if (ServerForm.Settings.ValidGameName != game)
             {
-                Console.WriteLine("Player connection rejected: Incorrect game");
+                ServerForm.Log("Player connection rejected: Incorrect game");
                 SendIntro(playerIp, 102);
                 return;
             }
 
             // Ensure that the room doesn't already have the max number of players
-            if (_connectedPlayers.Count >= ServerForm.Settings.maxPlayers)
+            if (_connectedPlayers.Count >= ServerForm.Settings.ValidMaxPlayers)
             {
-                Console.WriteLine("Player connection rejected: Player limit reached");
+                ServerForm.Log("Player connection rejected: Player limit reached");
                 SendIntro(playerIp, 103);
                 return;
             }
@@ -163,7 +163,7 @@ namespace Windwaker.Multiplayer.Server
             // Ensure there are no duplicate ips
             if (_connectedPlayers.ContainsKey(playerIp))
             {
-                Console.WriteLine("Player connection rejected: Duplicate ip address");
+                ServerForm.Log("Player connection rejected: Duplicate ip address");
                 SendIntro(playerIp, 104);
                 return;
             }
@@ -173,7 +173,7 @@ namespace Windwaker.Multiplayer.Server
             {
                 if (data.Name == player)
                 {
-                    Console.WriteLine("Player connection rejected: Duplicate name");
+                    ServerForm.Log("Player connection rejected: Duplicate name");
                     SendIntro(playerIp, 105);
                     return;
                 }
@@ -195,7 +195,7 @@ namespace Windwaker.Multiplayer.Server
         {
             byte scene = message[0];
             _connectedPlayers[playerIp].UpdateScene(scene);
-            Console.WriteLine("Received new scene: " + _connectedPlayers[playerIp].CurrentSceneName);
+            ServerForm.Log("Received new scene: " + _connectedPlayers[playerIp].CurrentSceneName);
         }
 
         // Progress

@@ -11,21 +11,85 @@ namespace Windwaker.Multiplayer.Server
         {
             InitializeComponent();
             instance ??= this;
-
-            _settings = new ServerSettings(8, "Windwaker", 8989, null);
-
-            _server.Start("*:" + _settings.serverPort);
-
-            while (true)
-            {
-                // Infinite loop to keep the server alive
-                Console.ReadKey(true);
-            }
         }
 
         private ServerSettings _settings;
         public static ServerSettings Settings => instance._settings;
 
         private readonly Server _server = new();
+
+        private void OnClickStart(object sender, EventArgs e)
+        {
+            _server.Start("*:" + _settings.ValidServerPort);
+        }
+
+        /// <summary>
+        /// Ensures that the input fields contain valid info, and if so, update the server settings
+        /// </summary>
+        private ServerSettings ValidateInputFields()
+        {
+            // Ensure that max players is a valid number
+            if (!int.TryParse(maxPlayersField.Text.Trim(), out int maxPlayers) || maxPlayers < 0)
+            {
+                maxPlayers = 0;
+            }
+
+            // The game will always be ww for now
+            string gameName = null;
+
+            // Ensure that the port is a valid number
+            if (!int.TryParse(serverPortField.Text.Trim(), out int serverPort) || serverPort < 0)
+            {
+                serverPort = 0;
+            }
+
+            // Ensure that password is empty or has a valid length
+            string password = passwordField.Text.Trim();
+            if (password.Length > 16)
+            {
+                password = null;
+            }
+
+            maxPlayersField.Text = maxPlayers > 0 ? maxPlayers.ToString() : null;
+            gameNameField.Text = gameName;
+            serverPortField.Text = serverPort > 0 ? serverPort.ToString() : null;
+            passwordField.Text = password;
+
+            return new ServerSettings(maxPlayers, gameName, serverPort, password);
+        }
+
+        /// <summary>
+        /// When the form is opened, load the last used settings
+        /// </summary>
+        private void OnFormOpen(object sender, EventArgs e)
+        {
+            maxPlayersField.Text = Properties.Settings.Default.maxPlayers.ToString();
+            gameNameField.Text = Properties.Settings.Default.gameName;
+            serverPortField.Text = Properties.Settings.Default.serverPort.ToString();
+            passwordField.Text = Properties.Settings.Default.password;
+
+            _settings = ValidateInputFields();
+        }
+
+        /// <summary>
+        /// When the form is closed, save the last used settings
+        /// </summary>
+        private void OnFormClose(object sender, FormClosingEventArgs e)
+        {
+            ServerSettings settings = ValidateInputFields();
+            Properties.Settings.Default.maxPlayers = settings.maxPlayers;
+            Properties.Settings.Default.gameName = settings.gameName;
+            Properties.Settings.Default.serverPort = settings.serverPort;
+            Properties.Settings.Default.password = settings.password;
+            Properties.Settings.Default.Save();
+        }
+
+        /// <summary>
+        /// Logs a message to the debug console
+        /// </summary>
+        public static void Log(string message)
+        {
+            instance.debugText.AppendText(message + "\r\n");
+        }
     }
 }
