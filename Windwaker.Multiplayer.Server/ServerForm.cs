@@ -12,11 +12,13 @@ namespace Windwaker.Multiplayer.Server
         {
             InitializeComponent();
             instance ??= this;
+
+            _server = new Server();
+            _grid = new PlayerGrid();
         }
 
-        private readonly Server _server = new();
-
-        private readonly PlayerGrid _grid = new();
+        private readonly Server _server;
+        private readonly PlayerGrid _grid;
 
         private ServerSettings _settings;
         public static ServerSettings Settings => instance._settings;
@@ -111,7 +113,7 @@ namespace Windwaker.Multiplayer.Server
         /// </summary>
         public static void Log(string message)
         {
-            instance.debugText.AppendText(message + "\r\n");
+            instance.BeginInvoke(new MethodInvoker(() => instance.debugText.AppendText(message + "\r\n")));
         }
 
         /// <summary>

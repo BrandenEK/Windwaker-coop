@@ -45,7 +45,6 @@ namespace Windwaker.Multiplayer.Server
         /// </summary>
         public void Stop()
         {
-            _connectedPlayers.Clear(); // Maybe remove this once I have a button to test
             _server?.Stop();
             _server.Dispose();
             _server = null;
@@ -64,7 +63,7 @@ namespace Windwaker.Multiplayer.Server
         /// </summary>
         private void OnClientConnected(object sender, ConnectionEventArgs e)
         {
-            //ServerForm.Log("Received connection to server");
+            ServerForm.Log("Received connection to server");
         }
 
         /// <summary>
@@ -72,7 +71,7 @@ namespace Windwaker.Multiplayer.Server
         /// </summary>
         private void OnClientDisconnected(object sender, ConnectionEventArgs e)
         {
-            //ServerForm.Log("Client disconnected");
+            ServerForm.Log("Client disconnected");
             _connectedPlayers.Remove(e.IpPort);
             ServerForm.UpdatePlayerGrid(_connectedPlayers.Values, _connectedPlayers.Count);
         }
