@@ -137,7 +137,7 @@ namespace Windwaker.Multiplayer.Server
             string password = DeserializeString(message, 0 + playerLength + gameLength, out _);
 
             // Ensure the password is correct
-            if (!string.IsNullOrEmpty(Core.ServerSettings.password) && password != Core.ServerSettings.password)
+            if (!string.IsNullOrEmpty(ServerForm.Settings.password) && password != ServerForm.Settings.password)
             {
                 Console.WriteLine("Player connection rejected: Incorrect password");
                 SendIntro(playerIp, 101);
@@ -145,7 +145,7 @@ namespace Windwaker.Multiplayer.Server
             }
 
             // Ensure the game is correct
-            if (Core.ServerSettings.gameName != game)
+            if (ServerForm.Settings.gameName != game)
             {
                 Console.WriteLine("Player connection rejected: Incorrect game");
                 SendIntro(playerIp, 102);
@@ -153,7 +153,7 @@ namespace Windwaker.Multiplayer.Server
             }
 
             // Ensure that the room doesn't already have the max number of players
-            if (_connectedPlayers.Count >= Core.ServerSettings.maxPlayers)
+            if (_connectedPlayers.Count >= ServerForm.Settings.maxPlayers)
             {
                 Console.WriteLine("Player connection rejected: Player limit reached");
                 SendIntro(playerIp, 103);

@@ -1,12 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net7.0</TargetFramework>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net7.0-windows</TargetFramework>
     <Nullable>disable</Nullable>
     <Description>The server application for Windwaker Co-op</Description>
     <Version>0.1.0</Version>
     <Authors>BrandenEK</Authors>
+    <UseWindowsForms>true</UseWindowsForms>
     <ApplicationIcon>windwaker-server.ico</ApplicationIcon>
   </PropertyGroup>
 
@@ -15,7 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="SuperSimpleTcp" Version="3.0.12" />
   </ItemGroup>
 
