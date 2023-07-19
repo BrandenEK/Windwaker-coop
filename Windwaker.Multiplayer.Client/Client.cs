@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Windwaker.Multiplayer.Client
 {
-    internal class Client
+    public class Client
     {
         private SimpleTcpClient _client;
 
@@ -151,9 +151,9 @@ namespace Windwaker.Multiplayer.Client
 
         // Scene
 
-        public void SendScene(string scene)
+        public void SendScene(byte scene)
         {
-
+            Send(new byte[] { scene }, NetworkType.Scene);
         }
 
         private void ReceiveScene(byte[] message)

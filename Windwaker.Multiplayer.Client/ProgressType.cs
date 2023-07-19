@@ -1,7 +1,7 @@
 ﻿
 namespace Windwaker.Multiplayer.Client
 {
-    internal enum ProgressType
+    public enum ProgressType
     {
         Item,
         SceneInfo,

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Windwaker.Multiplayer.Client
 {
-    internal class MemoryReader
+    public class MemoryReader
     {
         [DllImport("kernel32.dll")]
         static extern bool WriteProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] lpBuffer, int nSize, out int lpNumberOfBytesWritten);
@@ -14,12 +14,15 @@ namespace Windwaker.Multiplayer.Client
 
         private bool _reading = false;
 
+        private WindwakerProgress _progress;
+
         /// <summary>
         /// Starts the async task of reading memory in a loop
         /// </summary>
         public void StartLoop()
         {
             _reading = true;
+            _progress = new WindwakerProgress();
             Task.Run(ReadLoop);
         }
 
@@ -124,7 +127,16 @@ namespace Windwaker.Multiplayer.Client
 
         private void ReadAllMemory()
         {
+            byte currentStage = 0xFF;
+            if (TryRead(0x53A4, 1, out byte[] bytes))
+                currentStage = bytes[0];
 
+            if (currentStage != _progress.stageId)
+            {
+                _progress.stageId = currentStage;
+                MainForm.Log("Changed scene: " +  currentStage);
+                MainForm.Client.SendScene(currentStage);
+            }
         }
     }
 }

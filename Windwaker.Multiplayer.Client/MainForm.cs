@@ -14,7 +14,10 @@ namespace Windwaker.Multiplayer.Client
         }
 
         private readonly Client _client = new();
+        public static Client Client => instance._client;
+
         private readonly MemoryReader _reader = new();
+        public static MemoryReader Reader => instance._reader;
 
         private ClientSettings _settings;
         public static ClientSettings Settings => instance._settings;
