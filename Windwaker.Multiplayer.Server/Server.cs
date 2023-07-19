@@ -64,7 +64,7 @@ namespace Windwaker.Multiplayer.Server
         /// </summary>
         private void OnClientConnected(object sender, ConnectionEventArgs e)
         {
-            ServerForm.Log("Received connection to server");
+            //ServerForm.Log("Received connection to server");
         }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace Windwaker.Multiplayer.Server
         /// </summary>
         private void OnClientDisconnected(object sender, ConnectionEventArgs e)
         {
-            ServerForm.Log("Client disconnected");
+            //ServerForm.Log("Client disconnected");
             _connectedPlayers.Remove(e.IpPort);
             ServerForm.UpdatePlayerGrid(_connectedPlayers.Values, _connectedPlayers.Count);
         }

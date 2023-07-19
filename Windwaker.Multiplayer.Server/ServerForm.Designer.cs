@@ -42,17 +42,6 @@ namespace Windwaker.Multiplayer.Server
             passwordLabel = new Label();
             passwordField = new TextBox();
             startButton = new Button();
-            playerGridOuter = new Panel();
-            playerGridInner = new Panel();
-            playerGridDividerH = new Panel();
-            playerGridDividerV = new Panel();
-            playerGridHeader = new Panel();
-            playerGridHeaderLocation = new Label();
-            playerGridHeaderName = new Label();
-            connectedPlayersLabel = new Label();
-            playerGridOuter.SuspendLayout();
-            playerGridInner.SuspendLayout();
-            playerGridHeader.SuspendLayout();
             SuspendLayout();
             // 
             // debugText
@@ -148,87 +137,12 @@ namespace Windwaker.Multiplayer.Server
             startButton.UseVisualStyleBackColor = true;
             startButton.Click += OnClickStart;
             // 
-            // playerGridOuter
-            // 
-            playerGridOuter.BackColor = SystemColors.ActiveCaptionText;
-            playerGridOuter.Controls.Add(playerGridInner);
-            playerGridOuter.Location = new Point(748, 12);
-            playerGridOuter.Name = "playerGridOuter";
-            playerGridOuter.Size = new Size(224, 174);
-            playerGridOuter.TabIndex = 111;
-            // 
-            // playerGridInner
-            // 
-            playerGridInner.BackColor = SystemColors.Control;
-            playerGridInner.Controls.Add(playerGridDividerH);
-            playerGridInner.Controls.Add(playerGridDividerV);
-            playerGridInner.Controls.Add(playerGridHeader);
-            playerGridInner.Location = new Point(2, 2);
-            playerGridInner.Name = "playerGridInner";
-            playerGridInner.Size = new Size(220, 170);
-            playerGridInner.TabIndex = 0;
-            // 
-            // playerGridDividerH
-            // 
-            playerGridDividerH.BackColor = SystemColors.ActiveCaptionText;
-            playerGridDividerH.Location = new Point(0, 39);
-            playerGridDividerH.Name = "playerGridDividerH";
-            playerGridDividerH.Size = new Size(220, 2);
-            playerGridDividerH.TabIndex = 2;
-            // 
-            // playerGridDividerV
-            // 
-            playerGridDividerV.BackColor = SystemColors.ActiveCaptionText;
-            playerGridDividerV.Location = new Point(109, 0);
-            playerGridDividerV.Name = "playerGridDividerV";
-            playerGridDividerV.Size = new Size(2, 170);
-            playerGridDividerV.TabIndex = 1;
-            // 
-            // playerGridHeader
-            // 
-            playerGridHeader.BackColor = SystemColors.ControlDark;
-            playerGridHeader.Controls.Add(playerGridHeaderLocation);
-            playerGridHeader.Controls.Add(playerGridHeaderName);
-            playerGridHeader.Location = new Point(0, 0);
-            playerGridHeader.Name = "playerGridHeader";
-            playerGridHeader.Size = new Size(220, 40);
-            playerGridHeader.TabIndex = 0;
-            // 
-            // playerGridHeaderLocation
-            // 
-            playerGridHeaderLocation.Location = new Point(110, 0);
-            playerGridHeaderLocation.Name = "playerGridHeaderLocation";
-            playerGridHeaderLocation.Size = new Size(110, 40);
-            playerGridHeaderLocation.TabIndex = 1;
-            playerGridHeaderLocation.Text = "Location";
-            playerGridHeaderLocation.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // playerGridHeaderName
-            // 
-            playerGridHeaderName.Location = new Point(0, 0);
-            playerGridHeaderName.Name = "playerGridHeaderName";
-            playerGridHeaderName.Size = new Size(110, 40);
-            playerGridHeaderName.TabIndex = 0;
-            playerGridHeaderName.Text = "Player";
-            playerGridHeaderName.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // connectedPlayersLabel
-            // 
-            connectedPlayersLabel.AutoSize = true;
-            connectedPlayersLabel.Location = new Point(349, 40);
-            connectedPlayersLabel.Name = "connectedPlayersLabel";
-            connectedPlayersLabel.Size = new Size(128, 15);
-            connectedPlayersLabel.TabIndex = 112;
-            connectedPlayersLabel.Text = "Connected players: 0/8";
-            // 
             // ServerForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = SystemColors.ControlDarkDark;
+            BackColor = SystemColors.ScrollBar;
             ClientSize = new Size(984, 561);
-            Controls.Add(connectedPlayersLabel);
-            Controls.Add(playerGridOuter);
             Controls.Add(startButton);
             Controls.Add(passwordLabel);
             Controls.Add(passwordField);
@@ -245,9 +159,6 @@ namespace Windwaker.Multiplayer.Server
             Text = "Windwaker Multiplayer Server";
             FormClosing += OnFormClose;
             Load += OnFormOpen;
-            playerGridOuter.ResumeLayout(false);
-            playerGridInner.ResumeLayout(false);
-            playerGridHeader.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -264,13 +175,5 @@ namespace Windwaker.Multiplayer.Server
         private Label passwordLabel;
         private TextBox passwordField;
         private Button startButton;
-        private Panel playerGridOuter;
-        private Panel playerGridInner;
-        private Panel playerGridHeader;
-        private Label playerGridHeaderLocation;
-        private Label playerGridHeaderName;
-        private Panel playerGridDividerH;
-        private Panel playerGridDividerV;
-        private Label connectedPlayersLabel;
     }
 }

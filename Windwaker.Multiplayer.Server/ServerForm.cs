@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Windwaker.Multiplayer.Server
@@ -16,6 +15,8 @@ namespace Windwaker.Multiplayer.Server
         }
 
         private readonly Server _server = new();
+
+        private readonly PlayerGrid _grid = new();
 
         private ServerSettings _settings;
         public static ServerSettings Settings => instance._settings;
@@ -40,15 +41,7 @@ namespace Windwaker.Multiplayer.Server
 
         public static void UpdatePlayerGrid(IEnumerable<PlayerData> players, int count)
         {
-            var text = new StringBuilder();
-            text.AppendLine($"Connected players: {count}/{Settings.ValidMaxPlayers}\r\n");
-
-            foreach (var player in players)
-            {
-                text.AppendLine($"{player.Name} - {player.CurrentSceneName}");
-            }
-
-            instance.connectedPlayersLabel.Text = text.ToString();
+            instance.BeginInvoke(new MethodInvoker(() => instance._grid.UpdateGrid(players, count)));
         }
 
         /// <summary>
@@ -97,6 +90,7 @@ namespace Windwaker.Multiplayer.Server
             passwordField.Text = Properties.Settings.Default.password;
 
             _settings = ValidateInputFields();
+            _grid.UpdateGrid(Array.Empty<PlayerData>(), 0);
         }
 
         /// <summary>
@@ -118,6 +112,14 @@ namespace Windwaker.Multiplayer.Server
         public static void Log(string message)
         {
             instance.debugText.AppendText(message + "\r\n");
+        }
+
+        /// <summary>
+        /// Adds a panel to the registered controls
+        /// </summary>
+        public static void AddPanel(Panel panel)
+        {
+            instance.Controls.Add(panel);
         }
     }
 }
