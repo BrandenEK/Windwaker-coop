@@ -186,14 +186,16 @@ namespace Windwaker.Multiplayer.Server
 
         // Scene
 
-        public void SendScene(string playerIp, string scene)
+        public void SendScene(string playerIp, byte scene)
         {
 
         }
 
         private void ReceiveScene(string playerIp, byte[] message)
         {
-
+            byte scene = message[0];
+            _connectedPlayers[playerIp].UpdateScene(scene);
+            Console.WriteLine("Received new scene: " + _connectedPlayers[playerIp].CurrentSceneName);
         }
 
         // Progress

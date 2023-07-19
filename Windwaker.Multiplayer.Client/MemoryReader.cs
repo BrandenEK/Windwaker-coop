@@ -43,9 +43,13 @@ namespace Windwaker.Multiplayer.Client
             {
                 int timeStart = Environment.TickCount;
 
+                // Check if the player is in a stage and which one
+                CheckNewStage();
+
+                // If in a save file, check for new progress
                 if (IsSaveFileLoaded())
                 {
-                    ReadAllMemory();
+                    CheckNewProgress();
                 }
                 else
                 {
@@ -125,18 +129,22 @@ namespace Windwaker.Multiplayer.Client
             }
         }
 
-        private void ReadAllMemory()
+        private void CheckNewStage()
         {
             byte currentStage = 0xFF;
-            if (TryRead(0x53A4, 1, out byte[] bytes))
+            if (IsSaveFileLoaded() && TryRead(0x53A4, 1, out byte[] bytes))
                 currentStage = bytes[0];
 
             if (currentStage != _progress.stageId)
             {
                 _progress.stageId = currentStage;
-                MainForm.Log("Changed scene: " +  currentStage);
+                MainForm.Log("Changed scene: " + currentStage);
                 MainForm.Client.SendScene(currentStage);
             }
+        }
+
+        private void CheckNewProgress()
+        {
         }
     }
 }
