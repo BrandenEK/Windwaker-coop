@@ -37,12 +37,18 @@ namespace Windwaker.Multiplayer.Client
             }
         }
 
+        /// <summary>
+        /// Once this player is accepted to the server, begin reading memory and syncing it
+        /// </summary>
         public static void OnConnect()
         {
             instance.connectBtn.Text = "Disconnect";
             instance._reader.StartLoop();
         }
 
+        /// <summary>
+        /// Once this player is disconnected from the server, stop reading memory
+        /// </summary>
         public static void OnDisconnect()
         {
             instance.connectBtn.Text = "Connect";
@@ -126,7 +132,7 @@ namespace Windwaker.Multiplayer.Client
         /// </summary>
         public static void Log(string message)
         {
-            instance.debugText.Text += message + "\r\n";
+            instance.debugText.AppendText(message + "\r\n");
         }
     }
 }
