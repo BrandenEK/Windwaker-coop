@@ -59,6 +59,7 @@ namespace Windwaker.Multiplayer.Client
         /// </summary>
         private void OnServerDisconnected(object sender, ConnectionEventArgs e)
         {
+            ClientForm.Log($"Lost connection with server");
             ClientForm.OnDisconnect();
         }
 

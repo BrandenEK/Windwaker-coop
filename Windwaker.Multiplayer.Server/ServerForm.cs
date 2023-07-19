@@ -13,14 +13,27 @@ namespace Windwaker.Multiplayer.Server
             instance ??= this;
         }
 
+        private readonly Server _server = new();
+
         private ServerSettings _settings;
         public static ServerSettings Settings => instance._settings;
 
-        private readonly Server _server = new();
-
+        /// <summary>
+        /// When the start button is clicked, either start/stop the server
+        /// </summary>
         private void OnClickStart(object sender, EventArgs e)
         {
-            _server.Start("*:" + _settings.ValidServerPort);
+            if (_server.IsListening)
+            {
+                _server.Stop();
+                startButton.Text = "Start";
+            }
+            else
+            {
+                _settings = ValidateInputFields();
+                if (_server.Start("*", _settings.ValidServerPort))
+                    startButton.Text = "Stop";
+            }
         }
 
         /// <summary>

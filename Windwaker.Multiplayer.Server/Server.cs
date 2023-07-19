@@ -12,15 +12,17 @@ namespace Windwaker.Multiplayer.Server
 
         private readonly Dictionary<string, PlayerData> _connectedPlayers = new();
 
+        public bool IsListening => _server != null && _server.IsListening;
+
         /// <summary>
         /// Attempts to start the server at the specified ip port.  
         /// </summary>
-        public bool Start(string ipPort)
+        public bool Start(string ip, int port)
         {
             try
             {
                 _connectedPlayers.Clear();
-                _server = new SimpleTcpServer(ipPort);
+                _server = new SimpleTcpServer(ip, port);
 
                 _server.Events.ClientConnected += OnClientConnected;
                 _server.Events.ClientDisconnected += OnClientDisconnected;
@@ -30,11 +32,11 @@ namespace Windwaker.Multiplayer.Server
             }
             catch (Exception e) when (e is SocketException || e is TimeoutException)
             {
-                ServerForm.Log($"Failed to start server at {ipPort}");
+                ServerForm.Log($"Failed to start server at {ip}:{port}");
                 return false;
             }
 
-            ServerForm.Log($"Started server at {ipPort}");
+            ServerForm.Log($"Started server at {ip}:{port}");
             return true;
         }
 
@@ -45,6 +47,7 @@ namespace Windwaker.Multiplayer.Server
         {
             _connectedPlayers.Clear(); // Maybe remove this once I have a button to test
             _server?.Stop();
+            _server.Dispose();
             _server = null;
         }
 
