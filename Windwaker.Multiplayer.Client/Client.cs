@@ -59,7 +59,7 @@ namespace Windwaker.Multiplayer.Client
         /// </summary>
         private void OnServerDisconnected(object sender, ConnectionEventArgs e)
         {
-            MainForm.UpdateUI();
+            MainForm.OnDisconnect();
         }
 
         /// <summary>
@@ -132,8 +132,7 @@ namespace Windwaker.Multiplayer.Client
             if (response == 200)
             {
                 MainForm.Log($"Connection to server was approved");
-                MainForm.UpdateUI();
-                // Start sync
+                MainForm.OnConnect();
             }
             else
             {

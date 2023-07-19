@@ -14,6 +14,7 @@ namespace Windwaker.Multiplayer.Client
         }
 
         private readonly Client _client = new();
+        private readonly MemoryReader _reader = new();
 
         private ClientSettings _settings;
         public static ClientSettings Settings => instance._settings;
@@ -36,12 +37,16 @@ namespace Windwaker.Multiplayer.Client
             }
         }
 
-        /// <summary>
-        /// Whenever the connection status is changed, update the button UI
-        /// </summary>
-        public static void UpdateUI()
+        public static void OnConnect()
         {
-            instance.connectBtn.Text = instance.IsConnectedToGame ? "Disconnect" : "Connect";
+            instance.connectBtn.Text = "Disconnect";
+            instance._reader.StartLoop();
+        }
+
+        public static void OnDisconnect()
+        {
+            instance.connectBtn.Text = "Connect";
+            instance._reader.StopLoop();
         }
 
         /// <summary>
