@@ -164,9 +164,15 @@ namespace Windwaker.Multiplayer.Client
 
         // Progress
 
-        public void SendProgress(ProgressType type, string progressId, byte progressValue)
+        public void SendProgress(ProgressType progressType, string progressId, byte progressValue)
         {
+            var bytes = new List<byte>();
 
+            bytes.Add((byte)progressType);
+            bytes.Add(progressValue);
+            bytes.AddRange(Encoding.UTF8.GetBytes(progressId));
+
+            Send(bytes.ToArray(), NetworkType.Progress);
         }
 
         private void ReceiveProgress(byte[] message)
