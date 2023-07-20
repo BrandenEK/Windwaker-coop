@@ -1,352 +1,221 @@
-﻿
+﻿using System.Collections.Generic;
+
 namespace Windwaker.Multiplayer.Client
 {
     public class WindwakerProgress
     {
-        public void ResetProgress()
-        {
-
-        }
-
-        public void AddItem(string player, string item, byte value)
-        {
-            ClientForm.Log($"Receiving item: {item} from {player}");
-        }
+        private readonly Dictionary<string, byte> items = new();
 
         public byte stageId = 0xFF;
 
+        public WindwakerProgress() => ResetProgress();
+
+        public void ResetProgress()
+        {
+            items.Clear();
+            items["maxhealth"] = 12;
+        }
+
+        public void ObtainItem(string item, byte value)
+        {
+            items[item] = value;
+            ClientForm.Log($"Obtained item: {item}");
+            ClientForm.Client.SendProgress(ProgressType.Item, item, value);
+        }
+
+        public void ReceiveItem(string player, string item, byte value)
+        {
+            byte current = CheckItem(item);
+            if (value > current)
+            {
+                ClientForm.Log($"Received item: {item} from {player}");
+                items[item] = value;
+            }
+        }
+
+        private byte CheckItem(string item)
+        {
+            return items.TryGetValue(item, out byte value) ? value : (byte)0;
+        }
+
         #region Inventory
-
-        private bool telescope;
-        private bool sail;
-        private bool windwaker;
-        private bool grapplinghook;
-        private bool spoilsbag;
-        private bool boomerang;
-        private bool dekuleaf;
-
-        private bool tingletuner;
-        private PictoBoxType pictobox;
-        private bool ironboots;
-        private bool magicarmor;
-        private bool baitbag;
-        private BowType bow;
-        private bool bombs;
-
-        private bool bottle1;
-        private bool bottle2;
-        private bool bottle3;
-        private bool bottle4;
-        private bool deliverybag;
-        private bool hookshot;
-        private bool skullhammer;
 
         public void CheckForTelescope(byte value)
         {
-            if (value == 0x20 && !telescope)
-            {
-                telescope = true;
-                ClientForm.Client.SendProgress(ProgressType.Item, "telescope", 1);
-            }
+            if (value == 0x20 && CheckItem("telescope") < 1)
+                ObtainItem("telescope", 1);
         }
         public void CheckForSail(byte value)
         {
-            if (value == 0x78 && !sail)
-            {
-                sail = true;
-                ClientForm.Client.SendProgress(ProgressType.Item, "sail", 1);
-            }
+            if (value == 0x78 && CheckItem("sail") < 1)
+                ObtainItem("sail", 1);
         }
         public void CheckForWindwaker(byte value)
         {
-            if (value == 0x22 && !windwaker)
-            {
-                windwaker = true;
-                ClientForm.Client.SendProgress(ProgressType.Item, "windwaker", 1);
-            }
+            if (value == 0x22 && CheckItem("windwaker") < 1)
+                ObtainItem("windwaker", 1);
         }
         public void CheckForGrapplingHook(byte value)
         {
-            if (value == 0x25 && !grapplinghook)
-            {
-                grapplinghook = true;
-                ClientForm.Client.SendProgress(ProgressType.Item, "grapplinghook", 1);
-            }
+            if (value == 0x25 && CheckItem("grapplinghook") < 1)
+                ObtainItem("grapplinghook", 1);
         }
         public void CheckForSpoilsBag(byte value)
         {
-            if (value == 0x24 && !spoilsbag)
-            {
-                spoilsbag = true;
-                ClientForm.Client.SendProgress(ProgressType.Item, "spoilsbag", 1);
-            }
+            if (value == 0x24 && CheckItem("spoilsbag") < 1)
+                ObtainItem("spoilsbag", 1);
         }
         public void CheckForBoomerang(byte value)
         {
-            if (value == 0x2D && !boomerang)
-            {
-                boomerang = true;
-                ClientForm.Client.SendProgress(ProgressType.Item, "boomerang", 1);
-            }
+            if (value == 0x2D && CheckItem("boomerang") < 1)
+                ObtainItem("boomerang", 1);
         }
         public void CheckForDekuLeaf(byte value)
         {
-            if (value == 0x34 && !dekuleaf)
-            {
-                dekuleaf = true;
-                ClientForm.Client.SendProgress(ProgressType.Item, "dekuleaf", 1);
-            }
+            if (value == 0x34 && CheckItem("dekuleaf") < 1)
+                ObtainItem("dekuleaf", 1);
         }
         public void CheckForTingleTuner(byte value)
         {
-            if (value == 0x21 && !tingletuner)
-            {
-                tingletuner = true;
-                ClientForm.Client.SendProgress(ProgressType.Item, "tingletuner", 1);
-            }
+            if (value == 0x21 && CheckItem("tingletuner") < 1)
+                ObtainItem("tingletuner", 1);
         }
         public void CheckForPictoBox(byte value)
         {
-            if (value == 0x26 && pictobox < PictoBoxType.Deluxe)
-            {
-                pictobox = PictoBoxType.Deluxe;
-                ClientForm.Client.SendProgress(ProgressType.Item, "pictobox", 2);
-            }
-            else if (value == 0x23 && pictobox < PictoBoxType.Standard)
-            {
-                pictobox = PictoBoxType.Standard;
-                ClientForm.Client.SendProgress(ProgressType.Item, "pictobox", 1);
-            }
+            if (value == 0x26 && CheckItem("pictobox") < 2)
+                ObtainItem("pictobox", 2);
+            else if (value == 0x23 && CheckItem("pictobox") < 1)
+                ObtainItem("pictobox", 1);
         }
         public void CheckForIronBoots(byte value)
         {
-            if (value == 0x29 && !ironboots)
-            {
-                ironboots = true;
-                ClientForm.Client.SendProgress(ProgressType.Item, "ironboots", 1);
-            }
+            if (value == 0x29 && CheckItem("ironboots") < 1)
+                ObtainItem("ironboots", 1);
         }
         public void CheckForMagicArmor(byte value)
         {
-            if (value == 0x2A && !magicarmor)
-            {
-                magicarmor = true;
-                ClientForm.Client.SendProgress(ProgressType.Item, "magicarmor", 1);
-            }
+            if (value == 0x2A && CheckItem("magicarmor") < 1)
+                ObtainItem("magicarmor", 1);
         }
         public void CheckForBaitBag(byte value)
         {
-            if (value == 0x2C && !baitbag)
-            {
-                baitbag = true;
-                ClientForm.Client.SendProgress(ProgressType.Item, "baitbag", 1);
-            }
+            if (value == 0x2C && CheckItem("baitbag") < 1)
+                ObtainItem("baitbag", 1);
         }
         public void CheckForBow(byte value)
         {
-            if (value == 0x36 && bow < BowType.Light)
-            {
-                bow = BowType.Light;
-                ClientForm.Client.SendProgress(ProgressType.Item, "bow", 3);
-            }
-            else if (value == 0x35 && bow < BowType.FireAndIce)
-            {
-                bow = BowType.FireAndIce;
-                ClientForm.Client.SendProgress(ProgressType.Item, "bow", 2);
-            }
-            else if (value == 0x27 && bow < BowType.Standard)
-            {
-                bow = BowType.Standard;
-                ClientForm.Client.SendProgress(ProgressType.Item, "bow", 1);
-            }
+            if (value == 0x36 && CheckItem("bow") < 3)
+                ObtainItem("bow", 3);
+            else if (value == 0x35 && CheckItem("bow") < 2)
+                ObtainItem("bow", 2);
+            else if (value == 0x27 && CheckItem("bow") < 1)
+                ObtainItem("bow", 1);
         }
         public void CheckForBombs(byte value)
         {
-            if (value == 0x31 && !bombs)
-            {
-                bombs = true;
-                ClientForm.Client.SendProgress(ProgressType.Item, "bombs", 1);
-            }
+            if (value == 0x31 && CheckItem("bombs") < 1)
+                ObtainItem("bombs", 1);
         }
-
         public void CheckForBottle1(byte value)
         {
-            if (value >= 0x50 && value <= 0x59 && !bottle1)
-            {
-                bottle1 = true;
-                ClientForm.Client.SendProgress(ProgressType.Item, "bottle1", 1);
-            }
+            if (value >= 0x50 && value <= 0x59 && CheckItem("bottle1") < 1)
+                ObtainItem("bottle1", 1);
         }
         public void CheckForBottle2(byte value)
         {
-            if (value >= 0x50 && value <= 0x59 && !bottle2)
-            {
-                bottle2 = true;
-                ClientForm.Client.SendProgress(ProgressType.Item, "bottle2", 1);
-            }
+            if (value >= 0x50 && value <= 0x59 && CheckItem("bottle2") < 1)
+                ObtainItem("bottle2", 1);
         }
         public void CheckForBottle3(byte value)
         {
-            if (value >= 0x50 && value <= 0x59 && !bottle3)
-            {
-                bottle3 = true;
-                ClientForm.Client.SendProgress(ProgressType.Item, "bottle3", 1);
-            }
+            if (value >= 0x50 && value <= 0x59 && CheckItem("bottle3") < 1)
+                ObtainItem("bottle3", 1);
         }
         public void CheckForBottle4(byte value)
         {
-            if (value >= 0x50 && value <= 0x59 && !bottle4)
-            {
-                bottle4 = true;
-                ClientForm.Client.SendProgress(ProgressType.Item, "bottle4", 1);
-            }
+            if (value >= 0x50 && value <= 0x59 && CheckItem("bottle4") < 1)
+                ObtainItem("bottle4", 1);
         }
         public void CheckForDeliveryBag(byte value)
         {
-            if (value == 0x30 && !deliverybag)
-            {
-                deliverybag = true;
-                ClientForm.Client.SendProgress(ProgressType.Item, "deliverybag", 1);
-            }
+            if (value == 0x30 && CheckItem("deliverybag") < 1)
+                ObtainItem("deliverybag", 1);
         }
         public void CheckForHookshot(byte value)
         {
-            if (value == 0x2F && !hookshot)
-            {
-                hookshot = true;
-                ClientForm.Client.SendProgress(ProgressType.Item, "hookshot", 1);
-            }
+            if (value == 0x2F && CheckItem("hookshot") < 1)
+                ObtainItem("hookshot", 1);
         }
         public void CheckForSkullHammer(byte value)
         {
-            if (value == 0x33 && !skullhammer)
-            {
-                skullhammer = true;
-                ClientForm.Client.SendProgress(ProgressType.Item, "skullhammer", 1);
-            }
+            if (value == 0x33 && CheckItem("skullhammer") < 1)
+                ObtainItem("skullhammer", 1);
         }
 
         #endregion Inventory
 
         #region Equipment
 
-        private SwordType sword;
-
         public void CheckForSword(byte value)
         {
-            if (value == 0x3E && sword < SwordType.MasterFull)
-            {
-                sword = SwordType.MasterFull;
-                ClientForm.Client.SendProgress(ProgressType.Item, "sword", 4);
-            }
-            else if (value == 0x3A && sword < SwordType.MasterHalf)
-            {
-                sword = SwordType.MasterHalf;
-                ClientForm.Client.SendProgress(ProgressType.Item, "sword", 3);
-            }
-            else if (value == 0x39 && sword < SwordType.MasterEmpty)
-            {
-                sword = SwordType.MasterEmpty;
-                ClientForm.Client.SendProgress(ProgressType.Item, "sword", 2);
-            }
-            else if (value == 0x38 && sword < SwordType.Hero)
-            {
-                sword = SwordType.Hero;
-                ClientForm.Client.SendProgress(ProgressType.Item, "sword", 1);
-            }
+            if (value == 0x3E && CheckItem("sword") < 4)
+                ObtainItem("sword", 4);
+            else if (value == 0x3A && CheckItem("sword") < 3)
+                ObtainItem("sword", 3);
+            else if (value == 0x39 && CheckItem("sword") < 2)
+                ObtainItem("sword", 2);
+            else if (value == 0x38 && CheckItem("sword") < 1)
+                ObtainItem("sword", 1);
         }
-
-        private ShieldType shield;
-
         public void CheckForShield(byte value)
         {
-            if (value == 0x3C && shield < ShieldType.Mirror)
-            {
-                shield = ShieldType.Mirror;
-                ClientForm.Client.SendProgress(ProgressType.Item, "shield", 2);
-            }
-            else if (value == 0x3B && shield < ShieldType.Hero)
-            {
-                shield = ShieldType.Hero;
-                ClientForm.Client.SendProgress(ProgressType.Item, "shield", 1);
-            }
+            if (value == 0x3C && CheckItem("shield") < 2)
+                ObtainItem("shield", 2);
+            else if (value == 0x3B && CheckItem("shield") < 1)
+                ObtainItem("shield", 1);
         }
-
-        private bool powerbracelets;
-
         public void CheckForPowerBracelets(byte value)
         {
-            if (value == 0x28 && !powerbracelets)
-            {
-                powerbracelets = true;
-                ClientForm.Client.SendProgress(ProgressType.Item, "powerbracelets", 1);
-            }
+            if (value == 0x28 && CheckItem("powerbracelets") < 1)
+                ObtainItem("powerbracelets", 1);
         }
-
-        private bool piratescharm;
-
         public void CheckForPiratesCharm(byte value)
         {
-            if ((value & 0x01) > 0 && !piratescharm)
-            {
-                piratescharm = true;
-                ClientForm.Client.SendProgress(ProgressType.Item, "piratescharm", 1);
-            }
+            if ((value & 0x01) > 0 && CheckItem("piratescharm") < 1)
+                ObtainItem("piratescharm", 1);
         }
-
-        private bool heroscharm;
-
         public void CheckForHerosCharm(byte value)
         {
-            if ((value & 0x01) > 0 && !heroscharm)
-            {
-                heroscharm = true;
-                ClientForm.Client.SendProgress(ProgressType.Item, "heroscharm", 1);
-            }
+            if ((value & 0x01) > 0 && CheckItem("heroscharm") < 1)
+                ObtainItem("heroscharm", 1);
         }
-
-        private WalletType wallet;
-
         public void CheckForWallet(byte value)
         {
-            if (value == 0x02 && wallet < WalletType.Large)
-            {
-                wallet = WalletType.Large; // send
-            }
-            else if (value == 0x01 && wallet < WalletType.Medium)
-            {
-                wallet = WalletType.Medium; // send
-            }
+            if (value == 0x02 && CheckItem("wallet") < 2)
+                ObtainItem("wallet", 2);
+            else if (value == 0x01 && CheckItem("wallet") < 1)
+                ObtainItem("wallet", 1);
         }
 
-        private byte maxmagic;
-
+        public void CheckForMaxHealth(byte value)
+        {
+            if (CheckItem("maxhealth") < value)
+                ObtainItem("maxhealth", value);
+        }
         public void CheckForMaxMagic(byte value)
         {
-            if (maxmagic < value)
-            {
-                maxmagic = value; // send
-            }
+            if (CheckItem("maxmagic") < value)
+                ObtainItem("maxmagic", value);
         }
-
-        private byte maxarrows;
-
         public void CheckForMaxArrows(byte value)
         {
-            if (maxarrows < value)
-            {
-                maxarrows = value; // send
-            }
+            if (CheckItem("maxarrows") < value)
+                ObtainItem("maxarrows", value);
         }
-
-        private byte maxbombs;
-
         public void CheckForMaxBombs(byte value)
         {
-            if (maxbombs < value)
-            {
-                maxbombs = value; // send
-            }
+            if (CheckItem("maxbombs") < value)
+                ObtainItem("maxbombs", value);
         }
 
         #endregion Equipment
@@ -376,14 +245,6 @@ namespace Windwaker.Multiplayer.Client
 
         public byte events;
     }
-
-    public enum PictoBoxType { None = 0, Standard = 1, Deluxe = 2 }
-
-    public enum BowType { None = 0, Standard = 1, FireAndIce = 2, Light = 3 }
-
-    public enum SwordType { None = 0, Hero = 1, MasterEmpty = 2, MasterHalf = 3, MasterFull = 4 }
-
-    public enum ShieldType { None = 0, Hero = 1, Mirror = 2 }
 
     public enum WalletType { Small = 0, Medium = 1, Large = 2 }
 

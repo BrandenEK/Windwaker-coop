@@ -14,15 +14,12 @@ namespace Windwaker.Multiplayer.Client
 
         private bool _reading = false;
 
-        private WindwakerProgress progress;
-
         /// <summary>
         /// Starts the async task of reading memory in a loop
         /// </summary>
         public void StartLoop()
         {
             _reading = true;
-            progress = new WindwakerProgress();
             Task.Run(ReadLoop);
         }
 
@@ -135,9 +132,9 @@ namespace Windwaker.Multiplayer.Client
             if (IsSaveFileLoaded() && TryRead(0x53A4, 1, out byte[] bytes))
                 currentStage = bytes[0];
 
-            if (currentStage != progress.stageId)
+            if (currentStage != ClientForm.GameProgress.stageId)
             {
-                progress.stageId = currentStage;
+                ClientForm.GameProgress.stageId = currentStage;
                 ClientForm.Log("Changed scene: " + currentStage);
                 ClientForm.Client.SendScene(currentStage);
             }
@@ -145,7 +142,13 @@ namespace Windwaker.Multiplayer.Client
 
         private void CheckNewProgress()
         {
+            WindwakerProgress progress = ClientForm.GameProgress;
             byte[] bytes;
+
+            if (TryRead(0x4C09, 1, out bytes))
+            {
+                progress.CheckForMaxHealth(bytes[0]);
+            }
 
             if (TryRead(0x4C16, 6, out bytes))
             {

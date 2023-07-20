@@ -184,7 +184,7 @@ namespace Windwaker.Multiplayer.Client
 
             if (progressType == ProgressType.Item)
             {
-                ClientForm.GameProgress.AddItem(playerName, progressId, progressValue);
+                ClientForm.GameProgress.ReceiveItem(playerName, progressId, progressValue);
             }
         }
 
