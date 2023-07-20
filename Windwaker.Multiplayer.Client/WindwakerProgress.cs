@@ -28,9 +28,10 @@ namespace Windwaker.Multiplayer.Client
             byte current = CheckItem(item);
             if (value > current)
             {
-                ClientForm.Log($"Received item: {item} from {player}");
                 items[item] = value;
-                // Write to memory
+                ClientForm.Log($"Received item: {item} from {player}");
+                ClientForm.Reader.WriteReceivedItem(item, value);
+                // Calculate notification
             }
         }
 

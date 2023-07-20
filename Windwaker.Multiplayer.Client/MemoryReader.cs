@@ -215,7 +215,7 @@ namespace Windwaker.Multiplayer.Client
                 }
                 for (byte i = 0; i < 8; i++)
                 {
-                    progress.CheckForCharts("obtained", i, bytes[32 + i]);
+                    progress.CheckForCharts("looted", i, bytes[32 + i]);
                 }
 
                 for (byte i = 0; i < 49; i++)
@@ -232,6 +232,35 @@ namespace Windwaker.Multiplayer.Client
             if (TryRead(0x5296, 1, out bytes))
             {
                 progress.CheckForTingleStatues(bytes[0]);
+            }
+        }
+
+        public void WriteReceivedItem(string item, byte value)
+        {
+            switch (item)
+            {
+                case "telescope":
+                    TryWrite(0x4C44, new byte[] { 0x20 }); TryWrite(0x4C59, new byte[] { 0xFF });
+                    break;
+                case "sail":
+                    TryWrite(0x4C45, new byte[] { 0x78 }); TryWrite(0x4C5A, new byte[] { 0xFF });
+                    break;
+                case "windwaker":
+                    TryWrite(0x4C46, new byte[] { 0x22 }); TryWrite(0x4C5B, new byte[] { 0xFF });
+                    break;
+                case "grapplinghook":
+                    TryWrite(0x4C47, new byte[] { 0x25 }); TryWrite(0x4C5C, new byte[] { 0xFF });
+                    break;
+                case "spoilsbag":
+                    TryWrite(0x4C48, new byte[] { 0x24 }); TryWrite(0x4C5D, new byte[] { 0xFF });
+                    break;
+                case "boomerang":
+                    TryWrite(0x4C49, new byte[] { 0x2D }); TryWrite(0x4C5E, new byte[] { 0xFF });
+                    break;
+                case "dekuleaf":
+                    TryWrite(0x4C4A, new byte[] { 0x34 }); TryWrite(0x4C5F, new byte[] { 0xFF });
+                    break;
+
             }
         }
     }
