@@ -75,7 +75,7 @@ namespace Windwaker.Multiplayer.Server
             _connectedPlayers.Remove(e.IpPort);
             ServerForm.UpdatePlayerGrid(_connectedPlayers.Values, _connectedPlayers.Count);
 
-            if (_connectedPlayers.Count == 0 )
+            if (_connectedPlayers.Count == 0)
             {
                 ServerForm.GameProgress.ResetProgress();
             }
@@ -191,6 +191,8 @@ namespace Windwaker.Multiplayer.Server
             _connectedPlayers.Add(playerIp, new PlayerData(player));
             ServerForm.UpdatePlayerGrid(_connectedPlayers.Values, _connectedPlayers.Count);
             SendIntro(playerIp, 200);
+
+            // Also send all current game progress
         }
 
         // Scene
@@ -212,7 +214,20 @@ namespace Windwaker.Multiplayer.Server
 
         public void SendProgress(string playerIp, ProgressType progressType, string progressId, byte progressValue)
         {
+            var bytes = new List<byte>();
+            bytes.AddRange(SerializeString(_connectedPlayers[playerIp].Name));
+            bytes.Add((byte)progressType);
+            bytes.Add(progressValue);
+            bytes.AddRange(Encoding.UTF8.GetBytes(progressId));
+            byte[] message = bytes.ToArray();
 
+            foreach (string ip in _connectedPlayers.Keys)
+            {
+                if (playerIp != ip)
+                {
+                    Send(ip, message, NetworkType.Progress);
+                }
+            }
         }
 
         private void ReceiveProgress(string playerIp, byte[] message)
