@@ -74,11 +74,6 @@ namespace Windwaker.Multiplayer.Server
             ServerForm.Log("Client disconnected");
             _connectedPlayers.Remove(e.IpPort);
             ServerForm.UpdatePlayerGrid(_connectedPlayers.Values, _connectedPlayers.Count);
-
-            if (_connectedPlayers.Count == 0)
-            {
-                ServerForm.GameProgress.ResetProgress();
-            }
         }
 
         /// <summary>

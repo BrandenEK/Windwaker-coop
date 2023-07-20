@@ -36,6 +36,7 @@ namespace Windwaker.Multiplayer.Server
             {
                 _server.Stop();
                 startButton.Text = "Start";
+                _progress.ResetProgress();
             }
             else
             {
