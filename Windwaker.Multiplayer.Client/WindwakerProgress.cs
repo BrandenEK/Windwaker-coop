@@ -1,8 +1,18 @@
 ﻿
 namespace Windwaker.Multiplayer.Client
 {
-    internal class WindwakerProgress
+    public class WindwakerProgress
     {
+        public void ResetProgress()
+        {
+
+        }
+
+        public void AddItem(string player, string item, byte value)
+        {
+            ClientForm.Log($"Receiving item: {item} from {player}");
+        }
+
         public byte stageId = 0xFF;
 
         #region Inventory

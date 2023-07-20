@@ -177,7 +177,15 @@ namespace Windwaker.Multiplayer.Client
 
         private void ReceiveProgress(byte[] message)
         {
+            string playerName = DeserializeString(message, 0, out byte nameLength);
+            ProgressType progressType = (ProgressType)message[nameLength];
+            byte progressValue = message[nameLength + 1];
+            string progressId = Encoding.UTF8.GetString(message, nameLength + 2, message.Length - nameLength - 2);
 
+            if (progressType == ProgressType.Item)
+            {
+                ClientForm.GameProgress.AddItem(playerName, progressId, progressValue);
+            }
         }
 
         // Helpers

@@ -14,13 +14,16 @@ namespace Windwaker.Multiplayer.Client
 
             _client = new Client();
             _reader = new MemoryReader();
+            _progress = new WindwakerProgress();
         }
 
         private readonly Client _client;
         private readonly MemoryReader _reader;
+        private readonly WindwakerProgress _progress;
 
         public static Client Client => instance._client;
         public static MemoryReader Reader => instance._reader;
+        public static WindwakerProgress GameProgress => instance._progress;
 
         private ClientSettings _settings;
         public static ClientSettings Settings => instance._settings;
@@ -59,6 +62,7 @@ namespace Windwaker.Multiplayer.Client
         {
             instance.connectBtn.Text = "Connect";
             instance._reader.StopLoop();
+            GameProgress.ResetProgress();
         }
 
         /// <summary>
