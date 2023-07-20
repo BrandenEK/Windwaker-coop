@@ -148,6 +148,14 @@ namespace Windwaker.Multiplayer.Client
             byte[] bytes;
 
             if (TryRead(0x4C16, 6, out bytes))
+            {
+                progress.CheckForSword(bytes[0]);
+                progress.CheckForShield(bytes[1]);
+                progress.CheckForPowerBracelets(bytes[2]);
+                // Unknown
+                progress.CheckForWallet(bytes[4]);
+                progress.CheckForMaxMagic(bytes[5]);
+            }
 
             if (TryRead(0x4C44, 21, out bytes))
             {
@@ -174,6 +182,18 @@ namespace Windwaker.Multiplayer.Client
                 progress.CheckForDeliveryBag(bytes[18]);
                 progress.CheckForHookshot(bytes[19]);
                 progress.CheckForSkullHammer(bytes[20]);
+            }
+
+            if (TryRead(0x4C77, 2, out bytes))
+            {
+                progress.CheckForMaxArrows(bytes[0]);
+                progress.CheckForMaxBombs(bytes[1]);
+            }
+
+            if (TryRead(0x4CBF, 2, out bytes))
+            {
+                progress.CheckForPiratesCharm(bytes[0]);
+                progress.CheckForHerosCharm(bytes[1]);
             }
         }
     }

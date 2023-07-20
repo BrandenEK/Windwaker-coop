@@ -11,12 +11,6 @@ namespace Windwaker.Multiplayer.Client
     {
         public byte stageId = 0xFF;
 
-        //public byte swordId = 0xFF;
-        //public byte swordBitfield = 0;
-
-        //public byte shieldId = 0xFF;
-        //public byte shieldBitfield = 0;
-
         #region Inventory
 
         private bool telescope;
@@ -237,21 +231,114 @@ namespace Windwaker.Multiplayer.Client
 
         public void CheckForSword(byte value)
         {
-
+            if (value == 0x3E && sword < SwordType.MasterFull)
+            {
+                sword = SwordType.MasterFull; // send
+            }
+            else if (value == 0x3A && sword < SwordType.MasterHalf)
+            {
+                sword = SwordType.MasterHalf; // send
+            }
+            else if (value == 0x39 && sword < SwordType.MasterEmpty)
+            {
+                sword = SwordType.MasterEmpty; // send
+            }
+            else if (value == 0x38 && sword < SwordType.Hero)
+            {
+                sword = SwordType.Hero; // send
+            }
         }
 
         private ShieldType shield;
 
         public void CheckForShield(byte value)
         {
+            if (value == 0x3C && shield < ShieldType.Mirror)
+            {
+                shield = ShieldType.Mirror; // send
+            }
+            else if (value == 0x3B && shield < ShieldType.Hero)
+            {
+                shield = ShieldType.Hero; // send
+            }
+        }
 
+        private bool powerbracelets;
+
+        public void CheckForPowerBracelets(byte value)
+        {
+            if (value == 0x28 && !powerbracelets)
+            {
+                powerbracelets = true; // send
+            }
+        }
+
+        private bool piratescharm;
+
+        public void CheckForPiratesCharm(byte value)
+        {
+            if ((value & 0x01) > 0 && !piratescharm)
+            {
+                piratescharm = true; // send
+            }
+        }
+
+        private bool heroscharm;
+
+        public void CheckForHerosCharm(byte value)
+        {
+            if ((value & 0x01) > 0 && !heroscharm)
+            {
+                heroscharm = true; // send
+            }
+        }
+
+        private WalletType wallet;
+
+        public void CheckForWallet(byte value)
+        {
+            if (value == 0x02 && wallet < WalletType.Large)
+            {
+                wallet = WalletType.Large; // send
+            }
+            else if (value == 0x01 && wallet < WalletType.Medium)
+            {
+                wallet = WalletType.Medium; // send
+            }
+        }
+
+        private byte maxmagic;
+
+        public void CheckForMaxMagic(byte value)
+        {
+            if (maxmagic < value)
+            {
+                maxmagic = value; // send
+            }
+        }
+
+        private byte maxarrows;
+
+        public void CheckForMaxArrows(byte value)
+        {
+            if (maxarrows < value)
+            {
+                maxarrows = value; // send
+            }
+        }
+
+        private byte maxbombs;
+
+        public void CheckForMaxBombs(byte value)
+        {
+            if (maxbombs < value)
+            {
+                maxbombs = value; // send
+            }
         }
 
         #endregion Equipment
 
-        public byte powerBracelets;
-        public byte piratesCharm;
-        public byte herosCharm;
         public byte tingleStatues;
 
         public byte bagContents;
@@ -263,10 +350,6 @@ namespace Windwaker.Multiplayer.Client
         // Capcities
 
         public byte maxHealth;
-        public byte maxMagic;
-        public byte wallet;
-        public byte quiver;
-        public byte bombBag;
 
         // Charts
 
@@ -289,6 +372,8 @@ namespace Windwaker.Multiplayer.Client
     public enum SwordType { None = 0, Hero = 1, MasterEmpty = 2, MasterHalf = 3, MasterFull = 4 }
 
     public enum ShieldType { None = 0, Hero = 1, Mirror = 2 }
+
+    public enum WalletType { Small = 0, Medium = 1, Large = 2 }
 
     public enum BottleType { Empty, RedPotion, GreenPotion, BluePotion, ElixirSoupHalf, ElixirSoupFull, Water, Fairy, ForestFirefly, ForestWater }
 }
