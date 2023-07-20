@@ -155,7 +155,7 @@ namespace Windwaker.Multiplayer.Client
                 progress.CheckForSword(bytes[0]);
                 progress.CheckForShield(bytes[1]);
                 progress.CheckForPowerBracelets(bytes[2]);
-                // Unknown
+                // Unused x 1
                 progress.CheckForWallet(bytes[4]);
                 progress.CheckForMaxMagic(bytes[5]);
             }
@@ -193,10 +193,45 @@ namespace Windwaker.Multiplayer.Client
                 progress.CheckForMaxBombs(bytes[1]);
             }
 
-            if (TryRead(0x4CBF, 2, out bytes))
+            if (TryRead(0x4CBF, 9, out bytes))
             {
                 progress.CheckForPiratesCharm(bytes[0]);
                 progress.CheckForHerosCharm(bytes[1]);
+                // Unused x 4
+                progress.CheckForSongs(bytes[6]);
+                progress.CheckForShards(bytes[7]);
+                progress.CheckForPearls(bytes[8]);
+            }
+
+            if (TryRead(0x4CDC, 48 + 49, out bytes))
+            {
+                for (byte i = 0; i < 8; i++)
+                {
+                    progress.CheckForCharts("owned", i, bytes[0 + i]);
+                }
+                for (byte i = 0; i < 8; i++)
+                {
+                    progress.CheckForCharts("opened", i, bytes[16 + i]);
+                }
+                for (byte i = 0; i < 8; i++)
+                {
+                    progress.CheckForCharts("obtained", i, bytes[32 + i]);
+                }
+
+                for (byte i = 0; i < 49; i++)
+                {
+                    progress.CheckForSectors(i, bytes[48 + i]);
+                }
+            }
+
+            if (TryRead(0x4D4D, 1, out bytes))
+            {
+                progress.CheckForCharts("deciphered", 0, bytes[0]);
+            }
+
+            if (TryRead(0x5296, 1, out bytes))
+            {
+                progress.CheckForTingleStatues(bytes[0]);
             }
         }
     }

@@ -30,6 +30,7 @@ namespace Windwaker.Multiplayer.Client
             {
                 ClientForm.Log($"Received item: {item} from {player}");
                 items[item] = value;
+                // Write to memory
             }
         }
 
@@ -218,35 +219,49 @@ namespace Windwaker.Multiplayer.Client
                 ObtainItem("maxbombs", value);
         }
 
+        public void CheckForSongs(byte value)
+        {
+            if (CheckItem("songs") < value)
+                ObtainItem("songs", value);
+        }
+        public void CheckForPearls(byte value)
+        {
+            if (CheckItem("pearls") < value)
+                ObtainItem("pearls", value);
+        }
+        public void CheckForShards(byte value)
+        {
+            if (CheckItem("shards") < value)
+                ObtainItem("shards", value);
+        }
+        public void CheckForTingleStatues(byte value)
+        {
+            if (CheckItem("tinglestatues") < value)
+                ObtainItem("tinglestatues", value);
+        }
+
         #endregion Equipment
 
-        public byte tingleStatues;
+        public void CheckForCharts(string type, byte index, byte value)
+        {
+            string key = $"charts{type}{index}";
+            if (CheckItem(key) < value)
+                ObtainItem(key, value);
+        }
+
+        public void CheckForSectors(byte index, byte value)
+        {
+            string key = $"sector{index}";
+            if (CheckItem(key) < value)
+                ObtainItem(key, value);
+        }
 
         public byte bagContents;
 
-        public byte songs;
-        public byte pearls;
-        public byte triforceShards;
-
-        // Capcities
-
-        public byte maxHealth;
-
-        // Charts
-
-        public byte chartsOwned;
-        public byte chartsOpened;
-        public byte chartsLooted;
-        public byte chartsDeciphered;
-
-        public byte sectors;
+        public byte warpPots;
 
         public byte stages;
 
         public byte events;
     }
-
-    public enum WalletType { Small = 0, Medium = 1, Large = 2 }
-
-    public enum BottleType { Empty, RedPotion, GreenPotion, BluePotion, ElixirSoupHalf, ElixirSoupFull, Water, Fairy, ForestFirefly, ForestWater }
 }
