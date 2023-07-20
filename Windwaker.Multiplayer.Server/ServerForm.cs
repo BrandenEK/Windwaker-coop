@@ -15,10 +15,14 @@ namespace Windwaker.Multiplayer.Server
 
             _server = new Server();
             _grid = new PlayerGrid();
+            _progress = new GameProgress();
         }
 
         private readonly Server _server;
         private readonly PlayerGrid _grid;
+        private readonly GameProgress _progress;
+
+        public static GameProgress GameProgress => instance._progress;
 
         private ServerSettings _settings;
         public static ServerSettings Settings => instance._settings;

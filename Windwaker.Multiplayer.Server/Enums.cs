@@ -1,10 +1,16 @@
 ﻿
 namespace Windwaker.Multiplayer.Server
 {
-    internal enum NetworkType
+    public enum NetworkType
     {
         Intro,
         Scene,
         Progress,
+    }
+
+    public enum ProgressType
+    {
+        Item,
+        SceneInfo,
     }
 }

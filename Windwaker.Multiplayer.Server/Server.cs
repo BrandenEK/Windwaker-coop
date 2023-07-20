@@ -74,6 +74,11 @@ namespace Windwaker.Multiplayer.Server
             ServerForm.Log("Client disconnected");
             _connectedPlayers.Remove(e.IpPort);
             ServerForm.UpdatePlayerGrid(_connectedPlayers.Values, _connectedPlayers.Count);
+
+            if (_connectedPlayers.Count == 0 )
+            {
+                ServerForm.GameProgress.ResetProgress();
+            }
         }
 
         /// <summary>
@@ -205,14 +210,22 @@ namespace Windwaker.Multiplayer.Server
 
         // Progress
 
-        public void SendProgress(string playerIp)
+        public void SendProgress(string playerIp, ProgressType progressType, string progressId, byte progressValue)
         {
 
         }
 
         private void ReceiveProgress(string playerIp, byte[] message)
         {
+            ProgressType progressType = (ProgressType)message[0];
+            byte progressValue = message[1];
+            string progressId = Encoding.UTF8.GetString(message, 2, message.Length - 2);
 
+            if (progressType == ProgressType.Item)
+            {
+                if (ServerForm.GameProgress.AddItem(progressId, progressValue))
+                    SendProgress(playerIp, progressType, progressId, progressValue);
+            }
         }
 
         // Helpers
