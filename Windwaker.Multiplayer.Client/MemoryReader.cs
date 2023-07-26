@@ -13,7 +13,9 @@ namespace Windwaker.Multiplayer.Client
         [DllImport("kernel32.dll")]
         static extern bool ReadProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] lpBuffer, int nSize, out int lpNumberOfBytesWritten);
 
-        private bool _reading = false;
+        private bool _reading;
+
+        private byte _currentStage;
 
         public void Initialize()
         {
@@ -26,6 +28,7 @@ namespace Windwaker.Multiplayer.Client
         /// </summary>
         private void StartLoop()
         {
+            _currentStage = 0xFF;
             _reading = true;
             Task.Run(ReadLoop);
         }
@@ -35,6 +38,7 @@ namespace Windwaker.Multiplayer.Client
         /// </summary>
         private void StopLoop()
         {
+            _currentStage = 0xFF;
             _reading = false;
         }
 
@@ -135,15 +139,15 @@ namespace Windwaker.Multiplayer.Client
 
         private void CheckNewStage()
         {
-            byte currentStage = 0xFF;
+            byte dolphinStage = 0xFF;
             if (IsSaveFileLoaded() && TryRead(0x53A4, 1, out byte[] bytes))
-                currentStage = bytes[0];
+                dolphinStage = bytes[0];
 
-            if (currentStage != Core.ProgressManager.stageId)
+            if (dolphinStage != _currentStage)
             {
-                Core.ProgressManager.stageId = currentStage;
-                ClientForm.Log("Changed scene: " + currentStage);
-                Core.NetworkManager.SendScene(currentStage);
+                ClientForm.Log("Changed scene: " + dolphinStage);
+                _currentStage = dolphinStage;
+                OnStageChanged?.Invoke(dolphinStage);
             }
         }
 
@@ -506,5 +510,8 @@ namespace Windwaker.Multiplayer.Client
             if (bitfAddress > 0)
                 TryWrite(bitfAddress, new byte[] { bitfValue });
         }
+
+        public delegate void StageChangeEvent(byte stage);
+        public event StageChangeEvent OnStageChanged;
     }
 }

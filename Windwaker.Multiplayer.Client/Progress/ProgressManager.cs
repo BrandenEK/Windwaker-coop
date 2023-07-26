@@ -6,8 +6,6 @@ namespace Windwaker.Multiplayer.Client.Progress
     {
         private readonly Dictionary<string, byte> items = new();
 
-        public byte stageId = 0xFF;
-
         public void Initialize()
         {
             ResetProgress();

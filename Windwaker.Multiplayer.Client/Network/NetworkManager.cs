@@ -15,7 +15,7 @@ namespace Windwaker.Multiplayer.Client.Network
 
         public void Initialize()
         {
-
+            Core.MemoryReader.OnStageChanged += SendScene;
         }
 
         /// <summary>
