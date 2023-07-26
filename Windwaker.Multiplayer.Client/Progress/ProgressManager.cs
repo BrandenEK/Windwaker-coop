@@ -1,14 +1,27 @@
 ﻿using System.Collections.Generic;
 
-namespace Windwaker.Multiplayer.Client
+namespace Windwaker.Multiplayer.Client.Progress
 {
-    public class WindwakerProgress
+    internal class ProgressManager
     {
         private readonly Dictionary<string, byte> items = new();
 
         public byte stageId = 0xFF;
 
-        public WindwakerProgress() => ResetProgress();
+        public void Initialize()
+        {
+            ResetProgress();
+            Core.NetworkManager.OnReceiveProgress += ReceiveProgress;
+            Core.NetworkManager.OnDisconnect += ResetProgress;
+        }
+
+        private void ReceiveProgress(string player, ProgressUpdate progress)
+        {
+            if (progress.type == ProgressType.Item)
+            {
+                ReceiveItem(player, progress.id, progress.value);
+            }
+        }
 
         public void ResetProgress()
         {
@@ -20,7 +33,7 @@ namespace Windwaker.Multiplayer.Client
         {
             items[item] = value;
             ClientForm.Log($"Obtained item: {item}");
-            ClientForm.Client.SendProgress(ProgressType.Item, item, value);
+            Core.NetworkManager.SendProgress(ProgressType.Item, item, value);
         }
 
         public void ReceiveItem(string player, string item, byte value)
@@ -30,8 +43,7 @@ namespace Windwaker.Multiplayer.Client
             {
                 items[item] = value;
                 ClientForm.Log($"Received item: {item} from {player}");
-                ClientForm.Reader.WriteReceivedItem(item, value);
-                // Calculate notification
+                Core.MemoryReader.WriteReceivedItem(item, value);
             }
         }
 

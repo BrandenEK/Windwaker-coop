@@ -1,5 +1,8 @@
 using System;
 using System.Windows.Forms;
+using Windwaker.Multiplayer.Client.Network;
+using Windwaker.Multiplayer.Client.Notifications;
+using Windwaker.Multiplayer.Client.Progress;
 
 namespace Windwaker.Multiplayer.Client
 {
@@ -11,10 +14,21 @@ namespace Windwaker.Multiplayer.Client
         [STAThread]
         public static void Main()
         {
-            // To customize application configuration such as set high DPI settings or default font,
-            // see https://aka.ms/applicationconfiguration.
+            MemoryReader.Initialize();
+            NetworkManager.Initialize();
+            NotificationManager.Initialize();
+            ProgressManager.Initialize();
+
             ApplicationConfiguration.Initialize();
             Application.Run(new ClientForm());
         }
+
+        public static MemoryReader MemoryReader { get; private set; } = new MemoryReader();
+
+        public static NetworkManager NetworkManager { get; private set; } = new NetworkManager();
+
+        public static NotificationManager NotificationManager { get; private set; } = new NotificationManager();
+
+        public static ProgressManager ProgressManager { get; private set; } = new ProgressManager();
     }
 }

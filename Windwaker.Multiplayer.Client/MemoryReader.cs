@@ -2,10 +2,11 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using Windwaker.Multiplayer.Client.Progress;
 
 namespace Windwaker.Multiplayer.Client
 {
-    public class MemoryReader
+    internal class MemoryReader
     {
         [DllImport("kernel32.dll")]
         static extern bool WriteProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] lpBuffer, int nSize, out int lpNumberOfBytesWritten);
@@ -14,10 +15,16 @@ namespace Windwaker.Multiplayer.Client
 
         private bool _reading = false;
 
+        public void Initialize()
+        {
+            Core.NetworkManager.OnIntroValidated += StartLoop;
+            Core.NetworkManager.OnDisconnect += StopLoop;
+        }
+
         /// <summary>
         /// Starts the async task of reading memory in a loop
         /// </summary>
-        public void StartLoop()
+        private void StartLoop()
         {
             _reading = true;
             Task.Run(ReadLoop);
@@ -26,7 +33,7 @@ namespace Windwaker.Multiplayer.Client
         /// <summary>
         /// Stops the async task of reading memory in a loop
         /// </summary>
-        public void StopLoop()
+        private void StopLoop()
         {
             _reading = false;
         }
@@ -34,7 +41,7 @@ namespace Windwaker.Multiplayer.Client
         /// <summary>
         /// Every certain number of seconds, the dolphin memory will be read to determine if anything has changed
         /// </summary>
-        public async Task ReadLoop()
+        private async Task ReadLoop()
         {
             while (_reading)
             {
@@ -132,17 +139,17 @@ namespace Windwaker.Multiplayer.Client
             if (IsSaveFileLoaded() && TryRead(0x53A4, 1, out byte[] bytes))
                 currentStage = bytes[0];
 
-            if (currentStage != ClientForm.GameProgress.stageId)
+            if (currentStage != Core.ProgressManager.stageId)
             {
-                ClientForm.GameProgress.stageId = currentStage;
+                Core.ProgressManager.stageId = currentStage;
                 ClientForm.Log("Changed scene: " + currentStage);
-                ClientForm.Client.SendScene(currentStage);
+                Core.NetworkManager.SendScene(currentStage);
             }
         }
 
         private void CheckNewProgress()
         {
-            WindwakerProgress progress = ClientForm.GameProgress;
+            ProgressManager progress = Core.ProgressManager;
             byte[] bytes;
 
             if (TryRead(0x4C09, 1, out bytes))

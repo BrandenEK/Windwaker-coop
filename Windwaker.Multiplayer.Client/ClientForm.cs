@@ -3,7 +3,7 @@ using System.Windows.Forms;
 
 namespace Windwaker.Multiplayer.Client
 {
-    public partial class ClientForm : Form
+    internal partial class ClientForm : Form
     {
         private static ClientForm instance;
 
@@ -11,24 +11,12 @@ namespace Windwaker.Multiplayer.Client
         {
             InitializeComponent();
             instance ??= this;
-
-            _client = new Client();
-            _reader = new MemoryReader();
-            _progress = new WindwakerProgress();
         }
 
-        private readonly Client _client;
-        private readonly MemoryReader _reader;
-        private readonly WindwakerProgress _progress;
-
-        public static Client Client => instance._client;
-        public static MemoryReader Reader => instance._reader;
-        public static WindwakerProgress GameProgress => instance._progress;
-
-        private ClientSettings _settings;
         public static ClientSettings Settings => instance._settings;
+        private ClientSettings _settings;
 
-        private bool IsConnectedToGame => _client.IsConnected;
+        private bool IsConnectedToGame => Core.NetworkManager.IsConnected;
 
         /// <summary>
         /// When the connect button is clicked, either connect/disconnect from the server
@@ -37,32 +25,40 @@ namespace Windwaker.Multiplayer.Client
         {
             if (IsConnectedToGame)
             {
-                _client.Disconnect();
+                Core.NetworkManager.Disconnect();
             }
             else
             {
                 _settings = ValidateInputFields();
-                _client.Connect(_settings.ValidServerIp, _settings.ValidServerPort);
+                Core.NetworkManager.Connect(_settings.ValidServerIp, _settings.ValidServerPort);
             }
         }
 
         /// <summary>
         /// Once this player is accepted to the server, begin reading memory and syncing it
         /// </summary>
-        public static void OnConnect()
+        private void OnIntroValidated()
         {
-            instance.connectBtn.Text = "Disconnect";
-            instance._reader.StartLoop();
+            Log($"Connection to server was approved");
+            connectBtn.Text = "Disconnect";
+        }
+
+        /// <summary>
+        /// Once this player is connected to the server, send introductory data
+        /// </summary>
+        private void OnConnect()
+        {
+            Log($"Established connection with server");
+            Core.NetworkManager.SendIntro(Settings.ValidPlayerName, Settings.ValidGameName, Settings.ValidPassword);
         }
 
         /// <summary>
         /// Once this player is disconnected from the server, stop reading memory
         /// </summary>
-        public static void OnDisconnect()
+        private void OnDisconnect()
         {
-            instance.connectBtn.Text = "Connect";
-            instance._reader.StopLoop();
-            GameProgress.ResetProgress();
+            Log($"Lost connection with server");
+            connectBtn.Text = "Connect";
         }
 
         /// <summary>
@@ -121,6 +117,10 @@ namespace Windwaker.Multiplayer.Client
             passwordField.Text = Properties.Settings.Default.password;
 
             _settings = ValidateInputFields();
+
+            Core.NetworkManager.OnConnect += OnConnect;
+            Core.NetworkManager.OnDisconnect += OnDisconnect;
+            Core.NetworkManager.OnIntroValidated += OnIntroValidated;
         }
 
         /// <summary>

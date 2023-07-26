@@ -3,14 +3,20 @@ using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Text;
+using Windwaker.Multiplayer.Client.Progress;
 
-namespace Windwaker.Multiplayer.Client
+namespace Windwaker.Multiplayer.Client.Network
 {
-    public class Client
+    internal class NetworkManager
     {
         private SimpleTcpClient _client;
 
         public bool IsConnected => _client != null && _client.IsConnected;
+
+        public void Initialize()
+        {
+
+        }
 
         /// <summary>
         /// Attempts to connect to a server at the specified ip port
@@ -48,20 +54,12 @@ namespace Windwaker.Multiplayer.Client
         /// <summary>
         /// Called whenever the client connects to the server
         /// </summary>
-        private void OnServerConnected(object sender, ConnectionEventArgs e)
-        {
-            ClientForm.Log($"Established connection with server");
-            SendIntro(ClientForm.Settings.ValidPlayerName, ClientForm.Settings.ValidGameName, ClientForm.Settings.ValidPassword);
-        }
+        private void OnServerConnected(object sender, ConnectionEventArgs e) => OnConnect?.Invoke();
 
         /// <summary>
         /// Called whenever the client disconnects from the server
         /// </summary>
-        private void OnServerDisconnected(object sender, ConnectionEventArgs e)
-        {
-            ClientForm.Log($"Lost connection with server");
-            ClientForm.OnDisconnect();
-        }
+        private void OnServerDisconnected(object sender, ConnectionEventArgs e) => OnDisconnect?.Invoke();
 
         /// <summary>
         /// Sends a message to the server
@@ -132,8 +130,7 @@ namespace Windwaker.Multiplayer.Client
 
             if (response == 200)
             {
-                ClientForm.Log($"Connection to server was approved");
-                ClientForm.OnConnect();
+                OnIntroValidated?.Invoke();
             }
             else
             {
@@ -145,7 +142,6 @@ namespace Windwaker.Multiplayer.Client
                     case 104: ClientForm.Log("Connection refused: Duplicate ip address"); break;
                     case 105: ClientForm.Log("Connection refused: Duplicate name"); break;
                 }
-
                 Disconnect();
             }
         }
@@ -182,10 +178,7 @@ namespace Windwaker.Multiplayer.Client
             byte progressValue = message[nameLength + 1];
             string progressId = Encoding.UTF8.GetString(message, nameLength + 2, message.Length - nameLength - 2);
 
-            if (progressType == ProgressType.Item)
-            {
-                ClientForm.GameProgress.ReceiveItem(playerName, progressId, progressValue);
-            }
+            OnReceiveProgress?.Invoke(playerName, new ProgressUpdate(progressType, progressId, progressValue));
         }
 
         // Helpers
@@ -210,5 +203,17 @@ namespace Windwaker.Multiplayer.Client
 
             return length == 1 ? null : Encoding.UTF8.GetString(bytes, start + 1, length - 1);
         }
+
+        public delegate void ValidateIntroEvent();
+        public event ValidateIntroEvent OnIntroValidated;
+
+        public delegate void ReceiveProgressEvent(string player, ProgressUpdate progress);
+        public event ReceiveProgressEvent OnReceiveProgress;
+
+        public delegate void ConnectionEvent();
+        public event ConnectionEvent OnConnect;
+
+        public delegate void DisconnectionEvent();
+        public event DisconnectionEvent OnDisconnect;
     }
 }
