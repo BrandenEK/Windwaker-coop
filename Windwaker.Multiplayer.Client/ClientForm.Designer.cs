@@ -35,7 +35,6 @@ namespace Windwaker.Multiplayer.Client
             connectBtn = new Button();
             serverIpField = new TextBox();
             sideServerHeader = new Label();
-            debugText = new TextBox();
             serverPortField = new TextBox();
             passwordField = new TextBox();
             sidePlayerHeader = new Label();
@@ -53,6 +52,7 @@ namespace Windwaker.Multiplayer.Client
             gameNameField = new TextBox();
             sideRoomHeader = new Label();
             sidePlayerPanel = new Panel();
+            debugText = new RichTextBox();
             sidePanel.SuspendLayout();
             sidePanelConnect.SuspendLayout();
             sideServerPanel.SuspendLayout();
@@ -89,17 +89,6 @@ namespace Windwaker.Multiplayer.Client
             sideServerHeader.TabIndex = 99;
             sideServerHeader.Text = "Server info";
             sideServerHeader.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // debugText
-            // 
-            debugText.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            debugText.BackColor = SystemColors.AppWorkspace;
-            debugText.Location = new Point(672, 299);
-            debugText.Multiline = true;
-            debugText.Name = "debugText";
-            debugText.ReadOnly = true;
-            debugText.Size = new Size(300, 250);
-            debugText.TabIndex = 99;
             // 
             // serverPortField
             // 
@@ -275,17 +264,29 @@ namespace Windwaker.Multiplayer.Client
             sidePlayerPanel.Size = new Size(160, 100);
             sidePlayerPanel.TabIndex = 108;
             // 
-            // MainForm
+            // debugText
+            // 
+            debugText.BackColor = Color.FromArgb(40, 40, 40);
+            debugText.BorderStyle = BorderStyle.FixedSingle;
+            debugText.Location = new Point(672, 12);
+            debugText.Name = "debugText";
+            debugText.ReadOnly = true;
+            debugText.ScrollBars = RichTextBoxScrollBars.Vertical;
+            debugText.Size = new Size(300, 537);
+            debugText.TabIndex = 108;
+            debugText.Text = "";
+            // 
+            // ClientForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.ControlDarkDark;
             ClientSize = new Size(984, 561);
-            Controls.Add(sidePanel);
             Controls.Add(debugText);
+            Controls.Add(sidePanel);
             Icon = (Icon)resources.GetObject("$this.Icon");
             MinimumSize = new Size(1000, 600);
-            Name = "MainForm";
+            Name = "ClientForm";
             Text = "Windwaker Multiplayer Client";
             FormClosing += OnFormClose;
             Load += OnFormOpen;
@@ -298,14 +299,12 @@ namespace Windwaker.Multiplayer.Client
             sidePlayerPanel.ResumeLayout(false);
             sidePlayerPanel.PerformLayout();
             ResumeLayout(false);
-            PerformLayout();
         }
 
         #endregion
         private Button connectBtn;
         private TextBox serverIpField;
         private Label sideServerHeader;
-        private TextBox debugText;
         private TextBox serverPortField;
         private TextBox passwordField;
         private Label sidePlayerHeader;
@@ -323,5 +322,6 @@ namespace Windwaker.Multiplayer.Client
         private Panel sideServerPanel;
         private Panel sidePanelConnect;
         private TextBox gameNameField;
+        private RichTextBox debugText;
     }
 }

@@ -6,14 +6,12 @@ namespace Windwaker.Multiplayer.Client.Progress
     {
         private readonly Dictionary<string, byte> items = new();
 
-        public void Initialize()
+        public ProgressManager()
         {
             ResetProgress();
-            Core.NetworkManager.OnReceiveProgress += ReceiveProgress;
-            Core.NetworkManager.OnDisconnect += ResetProgress;
         }
 
-        private void ReceiveProgress(string player, ProgressUpdate progress)
+        public void ReceiveProgress(string player, ProgressUpdate progress)
         {
             if (progress.type == ProgressType.Item)
             {
@@ -30,7 +28,7 @@ namespace Windwaker.Multiplayer.Client.Progress
         public void ObtainItem(string item, byte value)
         {
             items[item] = value;
-            ClientForm.Log($"Obtained item: {item}");
+            Core.UIManager.Log($"Obtained item: {item}");
             Core.NetworkManager.SendProgress(ProgressType.Item, item, value);
         }
 
@@ -40,7 +38,7 @@ namespace Windwaker.Multiplayer.Client.Progress
             if (value > current)
             {
                 items[item] = value;
-                ClientForm.Log($"Received item: {item} from {player}");
+                Core.UIManager.Log($"Received item: {item} from {player}");
                 Core.MemoryReader.WriteReceivedItem(item, value);
             }
         }

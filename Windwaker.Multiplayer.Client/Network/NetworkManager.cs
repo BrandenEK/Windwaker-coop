@@ -13,11 +13,6 @@ namespace Windwaker.Multiplayer.Client.Network
 
         public bool IsConnected => _client != null && _client.IsConnected;
 
-        public void Initialize()
-        {
-            Core.MemoryReader.OnStageChanged += SendScene;
-        }
-
         /// <summary>
         /// Attempts to connect to a server at the specified ip port
         /// </summary>
@@ -35,7 +30,7 @@ namespace Windwaker.Multiplayer.Client.Network
             }
             catch (Exception e) when (e is SocketException || e is TimeoutException)
             {
-                ClientForm.Log($"Failed to connect to {ip}:{port}");
+                Core.UIManager.LogError($"Failed to connect to {ip}:{port}");
                 return false;
             }
 
@@ -54,12 +49,22 @@ namespace Windwaker.Multiplayer.Client.Network
         /// <summary>
         /// Called whenever the client connects to the server
         /// </summary>
-        private void OnServerConnected(object sender, ConnectionEventArgs e) => OnConnect?.Invoke();
+        private void OnServerConnected(object sender, ConnectionEventArgs e)
+        {
+            Core.UIManager.Log($"Established connection with server");
+            Core.NetworkManager.SendIntro(ClientForm.Settings.ValidPlayerName, ClientForm.Settings.ValidGameName, ClientForm.Settings.ValidPassword);
+        }
 
         /// <summary>
         /// Called whenever the client disconnects from the server
         /// </summary>
-        private void OnServerDisconnected(object sender, ConnectionEventArgs e) => OnDisconnect?.Invoke();
+        private void OnServerDisconnected(object sender, ConnectionEventArgs e)
+        {
+            Core.UIManager.Log($"Lost connection with server");
+            Core.UIManager.UpdateButtonText();
+            Core.ProgressManager.ResetProgress();
+            Core.MemoryReader.StopLoop();
+        }
 
         /// <summary>
         /// Sends a message to the server
@@ -108,7 +113,7 @@ namespace Windwaker.Multiplayer.Client.Network
             }
 
             if (startIdx != data.Length)
-                ClientForm.Log("*** Received data was formatted incorrectly ***");
+                Core.UIManager.LogError("*** Received data was formatted incorrectly ***");
         }
 
         // Intro
@@ -130,17 +135,19 @@ namespace Windwaker.Multiplayer.Client.Network
 
             if (response == 200)
             {
-                OnIntroValidated?.Invoke();
+                Core.UIManager.Log($"Connection to server was approved");
+                Core.UIManager.UpdateButtonText();
+                Core.MemoryReader.StartLoop();
             }
             else
             {
                 switch (response)
                 {
-                    case 101: ClientForm.Log("Connection refused: Incorrect password"); break;
-                    case 102: ClientForm.Log("Connection refused: Incorrect game"); break;
-                    case 103: ClientForm.Log("Connection refused: Player limit reached"); break;
-                    case 104: ClientForm.Log("Connection refused: Duplicate ip address"); break;
-                    case 105: ClientForm.Log("Connection refused: Duplicate name"); break;
+                    case 101: Core.UIManager.LogWarning("Connection refused: Incorrect password"); break;
+                    case 102: Core.UIManager.LogWarning("Connection refused: Incorrect game"); break;
+                    case 103: Core.UIManager.LogWarning("Connection refused: Player limit reached"); break;
+                    case 104: Core.UIManager.LogWarning("Connection refused: Duplicate ip address"); break;
+                    case 105: Core.UIManager.LogWarning("Connection refused: Duplicate name"); break;
                 }
                 Disconnect();
             }
@@ -178,7 +185,10 @@ namespace Windwaker.Multiplayer.Client.Network
             byte progressValue = message[nameLength + 1];
             string progressId = Encoding.UTF8.GetString(message, nameLength + 2, message.Length - nameLength - 2);
 
-            OnReceiveProgress?.Invoke(playerName, new ProgressUpdate(progressType, progressId, progressValue));
+            // Queue it instead to be processed right after read loop
+            var progress = new ProgressUpdate(progressType, progressId, progressValue);
+            Core.ProgressManager.ReceiveProgress(playerName, progress);
+            Core.NotificationManager.DisplayProgressNotification(playerName, progress);
         }
 
         // Helpers
@@ -203,17 +213,5 @@ namespace Windwaker.Multiplayer.Client.Network
 
             return length == 1 ? null : Encoding.UTF8.GetString(bytes, start + 1, length - 1);
         }
-
-        public delegate void ValidateIntroEvent();
-        public event ValidateIntroEvent OnIntroValidated;
-
-        public delegate void ReceiveProgressEvent(string player, ProgressUpdate progress);
-        public event ReceiveProgressEvent OnReceiveProgress;
-
-        public delegate void ConnectionEvent();
-        public event ConnectionEvent OnConnect;
-
-        public delegate void DisconnectionEvent();
-        public event DisconnectionEvent OnDisconnect;
     }
 }

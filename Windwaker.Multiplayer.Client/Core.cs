@@ -14,13 +14,8 @@ namespace Windwaker.Multiplayer.Client
         [STAThread]
         public static void Main()
         {
-            MemoryReader.Initialize();
-            NetworkManager.Initialize();
-            NotificationManager.Initialize();
-            ProgressManager.Initialize();
-
             ApplicationConfiguration.Initialize();
-            Application.Run(new ClientForm());
+            Application.Run(UIManager = new ClientForm());
         }
 
         public static MemoryReader MemoryReader { get; private set; } = new MemoryReader();
@@ -30,5 +25,7 @@ namespace Windwaker.Multiplayer.Client
         public static NotificationManager NotificationManager { get; private set; } = new NotificationManager();
 
         public static ProgressManager ProgressManager { get; private set; } = new ProgressManager();
+
+        public static ClientForm UIManager { get; private set; }
     }
 }

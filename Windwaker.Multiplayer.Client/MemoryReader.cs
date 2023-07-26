@@ -17,16 +17,10 @@ namespace Windwaker.Multiplayer.Client
 
         private byte _currentStage;
 
-        public void Initialize()
-        {
-            Core.NetworkManager.OnIntroValidated += StartLoop;
-            Core.NetworkManager.OnDisconnect += StopLoop;
-        }
-
         /// <summary>
         /// Starts the async task of reading memory in a loop
         /// </summary>
-        private void StartLoop()
+        public void StartLoop()
         {
             _currentStage = 0xFF;
             _reading = true;
@@ -36,7 +30,7 @@ namespace Windwaker.Multiplayer.Client
         /// <summary>
         /// Stops the async task of reading memory in a loop
         /// </summary>
-        private void StopLoop()
+        public void StopLoop()
         {
             _currentStage = 0xFF;
             _reading = false;
@@ -61,11 +55,11 @@ namespace Windwaker.Multiplayer.Client
                 }
                 else
                 {
-                    ClientForm.Log("Save file is not loaded yet!");
+                    Core.UIManager.LogWarning("Save file is not loaded yet!");
                 }
 
                 int timeEnd = Environment.TickCount;
-                ClientForm.Log($"Time taken to read from memory: {timeEnd - timeStart} ms");
+                Core.UIManager.Log($"Time taken to read from memory: {timeEnd - timeStart} ms");
 
                 await Task.Delay(2000);
             }
@@ -84,7 +78,7 @@ namespace Windwaker.Multiplayer.Client
             }
             else
             {
-                ClientForm.Log($"Dolphin is not running!");
+                Core.UIManager.LogWarning($"Dolphin is not running!");
                 process = IntPtr.Zero;
                 return false;
             }
@@ -145,9 +139,9 @@ namespace Windwaker.Multiplayer.Client
 
             if (dolphinStage != _currentStage)
             {
-                ClientForm.Log("Changed scene: " + dolphinStage);
+                Core.UIManager.Log("Changed scene: " + dolphinStage);
                 _currentStage = dolphinStage;
-                OnStageChanged?.Invoke(dolphinStage);
+                Core.NetworkManager.SendScene(dolphinStage);
             }
         }
 
@@ -501,7 +495,7 @@ namespace Windwaker.Multiplayer.Client
 
             else
             {
-                ClientForm.Log("*** Received unknown item ***");
+                Core.UIManager.LogError("*** Received unknown item ***");
                 return;
             }
 
@@ -510,8 +504,5 @@ namespace Windwaker.Multiplayer.Client
             if (bitfAddress > 0)
                 TryWrite(bitfAddress, new byte[] { bitfValue });
         }
-
-        public delegate void StageChangeEvent(byte stage);
-        public event StageChangeEvent OnStageChanged;
     }
 }

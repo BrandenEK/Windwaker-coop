@@ -1,5 +1,7 @@
 using System;
+using System.Drawing;
 using System.Windows.Forms;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Windwaker.Multiplayer.Client
 {
@@ -34,31 +36,9 @@ namespace Windwaker.Multiplayer.Client
             }
         }
 
-        /// <summary>
-        /// Once this player is accepted to the server, begin reading memory and syncing it
-        /// </summary>
-        private void OnIntroValidated()
+        public void UpdateButtonText()
         {
-            Log($"Connection to server was approved");
-            connectBtn.Text = "Disconnect";
-        }
-
-        /// <summary>
-        /// Once this player is connected to the server, send introductory data
-        /// </summary>
-        private void OnConnect()
-        {
-            Log($"Established connection with server");
-            Core.NetworkManager.SendIntro(Settings.ValidPlayerName, Settings.ValidGameName, Settings.ValidPassword);
-        }
-
-        /// <summary>
-        /// Once this player is disconnected from the server, stop reading memory
-        /// </summary>
-        private void OnDisconnect()
-        {
-            Log($"Lost connection with server");
-            connectBtn.Text = "Connect";
+            connectBtn.Text = Core.NetworkManager.IsConnected ? "Disconnect" : "Connect";
         }
 
         /// <summary>
@@ -117,10 +97,6 @@ namespace Windwaker.Multiplayer.Client
             passwordField.Text = Properties.Settings.Default.password;
 
             _settings = ValidateInputFields();
-
-            Core.NetworkManager.OnConnect += OnConnect;
-            Core.NetworkManager.OnDisconnect += OnDisconnect;
-            Core.NetworkManager.OnIntroValidated += OnIntroValidated;
         }
 
         /// <summary>
@@ -140,9 +116,27 @@ namespace Windwaker.Multiplayer.Client
         /// <summary>
         /// Logs a message to the debug console
         /// </summary>
-        public static void Log(string message)
+        public void DisplayText(object message, Color color)
         {
-            instance.BeginInvoke(new MethodInvoker(() => instance.debugText.AppendText(message + "\r\n")));
+            debugText.SelectionStart = debugText.TextLength;
+            debugText.SelectionLength = 0;
+
+            debugText.SelectionColor = color;
+            debugText.AppendText(message + "\r\n");
+            debugText.ScrollToCaret();
+        }
+
+        public void Log(object message)
+        {
+            BeginInvoke(new MethodInvoker(() => DisplayText(message, Color.White)));
+        }
+        public void LogWarning(object message)
+        {
+            BeginInvoke(new MethodInvoker(() => DisplayText(message, Color.Yellow)));
+        }
+        public void LogError(object message)
+        {
+            BeginInvoke(new MethodInvoker(() => DisplayText(message, Color.Red)));
         }
     }
 }

@@ -6,14 +6,9 @@ namespace Windwaker.Multiplayer.Client.Notifications
 {
     internal class NotificationManager
     {
-        public void Initialize()
+        public void DisplayProgressNotification(string player, ProgressUpdate progress)
         {
-            Core.NetworkManager.OnReceiveProgress += OnReceiveProgress;
-        }
 
-        private void OnReceiveProgress(string player, ProgressUpdate progress)
-        {
-            // Display notification
         }
     }
 }
