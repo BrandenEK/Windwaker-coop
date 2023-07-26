@@ -237,31 +237,227 @@ namespace Windwaker.Multiplayer.Client
 
         public void WriteReceivedItem(string item, byte value)
         {
-            switch (item)
-            {
-                case "telescope":
-                    TryWrite(0x4C44, new byte[] { 0x20 }); TryWrite(0x4C59, new byte[] { 0xFF });
-                    break;
-                case "sail":
-                    TryWrite(0x4C45, new byte[] { 0x78 }); TryWrite(0x4C5A, new byte[] { 0xFF });
-                    break;
-                case "windwaker":
-                    TryWrite(0x4C46, new byte[] { 0x22 }); TryWrite(0x4C5B, new byte[] { 0xFF });
-                    break;
-                case "grapplinghook":
-                    TryWrite(0x4C47, new byte[] { 0x25 }); TryWrite(0x4C5C, new byte[] { 0xFF });
-                    break;
-                case "spoilsbag":
-                    TryWrite(0x4C48, new byte[] { 0x24 }); TryWrite(0x4C5D, new byte[] { 0xFF });
-                    break;
-                case "boomerang":
-                    TryWrite(0x4C49, new byte[] { 0x2D }); TryWrite(0x4C5E, new byte[] { 0xFF });
-                    break;
-                case "dekuleaf":
-                    TryWrite(0x4C4A, new byte[] { 0x34 }); TryWrite(0x4C5F, new byte[] { 0xFF });
-                    break;
+            uint mainAddress, bitfAddress;
+            byte mainValue, bitfValue;            
 
+            // Inventory
+
+            if (item == "telescope")
+            {
+                mainAddress = 0x4C44; mainValue = (byte)(value == 1 ? 0x20 : 0xFF);
+                bitfAddress = 0x4C59; bitfValue = (byte)(value == 1 ? 0xFF : 0x00);
             }
+            else if (item == "sail")
+            {
+                mainAddress = 0x4C45; mainValue = (byte)(value == 1 ? 0x78 : 0xFF);
+                bitfAddress = 0x4C5A; bitfValue = (byte)(value == 1 ? 0xFF : 0x00);
+            }
+            else if (item == "windwaker")
+            {
+                mainAddress = 0x4C46; mainValue = (byte)(value == 1 ? 0x22 : 0xFF);
+                bitfAddress = 0x4C5B; bitfValue = (byte)(value == 1 ? 0xFF : 0x00);
+            }
+            else if (item == "grapplinghook")
+            {
+                mainAddress = 0x4C47; mainValue = (byte)(value == 1 ? 0x25 : 0xFF);
+                bitfAddress = 0x4C5C; bitfValue = (byte)(value == 1 ? 0x01 : 0x00);
+            }
+            else if (item == "spoilsbag")
+            {
+                mainAddress = 0x4C48; mainValue = (byte)(value == 1 ? 0x24 : 0xFF);
+                bitfAddress = 0x4C5D; bitfValue = (byte)(value == 1 ? 0x01 : 0x00);
+            }
+            else if (item == "boomerang")
+            {
+                mainAddress = 0x4C49; mainValue = (byte)(value == 1 ? 0x2D : 0xFF);
+                bitfAddress = 0x4C5E; bitfValue = (byte)(value == 1 ? 0x01 : 0x00);
+            }
+            else if (item == "dekuleaf")
+            {
+                mainAddress = 0x4C4A; mainValue = (byte)(value == 1 ? 0x34 : 0xFF);
+                bitfAddress = 0x4C5F; bitfValue = (byte)(value == 1 ? 0x01 : 0x00);
+            }
+            else if (item == "tingletuner")
+            {
+                mainAddress = 0x4C4B; mainValue = (byte)(value == 1 ? 0x21 : 0xFF);
+                bitfAddress = 0x4C60; bitfValue = (byte)(value == 1 ? 0x01 : 0x00);
+            }
+            else if (item == "pictobox")
+            {
+                mainAddress = 0x4C4C; bitfAddress = 0x4C61;
+                if (value == 2)
+                {
+                    mainValue = 0x26; bitfValue = 0x03;
+                }
+                else if (value == 1)
+                {
+                    mainValue = 0x23; bitfValue = 0x01;
+                }
+                else
+                {
+                    mainValue = 0xFF; bitfValue = 0x00;
+                }
+            }
+            else if (item == "ironboots")
+            {
+                mainAddress = 0x4C4D; mainValue = (byte)(value == 1 ? 0x29 : 0xFF);
+                bitfAddress = 0x4C62; bitfValue = (byte)(value == 1 ? 0x01 : 0x00);
+            }
+            else if (item == "magicarmor")
+            {
+                mainAddress = 0x4C4E; mainValue = (byte)(value == 1 ? 0x2A : 0xFF);
+                bitfAddress = 0x4C63; bitfValue = (byte)(value == 1 ? 0x01 : 0x00);
+            }
+            else if (item == "baitbag")
+            {
+                mainAddress = 0x4C4F; mainValue = (byte)(value == 1 ? 0x2C : 0xFF);
+                bitfAddress = 0x4C64; bitfValue = (byte)(value == 1 ? 0x01 : 0x00);
+            }
+            else if (item == "bow")
+            {
+                mainAddress = 0x4C50; bitfAddress = 0x4C65;
+                if (value == 3)
+                {
+                    mainValue = 0x36; bitfValue = 0x07;
+                }
+                else if (value == 2)
+                {
+                    mainValue = 0x35; bitfValue = 0x03;
+                }
+                else if (value == 1)
+                {
+                    mainValue = 0x27; bitfValue = 0x01;
+                }
+                else
+                {
+                    mainValue = 0xFF; bitfValue = 0x00;
+                }
+            }
+            else if (item == "bombs")
+            {
+                mainAddress = 0x4C51; mainValue = (byte)(value == 1 ? 0x31 : 0xFF);
+                bitfAddress = 0x4C66; bitfValue = (byte)(value == 1 ? 0x01 : 0x00);
+            }
+            else if (item == "bottle1")
+            {
+                mainAddress = 0x4C52; mainValue = (byte)(value == 1 ? 0x50 : 0xFF);
+                bitfAddress = 0x4C67; bitfValue = (byte)(value == 1 ? 0x01 : 0x00);
+            }
+            else if (item == "bottle2")
+            {
+                mainAddress = 0x4C53; mainValue = (byte)(value == 1 ? 0x50 : 0xFF);
+                bitfAddress = 0x4C68; bitfValue = (byte)(value == 1 ? 0x01 : 0x00);
+            }
+            else if (item == "bottle3")
+            {
+                mainAddress = 0x4C54; mainValue = (byte)(value == 1 ? 0x50 : 0xFF);
+                bitfAddress = 0x4C69; bitfValue = (byte)(value == 1 ? 0x01 : 0x00);
+            }
+            else if (item == "bottle4")
+            {
+                mainAddress = 0x4C55; mainValue = (byte)(value == 1 ? 0x50 : 0xFF);
+                bitfAddress = 0x4C6A; bitfValue = (byte)(value == 1 ? 0x01 : 0x00);
+            }
+            else if (item == "deliverybag")
+            {
+                mainAddress = 0x4C56; mainValue = (byte)(value == 1 ? 0x30 : 0xFF);
+                bitfAddress = 0x4C6B; bitfValue = (byte)(value == 1 ? 0x01 : 0x00);
+            }
+            else if (item == "hookshot")
+            {
+                mainAddress = 0x4C57; mainValue = (byte)(value == 1 ? 0x2F : 0xFF);
+                bitfAddress = 0x4C6C; bitfValue = (byte)(value == 1 ? 0x01 : 0x00);
+            }
+            else if (item == "skullhammer")
+            {
+                mainAddress = 0x4C58; mainValue = (byte)(value == 1 ? 0x33 : 0xFF);
+                bitfAddress = 0x4C6D; bitfValue = (byte)(value == 1 ? 0x01 : 0x00);
+            }
+
+            // Equipment
+
+            else if (item == "sword")
+            {
+                mainAddress = 0x4C16; bitfAddress = 0x4CBC;
+                if (value == 4)
+                {
+                    mainValue = 0x3E; bitfValue = 0x15;
+                }
+                else if (value == 3)
+                {
+                    mainValue = 0x3A; bitfValue = 0x07;
+                }
+                else if (value == 2)
+                {
+                    mainValue = 0x39; bitfValue = 0x03;
+                }
+                else if (value == 1)
+                {
+                    mainValue = 0x38; bitfValue = 0x01;
+                }
+                else
+                {
+                    mainValue = 0xFF; bitfValue = 0x00;
+                }
+            }
+            else if (item == "shield")
+            {
+                mainAddress = 0x4C17; bitfAddress = 0x4CBD;
+                if (value == 2)
+                {
+                    mainValue = 0x3C; bitfValue = 0x03;
+                }
+                else if (value == 1)
+                {
+                    mainValue = 0x3B; bitfValue = 0x01;
+                }
+                else
+                {
+                    mainValue = 0xFF; bitfValue = 0x00;
+                }
+            }
+            else if (item == "powerbracelets")
+            {
+                mainAddress = 0x4C18; mainValue = (byte)(value == 1 ? 0x28 : 0xFF);
+                bitfAddress = 0x4CBE; bitfValue = (byte)(value == 1 ? 0x01 : 0x00);
+            }
+            else if (item == "piratescharm")
+            {
+                mainAddress = 0; mainValue = 0;
+                bitfAddress = 0x4CBF; bitfValue = (byte)(value == 1 ? 0x01 : 0x00);
+            }
+            else if (item == "heroscharm")
+            {
+                mainAddress = 0; mainValue = 0;
+                bitfAddress = 0x4CC0; bitfValue = (byte)(value == 1 ? 0x01 : 0x00);
+            }
+            else if (item == "wallet")
+            {
+                mainAddress = 0x4C1A; bitfAddress = 0; bitfValue = 0;
+                if (value == 2)
+                {
+                    mainValue = 0x02;
+                }
+                else if (value == 1)
+                {
+                    mainValue = 0x01;
+                }
+                else
+                {
+                    mainValue = 0x00;
+                }
+            }
+
+            else
+            {
+                ClientForm.Log("*** Received unknown item ***");
+                return;
+            }
+
+            if (mainAddress > 0)
+                TryWrite(mainAddress, new byte[] { mainValue });
+            if (bitfAddress > 0)
+                TryWrite(bitfAddress, new byte[] { bitfValue });
         }
     }
 }
