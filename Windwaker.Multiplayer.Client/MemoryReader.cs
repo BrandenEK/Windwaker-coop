@@ -447,6 +447,46 @@ namespace Windwaker.Multiplayer.Client
                     mainValue = 0x00;
                 }
             }
+            else if (item == "maxhealth")
+            {
+                mainAddress = 0x4C08; mainValue = value;
+                bitfAddress = 0; bitfValue = 0;
+            }
+            else if (item == "maxmagic")
+            {
+                mainAddress = 0x4C1B; mainValue = value;
+                bitfAddress = 0; bitfValue = 0;
+            }
+            else if (item == "maxarrows")
+            {
+                mainAddress = 0x4C77; mainValue = value;
+                bitfAddress = 0; bitfValue = 0;
+            }
+            else if (item == "maxbombs")
+            {
+                mainAddress = 0x4C78; mainValue = value;
+                bitfAddress = 0; bitfValue = 0;
+            }
+            else if (item == "songs")
+            {
+                mainAddress = 0; mainValue = 0;
+                bitfAddress = 0x4CC5; bitfValue = value;
+            }
+            else if (item == "pearls")
+            {
+                mainAddress = 0; mainValue = 0;
+                bitfAddress = 0x4CC7; bitfValue = value;
+            }
+            else if (item == "shards")
+            {
+                mainAddress = 0; mainValue = 0;
+                bitfAddress = 0x4CC6; bitfValue = value;
+            }
+            else if (item == "tinglestatues")
+            {
+                mainAddress = 0; mainValue = 0;
+                bitfAddress = 0x5296; bitfValue = value;
+            }
 
             else
             {
