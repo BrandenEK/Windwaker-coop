@@ -6,7 +6,7 @@ using Windwaker.Multiplayer.Client.Progress;
 
 namespace Windwaker.Multiplayer.Client.Dolphin
 {
-    internal class MemoryReader
+    internal class DolphinManager
     {
         [DllImport("kernel32.dll")]
         static extern bool WriteProcessMemory(nint hProcess, nint lpBaseAddress, byte[] lpBuffer, int nSize, out int lpNumberOfBytesWritten);
@@ -56,7 +56,7 @@ namespace Windwaker.Multiplayer.Client.Dolphin
                 }
 
                 int timeEnd = Environment.TickCount;
-                Core.UIManager.Log($"Time taken to read from memory: {timeEnd - timeStart} ms");
+                //Core.UIManager.Log($"Time taken to read from memory: {timeEnd - timeStart} ms");
 
                 await Task.Delay(2000);
             }

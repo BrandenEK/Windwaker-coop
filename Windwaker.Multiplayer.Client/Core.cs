@@ -19,7 +19,7 @@ namespace Windwaker.Multiplayer.Client
             Application.Run(UIManager = new ClientForm());
         }
 
-        public static MemoryReader MemoryReader { get; private set; } = new MemoryReader();
+        public static DolphinManager DolphinManager { get; private set; } = new DolphinManager();
 
         public static NetworkManager NetworkManager { get; private set; } = new NetworkManager();
 

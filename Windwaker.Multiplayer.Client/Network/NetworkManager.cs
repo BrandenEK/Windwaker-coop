@@ -63,7 +63,7 @@ namespace Windwaker.Multiplayer.Client.Network
             Core.UIManager.Log($"Lost connection with server");
             Core.UIManager.UpdateButtonText();
             Core.ProgressManager.ResetProgress();
-            Core.MemoryReader.StopLoop();
+            Core.DolphinManager.StopLoop();
         }
 
         /// <summary>
@@ -137,7 +137,7 @@ namespace Windwaker.Multiplayer.Client.Network
             {
                 Core.UIManager.Log($"Connection to server was approved");
                 Core.UIManager.UpdateButtonText();
-                Core.MemoryReader.StartLoop();
+                Core.DolphinManager.StartLoop();
             }
             else
             {

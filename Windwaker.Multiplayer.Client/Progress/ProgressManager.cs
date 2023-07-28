@@ -21,7 +21,7 @@ namespace Windwaker.Multiplayer.Client.Progress
                 {
                     items[progress.id] = progress.value;
                     Core.UIManager.Log($"Received item: {progress.id} from {player}");
-                    Core.MemoryReader.WriteReceivedItem(progress.id, progress.value);
+                    Core.DolphinManager.WriteReceivedItem(progress.id, progress.value);
                     Core.NotificationManager.DisplayProgressNotification(player, progress);
                 }
             }
@@ -286,8 +286,8 @@ namespace Windwaker.Multiplayer.Client.Progress
 
         public static void AddProgress(byte value)
         {
-            Core.MemoryReader.TryWrite(0x4C44, new byte[] { (byte)(value == 1 ? 0x20 : 0xFF) });
-            Core.MemoryReader.TryWrite(0x4C59, new byte[] { (byte)(value == 1 ? 0xFF : 0x00) });
+            Core.DolphinManager.TryWrite(0x4C44, new byte[] { (byte)(value == 1 ? 0x20 : 0xFF) });
+            Core.DolphinManager.TryWrite(0x4C59, new byte[] { (byte)(value == 1 ? 0xFF : 0x00) });
         }
 
         public static string GetNotification(string player, byte value)
