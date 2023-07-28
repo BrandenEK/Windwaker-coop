@@ -1,7 +1,6 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Windwaker.Multiplayer.Client
 {
@@ -137,6 +136,10 @@ namespace Windwaker.Multiplayer.Client
         public void LogError(object message)
         {
             BeginInvoke(new MethodInvoker(() => DisplayText(message, Color.Red)));
+        }
+        public void LogProgress(object message)
+        {
+            BeginInvoke(new MethodInvoker(() => DisplayText(message, Color.Green)));
         }
     }
 }

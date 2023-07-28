@@ -8,7 +8,7 @@ namespace Windwaker.Multiplayer.Client.Notifications
     {
         public void DisplayProgressNotification(string player, ProgressUpdate progress)
         {
-
+            Core.UIManager.LogProgress($"{player} has obtained the {progress.id}");
         }
     }
 }
