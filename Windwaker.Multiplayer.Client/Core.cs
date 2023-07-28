@@ -1,5 +1,6 @@
 using System;
 using System.Windows.Forms;
+using Windwaker.Multiplayer.Client.Dolphin;
 using Windwaker.Multiplayer.Client.Network;
 using Windwaker.Multiplayer.Client.Notifications;
 using Windwaker.Multiplayer.Client.Progress;

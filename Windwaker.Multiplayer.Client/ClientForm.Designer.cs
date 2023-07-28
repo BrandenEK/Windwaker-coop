@@ -53,6 +53,7 @@ namespace Windwaker.Multiplayer.Client
             sideRoomHeader = new Label();
             sidePlayerPanel = new Panel();
             debugText = new RichTextBox();
+            statusBox = new Panel();
             sidePanel.SuspendLayout();
             sidePanelConnect.SuspendLayout();
             sideServerPanel.SuspendLayout();
@@ -276,12 +277,22 @@ namespace Windwaker.Multiplayer.Client
             debugText.TabIndex = 108;
             debugText.Text = "";
             // 
+            // statusBox
+            // 
+            statusBox.BackColor = Color.Red;
+            statusBox.BorderStyle = BorderStyle.Fixed3D;
+            statusBox.Location = new Point(172, 12);
+            statusBox.Name = "statusBox";
+            statusBox.Size = new Size(60, 60);
+            statusBox.TabIndex = 109;
+            // 
             // ClientForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.ControlDarkDark;
             ClientSize = new Size(984, 561);
+            Controls.Add(statusBox);
             Controls.Add(debugText);
             Controls.Add(sidePanel);
             Icon = (Icon)resources.GetObject("$this.Icon");
@@ -323,5 +334,6 @@ namespace Windwaker.Multiplayer.Client
         private Panel sidePanelConnect;
         private TextBox gameNameField;
         private RichTextBox debugText;
+        private Panel statusBox;
     }
 }

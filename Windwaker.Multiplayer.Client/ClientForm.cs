@@ -1,6 +1,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using Windwaker.Multiplayer.Client.Dolphin;
 
 namespace Windwaker.Multiplayer.Client
 {
@@ -38,6 +39,16 @@ namespace Windwaker.Multiplayer.Client
         public void UpdateButtonText()
         {
             connectBtn.Text = Core.NetworkManager.IsConnected ? "Disconnect" : "Connect";
+        }
+
+        public void UpdateStatusBox(ConnectionType connection)
+        {
+            if (connection == ConnectionType.ConnectedInGame)
+                statusBox.BackColor = Color.Green;
+            else if (connection == ConnectionType.ConnectedNotInGame)
+                statusBox.BackColor = Color.Yellow;
+            else
+                statusBox.BackColor = Color.Red;
         }
 
         /// <summary>

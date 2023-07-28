@@ -4,14 +4,14 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Windwaker.Multiplayer.Client.Progress;
 
-namespace Windwaker.Multiplayer.Client
+namespace Windwaker.Multiplayer.Client.Dolphin
 {
     internal class MemoryReader
     {
         [DllImport("kernel32.dll")]
-        static extern bool WriteProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] lpBuffer, int nSize, out int lpNumberOfBytesWritten);
+        static extern bool WriteProcessMemory(nint hProcess, nint lpBaseAddress, byte[] lpBuffer, int nSize, out int lpNumberOfBytesWritten);
         [DllImport("kernel32.dll")]
-        static extern bool ReadProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] lpBuffer, int nSize, out int lpNumberOfBytesWritten);
+        static extern bool ReadProcessMemory(nint hProcess, nint lpBaseAddress, byte[] lpBuffer, int nSize, out int lpNumberOfBytesWritten);
 
         private bool _reading;
 
@@ -32,6 +32,7 @@ namespace Windwaker.Multiplayer.Client
         /// </summary>
         public void StopLoop()
         {
+            Core.UIManager.UpdateStatusBox(ConnectionType.Disconnected);
             _currentStage = 0xFF;
             _reading = false;
         }
@@ -53,10 +54,6 @@ namespace Windwaker.Multiplayer.Client
                 {
                     CheckNewProgress();
                 }
-                else
-                {
-                    Core.UIManager.LogWarning("Save file is not loaded yet!");
-                }
 
                 int timeEnd = Environment.TickCount;
                 Core.UIManager.Log($"Time taken to read from memory: {timeEnd - timeStart} ms");
@@ -68,7 +65,7 @@ namespace Windwaker.Multiplayer.Client
         /// <summary>
         /// Checks whether Dolphin is running by hooking into its process
         /// </summary>
-        private bool IsDolphinRunning(out IntPtr process)
+        private bool IsDolphinRunning(out nint process)
         {
             Process[] processes = Process.GetProcessesByName("dolphin");
             if (processes.Length > 0)
@@ -78,8 +75,7 @@ namespace Windwaker.Multiplayer.Client
             }
             else
             {
-                Core.UIManager.LogWarning($"Dolphin is not running!");
-                process = IntPtr.Zero;
+                process = nint.Zero;
                 return false;
             }
         }
@@ -89,12 +85,18 @@ namespace Windwaker.Multiplayer.Client
         /// </summary>
         private bool IsSaveFileLoaded()
         {
-            if (!TryRead(0x4D64, 4, out byte[] bytes)) return false;
+            if (!TryRead(0x4D64, 4, out byte[] bytes))
+            {
+                Core.UIManager.UpdateStatusBox(ConnectionType.Disconnected);
+                return false;
+            }
 
             bool isEmpty = bytes[0] == 0 && bytes[1] == 0 && bytes[2] == 0 && bytes[3] == 0;
             bool isLink = bytes[0] == 76 && bytes[1] == 105 && bytes[2] == 110 && bytes[3] == 107;
 
-            return !isEmpty && !isLink;
+            bool saveLoaded = !isEmpty && !isLink;
+            Core.UIManager.UpdateStatusBox(saveLoaded ? ConnectionType.ConnectedInGame : ConnectionType.ConnectedNotInGame);
+            return saveLoaded;
         }
 
         /// <summary>
@@ -102,9 +104,9 @@ namespace Windwaker.Multiplayer.Client
         /// </summary>
         public bool TryWrite(uint address, byte[] bytes)
         {
-            if (IsDolphinRunning(out IntPtr process))
+            if (IsDolphinRunning(out nint process))
             {
-                WriteProcessMemory(process, (IntPtr)(0x803B0000 + address), bytes, bytes.Length, out int _);
+                WriteProcessMemory(process, (nint)(0x803B0000 + address), bytes, bytes.Length, out int _);
                 return true;
             }
             else
@@ -118,10 +120,10 @@ namespace Windwaker.Multiplayer.Client
         /// </summary>
         public bool TryRead(uint address, int size, out byte[] bytes)
         {
-            if (IsDolphinRunning(out IntPtr process))
+            if (IsDolphinRunning(out nint process))
             {
                 bytes = new byte[size];
-                ReadProcessMemory(process, (IntPtr)(0x803B0000 + address), bytes, size, out int _);
+                ReadProcessMemory(process, (nint)(0x803B0000 + address), bytes, size, out int _);
                 return true;
             }
             else
@@ -243,7 +245,7 @@ namespace Windwaker.Multiplayer.Client
         public void WriteReceivedItem(string item, byte value)
         {
             uint mainAddress, bitfAddress;
-            byte mainValue, bitfValue;            
+            byte mainValue, bitfValue;
 
             // Inventory
 
