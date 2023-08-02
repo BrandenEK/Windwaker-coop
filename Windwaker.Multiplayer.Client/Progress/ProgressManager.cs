@@ -36,8 +36,9 @@ namespace Windwaker.Multiplayer.Client.Progress
         public void ObtainItem(string item, byte value)
         {
             items[item] = value;
-            Core.UIManager.Log($"Obtained item: {item}");
-            Core.NetworkManager.SendProgress(ProgressType.Item, item, value);
+            var progress = new ProgressUpdate(ProgressType.Item, item, value);
+            Core.NotificationManager.DisplayProgressNotification(null, progress);
+            Core.NetworkManager.SendProgress(progress);
         }
 
         public void ReceiveItem(string player, string item, byte value)

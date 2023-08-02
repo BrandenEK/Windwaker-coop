@@ -167,13 +167,13 @@ namespace Windwaker.Multiplayer.Client.Network
 
         // Progress
 
-        public void SendProgress(ProgressType progressType, string progressId, byte progressValue)
+        public void SendProgress(ProgressUpdate progress)
         {
             var bytes = new List<byte>();
 
-            bytes.Add((byte)progressType);
-            bytes.Add(progressValue);
-            bytes.AddRange(Encoding.UTF8.GetBytes(progressId));
+            bytes.Add((byte)progress.type);
+            bytes.Add(progress.value);
+            bytes.AddRange(Encoding.UTF8.GetBytes(progress.id));
 
             Send(bytes.ToArray(), NetworkType.Progress);
         }
@@ -188,7 +188,6 @@ namespace Windwaker.Multiplayer.Client.Network
             // Queue it instead to be processed right after read loop
             var progress = new ProgressUpdate(progressType, progressId, progressValue);
             Core.ProgressManager.ReceiveProgress(playerName, progress);
-            Core.NotificationManager.DisplayProgressNotification(playerName, progress);
         }
 
         // Helpers

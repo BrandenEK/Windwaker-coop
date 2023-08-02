@@ -8,6 +8,9 @@ namespace Windwaker.Multiplayer.Client.Dolphin
 {
     internal class DolphinManager
     {
+        private const int SYNC_DELAY = 2000;
+        private const ulong BASE_ADDRESS = 0x803B0000;
+
         [DllImport("kernel32.dll")]
         static extern bool WriteProcessMemory(nint hProcess, nint lpBaseAddress, byte[] lpBuffer, int nSize, out int lpNumberOfBytesWritten);
         [DllImport("kernel32.dll")]
@@ -58,7 +61,7 @@ namespace Windwaker.Multiplayer.Client.Dolphin
                 int timeEnd = Environment.TickCount;
                 //Core.UIManager.Log($"Time taken to read from memory: {timeEnd - timeStart} ms");
 
-                await Task.Delay(2000);
+                await Task.Delay(SYNC_DELAY);
             }
         }
 
@@ -106,7 +109,7 @@ namespace Windwaker.Multiplayer.Client.Dolphin
         {
             if (IsDolphinRunning(out nint process))
             {
-                WriteProcessMemory(process, (nint)(0x803B0000 + address), bytes, bytes.Length, out int _);
+                WriteProcessMemory(process, (nint)(BASE_ADDRESS + address), bytes, bytes.Length, out int _);
                 return true;
             }
             else
@@ -123,7 +126,7 @@ namespace Windwaker.Multiplayer.Client.Dolphin
             if (IsDolphinRunning(out nint process))
             {
                 bytes = new byte[size];
-                ReadProcessMemory(process, (nint)(0x803B0000 + address), bytes, size, out int _);
+                ReadProcessMemory(process, (nint)(BASE_ADDRESS + address), bytes, size, out int _);
                 return true;
             }
             else
