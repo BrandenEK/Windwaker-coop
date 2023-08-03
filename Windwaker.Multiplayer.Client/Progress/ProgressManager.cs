@@ -1,14 +1,16 @@
 ﻿using System.Collections.Generic;
-using System.Net.Mail;
+using Windwaker.Multiplayer.Client.Progress.Helpers;
 
 namespace Windwaker.Multiplayer.Client.Progress
 {
     internal class ProgressManager
     {
         private readonly Dictionary<string, byte> items = new();
+        private readonly Dictionary<string, IObtainable> progressHelpers = new();
 
         public ProgressManager()
         {
+            InitializeHelpers();
             ResetProgress();
         }
 
@@ -20,9 +22,11 @@ namespace Windwaker.Multiplayer.Client.Progress
                 if (progress.value > current)
                 {
                     items[progress.id] = progress.value;
-                    Core.UIManager.Log($"Received item: {progress.id} from {player}");
-                    Core.DolphinManager.WriteReceivedItem(progress.id, progress.value);
-                    Core.NotificationManager.DisplayProgressNotification(player, progress);
+                    //Core.UIManager.Log($"Received item: {progress.id} from {player}");
+                    //Core.DolphinManager.WriteReceivedItem(progress.id, progress.value);
+                    //Core.NotificationManager.DisplayProgressNotification(player, progress);
+                    AddProgress(progress.id, progress.value);
+                    ShowNotification(player, progress.id, progress.value);
                 }
             }
         }
@@ -37,7 +41,8 @@ namespace Windwaker.Multiplayer.Client.Progress
         {
             items[item] = value;
             var progress = new ProgressUpdate(ProgressType.Item, item, value);
-            Core.NotificationManager.DisplayProgressNotification(null, progress);
+            //Core.NotificationManager.DisplayProgressNotification(null, progress);
+            ShowNotification(null, item, value);
             Core.NetworkManager.SendProgress(progress);
         }
 
@@ -50,6 +55,59 @@ namespace Windwaker.Multiplayer.Client.Progress
         {
             return items.TryGetValue(item, out byte value) ? value : (byte)0;
         }
+
+        private void InitializeHelpers()
+        {
+            progressHelpers.Add("telescope", new Telescope());
+            progressHelpers.Add("sail", new Sail());
+
+            progressHelpers.Add("maxhealth", new Health());
+            progressHelpers.Add("maxmagic", new Magic());
+            progressHelpers.Add("maxarrows", new Arrows());
+            progressHelpers.Add("maxbombs", new Bombs());
+        }
+
+        public void CheckForProgress(string progress, byte value)
+        {
+            if (progressHelpers.TryGetValue(progress, out IObtainable helper))
+            {
+                Core.UIManager.Log(progress + ": " + value);
+                helper.CheckForProgress(value);
+            }
+            else
+            {
+                Core.UIManager.LogError("Checking for unknown progress: " + progress);
+            }
+        }
+
+        private void AddProgress(string progress, byte value)
+        {
+            if (progressHelpers.TryGetValue(progress, out IObtainable helper))
+            {
+                helper.AddProgress(value);
+            }
+            else
+            {
+                Core.UIManager.LogError("Adding unknown progress: " + progress);
+            }
+        }
+
+        private void ShowNotification(string player, string progress, byte value)
+        {
+            if (progressHelpers.TryGetValue(progress, out IObtainable helper))
+            {
+                string playerPart = player is null ? "You have" : $"{player} has";
+                string itemPart = helper.GetNotificationPart(value);
+
+                Core.UIManager.LogProgress(playerPart + itemPart);
+            }
+            else
+            {
+                Core.UIManager.LogError("Showing notification for unknown progress: " + progress);
+            }
+        }
+
+        // All of these will be gone too
 
         #region Inventory
 
@@ -275,25 +333,5 @@ namespace Windwaker.Multiplayer.Client.Progress
         public byte stages;
 
         public byte events;
-    }
-
-    internal static class Telescope
-    {
-        public static void CheckForProgress(byte value)
-        {
-            if (value == 0x20 && Core.ProgressManager.GetItemLevel("telescope") < 1)
-                Core.ProgressManager.ObtainItem("telescope", 1);
-        }
-
-        public static void AddProgress(byte value)
-        {
-            Core.DolphinManager.TryWrite(0x4C44, new byte[] { (byte)(value == 1 ? 0x20 : 0xFF) });
-            Core.DolphinManager.TryWrite(0x4C59, new byte[] { (byte)(value == 1 ? 0xFF : 0x00) });
-        }
-
-        public static string GetNotification(string player, byte value)
-        {
-            return $"{player} has obtained the Telescope";
-        }
     }
 }

@@ -157,94 +157,97 @@ namespace Windwaker.Multiplayer.Client.Dolphin
 
             if (TryRead(0x4C09, 1, out bytes))
             {
-                progress.CheckForMaxHealth(bytes[0]);
+                progress.CheckForProgress("maxhealth", bytes[0]);
             }
 
             if (TryRead(0x4C16, 6, out bytes))
             {
-                progress.CheckForSword(bytes[0]);
-                progress.CheckForShield(bytes[1]);
-                progress.CheckForPowerBracelets(bytes[2]);
+                progress.CheckForProgress("sword", bytes[0]);
+                progress.CheckForProgress("shield", bytes[1]);
+                progress.CheckForProgress("powerbracelets", bytes[2]);
                 // Unused x 1
-                progress.CheckForWallet(bytes[4]);
-                progress.CheckForMaxMagic(bytes[5]);
+                progress.CheckForProgress("wallet", bytes[4]);
+                progress.CheckForProgress("maxmagic", bytes[5]);
             }
 
             if (TryRead(0x4C44, 21, out bytes))
             {
-                progress.CheckForTelescope(bytes[0]);
-                progress.CheckForSail(bytes[1]);
-                progress.CheckForWindwaker(bytes[2]);
-                progress.CheckForGrapplingHook(bytes[3]);
-                progress.CheckForSpoilsBag(bytes[4]);
-                progress.CheckForBoomerang(bytes[5]);
-                progress.CheckForDekuLeaf(bytes[6]);
+                progress.CheckForProgress("telescope", bytes[0]);
+                progress.CheckForProgress("sail", bytes[1]);
+                progress.CheckForProgress("windwaker", bytes[2]);
+                progress.CheckForProgress("grapplinghook", bytes[3]);
+                progress.CheckForProgress("spoilsbag", bytes[4]);
+                progress.CheckForProgress("boomerang", bytes[5]);
+                progress.CheckForProgress("dekuleaf", bytes[6]);
 
-                progress.CheckForTingleTuner(bytes[7]);
-                progress.CheckForPictoBox(bytes[8]);
-                progress.CheckForIronBoots(bytes[9]);
-                progress.CheckForMagicArmor(bytes[10]);
-                progress.CheckForBaitBag(bytes[11]);
-                progress.CheckForBow(bytes[12]);
-                progress.CheckForBombs(bytes[13]);
+                progress.CheckForProgress("tingletuner", bytes[7]);
+                progress.CheckForProgress("pictobox", bytes[8]);
+                progress.CheckForProgress("ironboots", bytes[9]);
+                progress.CheckForProgress("magicarmor", bytes[10]);
+                progress.CheckForProgress("baitbag", bytes[11]);
+                progress.CheckForProgress("bow", bytes[12]);
+                progress.CheckForProgress("bombs", bytes[13]);
 
-                progress.CheckForBottle1(bytes[14]);
-                progress.CheckForBottle2(bytes[15]);
-                progress.CheckForBottle3(bytes[16]);
-                progress.CheckForBottle4(bytes[17]);
-                progress.CheckForDeliveryBag(bytes[18]);
-                progress.CheckForHookshot(bytes[19]);
-                progress.CheckForSkullHammer(bytes[20]);
+                progress.CheckForProgress("bottle1", bytes[14]);
+                progress.CheckForProgress("bottle2", bytes[15]);
+                progress.CheckForProgress("bottle3", bytes[16]);
+                progress.CheckForProgress("bottle4", bytes[17]);
+                progress.CheckForProgress("deliverybag", bytes[18]);
+                progress.CheckForProgress("hookshot", bytes[19]);
+                progress.CheckForProgress("skullhammer", bytes[20]);
             }
 
             if (TryRead(0x4C77, 2, out bytes))
             {
-                progress.CheckForMaxArrows(bytes[0]);
-                progress.CheckForMaxBombs(bytes[1]);
+                progress.CheckForProgress("maxarrows", bytes[0]);
+                progress.CheckForProgress("maxbombs", bytes[1]);
             }
 
             if (TryRead(0x4CBF, 9, out bytes))
             {
-                progress.CheckForPiratesCharm(bytes[0]);
-                progress.CheckForHerosCharm(bytes[1]);
+                progress.CheckForProgress("piratescharm", bytes[0]);
+                progress.CheckForProgress("heroscharm", bytes[1]);
                 // Unused x 4
-                progress.CheckForSongs(bytes[6]);
-                progress.CheckForShards(bytes[7]);
-                progress.CheckForPearls(bytes[8]);
+                //progress.CheckForSongs(bytes[6]);
+                //progress.CheckForShards(bytes[7]);
+                //progress.CheckForPearls(bytes[8]);
             }
 
-            if (TryRead(0x4CDC, 48 + 49, out bytes))
-            {
-                for (byte i = 0; i < 8; i++)
-                {
-                    progress.CheckForCharts("owned", i, bytes[0 + i]);
-                }
-                for (byte i = 0; i < 8; i++)
-                {
-                    progress.CheckForCharts("opened", i, bytes[16 + i]);
-                }
-                for (byte i = 0; i < 8; i++)
-                {
-                    progress.CheckForCharts("looted", i, bytes[32 + i]);
-                }
+             // bitfields not implemented yet
 
-                for (byte i = 0; i < 49; i++)
-                {
-                    progress.CheckForSectors(i, bytes[48 + i]);
-                }
-            }
+            //if (TryRead(0x4CDC, 48 + 49, out bytes))
+            //{
+            //    for (byte i = 0; i < 8; i++)
+            //    {
+            //        progress.CheckForCharts("owned", i, bytes[0 + i]);
+            //    }
+            //    for (byte i = 0; i < 8; i++)
+            //    {
+            //        progress.CheckForCharts("opened", i, bytes[16 + i]);
+            //    }
+            //    for (byte i = 0; i < 8; i++)
+            //    {
+            //        progress.CheckForCharts("looted", i, bytes[32 + i]);
+            //    }
 
-            if (TryRead(0x4D4D, 1, out bytes))
-            {
-                progress.CheckForCharts("deciphered", 0, bytes[0]);
-            }
+            //    for (byte i = 0; i < 49; i++)
+            //    {
+            //        progress.CheckForSectors(i, bytes[48 + i]);
+            //    }
+            //}
+
+            //if (TryRead(0x4D4D, 1, out bytes))
+            //{
+            //    progress.CheckForCharts("deciphered", 0, bytes[0]);
+            //}
 
             if (TryRead(0x5296, 1, out bytes))
             {
-                progress.CheckForTingleStatues(bytes[0]);
+                progress.CheckForProgress("tinglestatues", bytes[0]);
             }
         }
 
+        // This function will be fully gone
         public void WriteReceivedItem(string item, byte value)
         {
             uint mainAddress, bitfAddress;

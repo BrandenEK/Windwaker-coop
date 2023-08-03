@@ -6,6 +6,7 @@ namespace Windwaker.Multiplayer.Client.Notifications
 {
     internal class NotificationManager
     {
+        // All gone too
         public void DisplayProgressNotification(string player, ProgressUpdate progress)
         {
             string message;
