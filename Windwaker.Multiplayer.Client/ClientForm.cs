@@ -7,11 +7,14 @@ namespace Windwaker.Multiplayer.Client
 {
     internal partial class ClientForm : Form
     {
+        private const string CLIENT_VERSION = "0.1.0";
+
         private static ClientForm instance;
 
         public ClientForm()
         {
             InitializeComponent();
+            Text = "Windwaker Multiplayer Client " + CLIENT_VERSION;
             instance ??= this;
         }
 
