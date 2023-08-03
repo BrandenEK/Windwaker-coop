@@ -1,5 +1,5 @@
 ﻿
-namespace Windwaker.Multiplayer.Client.Progress.Helpers
+namespace Windwaker.Multiplayer.Client.Progress
 {
     /// <summary>
     /// Generic interface for obtainable progress
@@ -62,12 +62,13 @@ namespace Windwaker.Multiplayer.Client.Progress.Helpers
 
         public void CheckForProgress(byte value)
         {
-            for (int i = MainValues.Length - 1; i >= 0; i++)
+            for (int i = MainValues.Length - 1; i >= 0; i--)
             {
                 byte level = (byte)(i + 1);
                 if (value == MainValues[i] && Core.ProgressManager.GetItemLevel(Id) < level)
                 {
                     Core.ProgressManager.ObtainItem(Id, level);
+                    break;
                 }
             }
         }
@@ -119,6 +120,39 @@ namespace Windwaker.Multiplayer.Client.Progress.Helpers
         public string GetNotificationPart(byte value)
         {
             return value > 0 ? $" obtained {Name}" : null;
+        }
+    }
+
+    /// <summary>
+    /// An obtainable bottle than can be obtained as any value, but is only sent as empty
+    /// </summary>
+    internal abstract class BottleItem : IObtainable
+    {
+        protected abstract string Id { get; }
+
+        protected abstract uint MainAddress { get; }
+        protected abstract uint BitfieldAddress { get; }
+
+        public void CheckForProgress(byte value)
+        {
+            if (value >= 0x50 && value <= 0x59 && Core.ProgressManager.GetItemLevel(Id) < 1)
+            {
+                Core.ProgressManager.ObtainItem(Id, 1);
+            }
+        }
+
+        public void AddProgress(byte value)
+        {
+            byte main = (byte)(value == 1 ? 0x50 : 0xFF);
+            byte bitfield = (byte)(value == 1 ? 0xFF : 0x00);
+
+            Core.DolphinManager.TryWrite(MainAddress, new byte[] { main });
+            Core.DolphinManager.TryWrite(BitfieldAddress, new byte[] { bitfield });
+        }
+
+        public string GetNotificationPart(byte value)
+        {
+            return value > 0 ? $" obtained a new bottle" : null;
         }
     }
 }

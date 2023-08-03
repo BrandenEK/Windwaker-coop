@@ -38,17 +38,23 @@ namespace Windwaker.Multiplayer.Client
 
         public void UpdateButtonText()
         {
-            connectBtn.Text = Core.NetworkManager.IsConnected ? "Disconnect" : "Connect";
+            BeginInvoke(new MethodInvoker(() =>
+            {
+                connectBtn.Text = Core.NetworkManager.IsConnected ? "Disconnect" : "Connect";
+            }));
         }
 
         public void UpdateStatusBox(ConnectionType connection)
         {
-            if (connection == ConnectionType.ConnectedInGame)
-                statusBox.BackColor = Color.Green;
-            else if (connection == ConnectionType.ConnectedNotInGame)
-                statusBox.BackColor = Color.Yellow;
-            else
-                statusBox.BackColor = Color.Red;
+            BeginInvoke(new MethodInvoker(() =>
+            {
+                if (connection == ConnectionType.ConnectedInGame)
+                    statusBox.BackColor = Color.Green;
+                else if (connection == ConnectionType.ConnectedNotInGame)
+                    statusBox.BackColor = Color.Yellow;
+                else
+                    statusBox.BackColor = Color.Red;
+            }));
         }
 
         /// <summary>
