@@ -3,7 +3,6 @@ namespace Windwaker.Multiplayer.Client.Progress.Helpers
 {
     internal class Telescope : SingleItem
     {
-        protected override string Id => "telescope";
         protected override string Name => "the Telescope";
 
         protected override uint MainAddress => 0x4C44;
@@ -12,7 +11,6 @@ namespace Windwaker.Multiplayer.Client.Progress.Helpers
     }
     internal class Sail : SingleItem
     {
-        protected override string Id => "sail";
         protected override string Name => "the Sail";
 
         protected override uint MainAddress => 0x4C45;
@@ -21,7 +19,6 @@ namespace Windwaker.Multiplayer.Client.Progress.Helpers
     }
     internal class Windwaker : SingleItem
     {
-        protected override string Id => "windwaker";
         protected override string Name => "the Windwaker";
 
         protected override uint MainAddress => 0x4C46;
@@ -30,7 +27,6 @@ namespace Windwaker.Multiplayer.Client.Progress.Helpers
     }
     internal class GrapplingHook : SingleItem
     {
-        protected override string Id => "grapplinghook";
         protected override string Name => "the Grappling Hook";
 
         protected override uint MainAddress => 0x4C47;
@@ -39,7 +35,6 @@ namespace Windwaker.Multiplayer.Client.Progress.Helpers
     }
     internal class SpoilsBag : SingleItem
     {
-        protected override string Id => "spoilsbag";
         protected override string Name => "the Spoils Bag";
 
         protected override uint MainAddress => 0x4C48;
@@ -48,7 +43,6 @@ namespace Windwaker.Multiplayer.Client.Progress.Helpers
     }
     internal class Boomerang : SingleItem
     {
-        protected override string Id => "boomerang";
         protected override string Name => "the Boomerang";
 
         protected override uint MainAddress => 0x4C49;
@@ -57,7 +51,6 @@ namespace Windwaker.Multiplayer.Client.Progress.Helpers
     }
     internal class DekuLeaf : SingleItem
     {
-        protected override string Id => "dekuleaf";
         protected override string Name => "the Deku Leaf";
 
         protected override uint MainAddress => 0x4C4A;
@@ -67,7 +60,6 @@ namespace Windwaker.Multiplayer.Client.Progress.Helpers
 
     internal class TingleTuner : SingleItem
     {
-        protected override string Id => "tingletuner";
         protected override string Name => "the Tingle Tuner";
 
         protected override uint MainAddress => 0x4C4B;
@@ -76,7 +68,6 @@ namespace Windwaker.Multiplayer.Client.Progress.Helpers
     }
     internal class PictoBox : MultipleItem
     {
-        protected override string Id => "pictobox";
         protected override string[] Names => new string[]
         {
             "the Picto Box",
@@ -89,7 +80,6 @@ namespace Windwaker.Multiplayer.Client.Progress.Helpers
     }
     internal class IronBoots : SingleItem
     {
-        protected override string Id => "ironboots";
         protected override string Name => "the Iron Boots";
 
         protected override uint MainAddress => 0x4C4D;
@@ -98,7 +88,6 @@ namespace Windwaker.Multiplayer.Client.Progress.Helpers
     }
     internal class MagicArmor : SingleItem
     {
-        protected override string Id => "magicarmor";
         protected override string Name => "the Magic Armor";
 
         protected override uint MainAddress => 0x4C4E;
@@ -107,7 +96,6 @@ namespace Windwaker.Multiplayer.Client.Progress.Helpers
     }
     internal class BaitBag : SingleItem
     {
-        protected override string Id => "baitbag";
         protected override string Name => "the Bait Bag";
 
         protected override uint MainAddress => 0x4C4F;
@@ -116,7 +104,6 @@ namespace Windwaker.Multiplayer.Client.Progress.Helpers
     }
     internal class Bow : MultipleItem
     {
-        protected override string Id => "bow";
         protected override string[] Names => new string[]
         {
             "the Hero's Bow",
@@ -130,7 +117,6 @@ namespace Windwaker.Multiplayer.Client.Progress.Helpers
     }
     internal class Bombs : SingleItem
     {
-        protected override string Id => "bombs";
         protected override string Name => "Bombs";
 
         protected override uint MainAddress => 0x4C51;
@@ -140,35 +126,26 @@ namespace Windwaker.Multiplayer.Client.Progress.Helpers
 
     internal class Bottle1 : BottleItem
     {
-        protected override string Id => "bottle1";
-
         protected override uint MainAddress => 0x4C52;
         protected override uint BitfieldAddress => 0x4C67;
     }
     internal class Bottle2 : BottleItem
     {
-        protected override string Id => "bottle2";
-
         protected override uint MainAddress => 0x4C53;
         protected override uint BitfieldAddress => 0x4C68;
     }
     internal class Bottle3 : BottleItem
     {
-        protected override string Id => "bottle3";
-
         protected override uint MainAddress => 0x4C54;
         protected override uint BitfieldAddress => 0x4C69;
     }
     internal class Bottle4 : BottleItem
     {
-        protected override string Id => "bottle4";
-
         protected override uint MainAddress => 0x4C55;
         protected override uint BitfieldAddress => 0x4C6A;
     }
     internal class DeliveryBag : SingleItem
     {
-        protected override string Id => "deliverybag";
         protected override string Name => "the Delivery Bag";
 
         protected override uint MainAddress => 0x4C56;
@@ -177,7 +154,6 @@ namespace Windwaker.Multiplayer.Client.Progress.Helpers
     }
     internal class Hookshot : SingleItem
     {
-        protected override string Id => "hookshot";
         protected override string Name => "the Hookshot";
 
         protected override uint MainAddress => 0x4C57;
@@ -186,7 +162,6 @@ namespace Windwaker.Multiplayer.Client.Progress.Helpers
     }
     internal class SkullHammer : SingleItem
     {
-        protected override string Id => "skullhammer";
         protected override string Name => "the Skull Hammer";
 
         protected override uint MainAddress => 0x4C58;

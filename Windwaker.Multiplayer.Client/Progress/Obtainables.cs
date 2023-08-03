@@ -4,28 +4,41 @@ namespace Windwaker.Multiplayer.Client.Progress
     /// <summary>
     /// Generic interface for obtainable progress
     /// </summary>
-    internal interface IObtainable
+    //internal interface IObtainable
+    //{
+    //    public void CheckForProgress(byte value);
+
+    //    public void AddProgress(byte value);
+
+    //    public string GetNotificationPart(byte value);
+    //}
+
+    /// <summary>
+    /// A base item that has an id and can be obtained
+    /// </summary>
+    internal abstract class BaseItem
     {
-        public void CheckForProgress(byte value);
+        public string Id => GetType().Name.ToLower();
 
-        public void AddProgress(byte value);
+        public abstract void CheckForProgress(byte value);
 
-        public string GetNotificationPart(byte value);
+        public abstract void AddProgress(byte value);
+
+        public abstract string GetNotificationPart(byte value);
     }
 
     /// <summary>
-    /// An obtainable item that can only be either owned or not owned, and also stores a bitfield
+    /// An item that can only be either owned or not owned, and also stores a bitfield
     /// </summary>
-    internal abstract class SingleItem : IObtainable
+    internal abstract class SingleItem : BaseItem
     {
-        protected abstract string Id { get; }
         protected abstract string Name { get; }
 
         protected abstract uint MainAddress { get; }
         protected abstract byte MainValue { get; }
         protected abstract uint BitfieldAddress { get; }
 
-        public void CheckForProgress(byte value)
+        public override void CheckForProgress(byte value)
         {
             if (value == MainValue && Core.ProgressManager.GetItemLevel(Id) < 1)
             {
@@ -33,7 +46,7 @@ namespace Windwaker.Multiplayer.Client.Progress
             }
         }
 
-        public void AddProgress(byte value)
+        public override void AddProgress(byte value)
         {
             byte main = (byte)(value == 1 ? MainValue : 0xFF);
             byte bitfield = (byte)(value == 1 ? 0xFF : 0x00);
@@ -42,25 +55,24 @@ namespace Windwaker.Multiplayer.Client.Progress
             Core.DolphinManager.TryWrite(BitfieldAddress, new byte[] { bitfield });
         }
 
-        public string GetNotificationPart(byte value)
+        public override string GetNotificationPart(byte value)
         {
             return value > 0 ? $" obtained {Name}" : null;
         }
     }
 
     /// <summary>
-    /// An obtainable item that can have multiple levels, and also stores a bitfield
+    /// An item that can have multiple levels, and also stores a bitfield
     /// </summary>
-    internal abstract class MultipleItem : IObtainable
+    internal abstract class MultipleItem : BaseItem
     {
-        protected abstract string Id { get; }
         protected abstract string[] Names { get; }
 
         protected abstract uint MainAddress { get; }
         protected abstract byte[] MainValues { get; }
         protected abstract uint BitfieldAddress { get; }
 
-        public void CheckForProgress(byte value)
+        public override void CheckForProgress(byte value)
         {
             for (int i = MainValues.Length - 1; i >= 0; i--)
             {
@@ -73,7 +85,7 @@ namespace Windwaker.Multiplayer.Client.Progress
             }
         }
 
-        public void AddProgress(byte value)
+        public override void AddProgress(byte value)
         {
             byte main = (byte)(value > 0 ? MainValues[value - 1] : 0xFF);
             byte bitfield = 0x00;
@@ -86,7 +98,7 @@ namespace Windwaker.Multiplayer.Client.Progress
             Core.DolphinManager.TryWrite(BitfieldAddress, new byte[] { bitfield });
         }
 
-        public string GetNotificationPart(byte value)
+        public override string GetNotificationPart(byte value)
         {
             return value > 0 ? $" obtained {Names[value - 1]}" : null;
         }
@@ -95,16 +107,15 @@ namespace Windwaker.Multiplayer.Client.Progress
     // Bitfield item
 
     /// <summary>
-    /// An obtainable item that simply increases in value
+    /// An item that simply increases in value
     /// </summary>
-    internal abstract class ValueItem : IObtainable
+    internal abstract class ValueItem : BaseItem
     {
-        protected abstract string Id { get; }
         protected abstract string Name { get; }
 
         protected abstract uint MainAddress { get; }
 
-        public void CheckForProgress(byte value)
+        public override void CheckForProgress(byte value)
         {
             if (Core.ProgressManager.GetItemLevel(Id) < value)
             {
@@ -112,28 +123,26 @@ namespace Windwaker.Multiplayer.Client.Progress
             }
         }
 
-        public void AddProgress(byte value)
+        public override void AddProgress(byte value)
         {
             Core.DolphinManager.TryWrite(MainAddress, new byte[] { value });
         }
 
-        public string GetNotificationPart(byte value)
+        public override string GetNotificationPart(byte value)
         {
             return value > 0 ? $" obtained {Name}" : null;
         }
     }
 
     /// <summary>
-    /// An obtainable bottle than can be obtained as any value, but is only sent as empty
+    /// An item (bottle) that can be obtained as any value, but is only sent as empty
     /// </summary>
-    internal abstract class BottleItem : IObtainable
+    internal abstract class BottleItem : BaseItem
     {
-        protected abstract string Id { get; }
-
         protected abstract uint MainAddress { get; }
         protected abstract uint BitfieldAddress { get; }
 
-        public void CheckForProgress(byte value)
+        public override void CheckForProgress(byte value)
         {
             if (value >= 0x50 && value <= 0x59 && Core.ProgressManager.GetItemLevel(Id) < 1)
             {
@@ -141,7 +150,7 @@ namespace Windwaker.Multiplayer.Client.Progress
             }
         }
 
-        public void AddProgress(byte value)
+        public override void AddProgress(byte value)
         {
             byte main = (byte)(value == 1 ? 0x50 : 0xFF);
             byte bitfield = (byte)(value == 1 ? 0xFF : 0x00);
@@ -150,7 +159,7 @@ namespace Windwaker.Multiplayer.Client.Progress
             Core.DolphinManager.TryWrite(BitfieldAddress, new byte[] { bitfield });
         }
 
-        public string GetNotificationPart(byte value)
+        public override string GetNotificationPart(byte value)
         {
             return value > 0 ? $" obtained a new bottle" : null;
         }

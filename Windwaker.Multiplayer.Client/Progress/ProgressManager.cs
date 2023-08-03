@@ -8,7 +8,7 @@ namespace Windwaker.Multiplayer.Client.Progress
     internal class ProgressManager
     {
         private readonly Dictionary<string, byte> items = new();
-        private readonly Dictionary<string, IObtainable> progressHelpers = new();
+        private readonly Dictionary<string, BaseItem> progressHelpers = new();
 
         public ProgressManager()
         {
@@ -55,15 +55,15 @@ namespace Windwaker.Multiplayer.Client.Progress
             {
                 if (t.Namespace is not null && t.Namespace.EndsWith("Progress.Helpers"))
                 {
-                    IObtainable obtainable = Activator.CreateInstance(t) as IObtainable;
-                    progressHelpers.Add(t.Name.ToLower(), obtainable);
+                    BaseItem helper = Activator.CreateInstance(t) as BaseItem;
+                    progressHelpers.Add(t.Name.ToLower(), helper);
                 }
             }
         }
 
         public void CheckForProgress(string progress, byte value)
         {
-            if (progressHelpers.TryGetValue(progress, out IObtainable helper))
+            if (progressHelpers.TryGetValue(progress, out BaseItem helper))
             {
                 helper.CheckForProgress(value);
             }
@@ -75,7 +75,7 @@ namespace Windwaker.Multiplayer.Client.Progress
 
         private void AddProgress(string progress, byte value)
         {
-            if (progressHelpers.TryGetValue(progress, out IObtainable helper))
+            if (progressHelpers.TryGetValue(progress, out BaseItem helper))
             {
                 helper.AddProgress(value);
             }
@@ -87,7 +87,7 @@ namespace Windwaker.Multiplayer.Client.Progress
 
         private void ShowNotification(string player, string progress, byte value)
         {
-            if (progressHelpers.TryGetValue(progress, out IObtainable helper))
+            if (progressHelpers.TryGetValue(progress, out BaseItem helper))
             {
                 string playerPart = player is null ? "You have" : $"{player} has";
                 string itemPart = helper.GetNotificationPart(value);
