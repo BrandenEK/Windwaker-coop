@@ -112,6 +112,14 @@ namespace Windwaker.Multiplayer.Client
             serverPortField.Text = Properties.Settings.Default.serverPort.ToString();
             passwordField.Text = Properties.Settings.Default.password;
 
+            int syncSettings = Properties.Settings.Default.syncSettings;
+            syncInventory.Checked = (syncSettings & 0x01) > 0;
+            syncEquipment.Checked = (syncSettings & 0x02) > 0;
+            syncStats.Checked = (syncSettings & 0x04) > 0;
+            syncCharts.Checked = (syncSettings & 0x08) > 0;
+            syncWorld.Checked = (syncSettings & 0x10) > 0;
+            syncKeys.Checked = (syncSettings & 0x20) > 0;
+
             _settings = ValidateInputFields();
         }
 
@@ -126,6 +134,16 @@ namespace Windwaker.Multiplayer.Client
             Properties.Settings.Default.serverIp = settings.serverIp;
             Properties.Settings.Default.serverPort = settings.serverPort;
             Properties.Settings.Default.password = settings.password;
+
+            int syncSettings = 0;
+            syncSettings |= syncInventory.Checked ? 0x01 : 0;
+            syncSettings |= syncEquipment.Checked ? 0x02 : 0;
+            syncSettings |= syncStats.Checked ? 0x04 : 0;
+            syncSettings |= syncCharts.Checked ? 0x08 : 0;
+            syncSettings |= syncWorld.Checked ? 0x10 : 0;
+            syncSettings |= syncKeys.Checked ? 0x20 : 0;
+            Properties.Settings.Default.syncSettings = syncSettings;
+
             Properties.Settings.Default.Save();
         }
 

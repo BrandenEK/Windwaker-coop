@@ -54,6 +54,13 @@ namespace Windwaker.Multiplayer.Client
             sidePlayerPanel = new Panel();
             debugText = new RichTextBox();
             statusBox = new Panel();
+            syncInventory = new CheckBox();
+            sideSyncHeader = new Label();
+            syncEquipment = new CheckBox();
+            syncCharts = new CheckBox();
+            syncWorld = new CheckBox();
+            syncStats = new CheckBox();
+            syncKeys = new CheckBox();
             sidePanel.SuspendLayout();
             sidePanelConnect.SuspendLayout();
             sideServerPanel.SuspendLayout();
@@ -63,7 +70,7 @@ namespace Windwaker.Multiplayer.Client
             // 
             // connectBtn
             // 
-            connectBtn.Location = new Point(20, 20);
+            connectBtn.Location = new Point(248, 34);
             connectBtn.Name = "connectBtn";
             connectBtn.Size = new Size(120, 24);
             connectBtn.TabIndex = 5;
@@ -133,7 +140,7 @@ namespace Windwaker.Multiplayer.Client
             // 
             oldgame.FormattingEnabled = true;
             oldgame.Items.AddRange(new object[] { "Windwaker", "Ocarina of Time", "Zelda I", "Zelda II" });
-            oldgame.Location = new Point(12, 164);
+            oldgame.Location = new Point(512, 25);
             oldgame.Name = "oldgame";
             oldgame.Size = new Size(136, 23);
             oldgame.TabIndex = 101;
@@ -201,8 +208,13 @@ namespace Windwaker.Multiplayer.Client
             // 
             sidePanelConnect.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
             sidePanelConnect.BackColor = SystemColors.ControlDark;
-            sidePanelConnect.Controls.Add(connectBtn);
-            sidePanelConnect.Controls.Add(oldgame);
+            sidePanelConnect.Controls.Add(syncKeys);
+            sidePanelConnect.Controls.Add(syncStats);
+            sidePanelConnect.Controls.Add(syncWorld);
+            sidePanelConnect.Controls.Add(syncCharts);
+            sidePanelConnect.Controls.Add(syncEquipment);
+            sidePanelConnect.Controls.Add(sideSyncHeader);
+            sidePanelConnect.Controls.Add(syncInventory);
             sidePanelConnect.Location = new Point(3, 362);
             sidePanelConnect.Name = "sidePanelConnect";
             sidePanelConnect.Size = new Size(160, 196);
@@ -286,6 +298,77 @@ namespace Windwaker.Multiplayer.Client
             statusBox.Size = new Size(60, 60);
             statusBox.TabIndex = 109;
             // 
+            // syncInventory
+            // 
+            syncInventory.AutoSize = true;
+            syncInventory.Location = new Point(12, 40);
+            syncInventory.Name = "syncInventory";
+            syncInventory.Size = new Size(108, 19);
+            syncInventory.TabIndex = 102;
+            syncInventory.Text = "Inventory items";
+            syncInventory.UseVisualStyleBackColor = true;
+            // 
+            // sideSyncHeader
+            // 
+            sideSyncHeader.Dock = DockStyle.Top;
+            sideSyncHeader.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            sideSyncHeader.Location = new Point(0, 0);
+            sideSyncHeader.Name = "sideSyncHeader";
+            sideSyncHeader.Size = new Size(160, 30);
+            sideSyncHeader.TabIndex = 104;
+            sideSyncHeader.Text = "Sync info";
+            sideSyncHeader.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // syncEquipment
+            // 
+            syncEquipment.AutoSize = true;
+            syncEquipment.Location = new Point(12, 65);
+            syncEquipment.Name = "syncEquipment";
+            syncEquipment.Size = new Size(116, 19);
+            syncEquipment.TabIndex = 105;
+            syncEquipment.Text = "Equipment items";
+            syncEquipment.UseVisualStyleBackColor = true;
+            // 
+            // syncCharts
+            // 
+            syncCharts.AutoSize = true;
+            syncCharts.Location = new Point(12, 115);
+            syncCharts.Name = "syncCharts";
+            syncCharts.Size = new Size(100, 19);
+            syncCharts.TabIndex = 106;
+            syncCharts.Text = "Map && Charts";
+            syncCharts.UseVisualStyleBackColor = true;
+            // 
+            // syncWorld
+            // 
+            syncWorld.AutoSize = true;
+            syncWorld.Location = new Point(12, 140);
+            syncWorld.Name = "syncWorld";
+            syncWorld.Size = new Size(87, 19);
+            syncWorld.TabIndex = 107;
+            syncWorld.Text = "World State";
+            syncWorld.UseVisualStyleBackColor = true;
+            // 
+            // syncStats
+            // 
+            syncStats.AutoSize = true;
+            syncStats.Location = new Point(12, 90);
+            syncStats.Name = "syncStats";
+            syncStats.Size = new Size(86, 19);
+            syncStats.TabIndex = 108;
+            syncStats.Text = "Player Stats";
+            syncStats.UseVisualStyleBackColor = true;
+            // 
+            // syncKeys
+            // 
+            syncKeys.AutoSize = true;
+            syncKeys.Location = new Point(12, 165);
+            syncKeys.Name = "syncKeys";
+            syncKeys.Size = new Size(82, 19);
+            syncKeys.TabIndex = 109;
+            syncKeys.Text = "Small Keys";
+            syncKeys.UseVisualStyleBackColor = true;
+            // 
             // ClientForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -293,8 +376,10 @@ namespace Windwaker.Multiplayer.Client
             BackColor = SystemColors.ControlDarkDark;
             ClientSize = new Size(984, 561);
             Controls.Add(statusBox);
+            Controls.Add(connectBtn);
             Controls.Add(debugText);
             Controls.Add(sidePanel);
+            Controls.Add(oldgame);
             Icon = (Icon)resources.GetObject("$this.Icon");
             MinimumSize = new Size(1000, 600);
             Name = "ClientForm";
@@ -303,6 +388,7 @@ namespace Windwaker.Multiplayer.Client
             Load += OnFormOpen;
             sidePanel.ResumeLayout(false);
             sidePanelConnect.ResumeLayout(false);
+            sidePanelConnect.PerformLayout();
             sideServerPanel.ResumeLayout(false);
             sideServerPanel.PerformLayout();
             sideRoomPanel.ResumeLayout(false);
@@ -335,5 +421,12 @@ namespace Windwaker.Multiplayer.Client
         private TextBox gameNameField;
         private RichTextBox debugText;
         private Panel statusBox;
+        private Label sideSyncHeader;
+        private CheckBox syncInventory;
+        private CheckBox syncKeys;
+        private CheckBox syncStats;
+        private CheckBox syncWorld;
+        private CheckBox syncCharts;
+        private CheckBox syncEquipment;
     }
 }
