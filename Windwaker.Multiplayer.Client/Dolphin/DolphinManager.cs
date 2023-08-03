@@ -208,12 +208,10 @@ namespace Windwaker.Multiplayer.Client.Dolphin
                 progress.CheckForProgress("piratescharm", bytes[0]);
                 progress.CheckForProgress("heroscharm", bytes[1]);
                 // Unused x 4
-                //progress.CheckForSongs(bytes[6]);
-                //progress.CheckForShards(bytes[7]);
-                //progress.CheckForPearls(bytes[8]);
+                progress.CheckForProgress("songs", bytes[6]);
+                progress.CheckForProgress("shards", bytes[7]);
+                progress.CheckForProgress("pearls", bytes[8]);
             }
-
-             // bitfields not implemented yet
 
             //if (TryRead(0x4CDC, 48 + 49, out bytes))
             //{
@@ -245,41 +243,37 @@ namespace Windwaker.Multiplayer.Client.Dolphin
             {
                 progress.CheckForProgress("tinglestatues", bytes[0]);
             }
-        }
 
-        // This function will be fully gone
-        public void WriteReceivedItem(string item, byte value)
-        {
-            //else if (item == "piratescharm")
+            //if (TryRead(0x52CB, 6, out bytes))
             //{
-            //    mainAddress = 0; mainValue = 0;
-            //    bitfAddress = 0x4CBF; bitfValue = (byte)(value == 1 ? 0x01 : 0x00);
+            //    progress.CheckForProgress("warpwt", bytes[0]);
+            //    progress.CheckForProgress("warpinter1", bytes[1]);
+            //    progress.CheckForProgress("warpfw", bytes[2]);
+            //    progress.CheckForProgress("warpdrc", bytes[3]);
+            //    progress.CheckForProgress("warpet", bytes[4]);
+            //    progress.CheckForProgress("warpinter2", bytes[5]);
             //}
-            //else if (item == "heroscharm")
+
+            //public void CheckForCharts(string type, byte index, byte value)
             //{
-            //    mainAddress = 0; mainValue = 0;
-            //    bitfAddress = 0x4CC0; bitfValue = (byte)(value == 1 ? 0x01 : 0x00);
+            //    string key = $"charts{type}{index}";
+            //    if (GetItemLevel(key) < value)
+            //        ObtainItem(key, value);
             //}
-            //else if (item == "songs")
+
+            //public void CheckForSectors(byte index, byte value)
             //{
-            //    mainAddress = 0; mainValue = 0;
-            //    bitfAddress = 0x4CC5; bitfValue = value;
+            //    string key = $"sector{index}";
+            //    if (GetItemLevel(key) < value)
+            //        ObtainItem(key, value);
             //}
-            //else if (item == "pearls")
-            //{
-            //    mainAddress = 0; mainValue = 0;
-            //    bitfAddress = 0x4CC7; bitfValue = value;
-            //}
-            //else if (item == "shards")
-            //{
-            //    mainAddress = 0; mainValue = 0;
-            //    bitfAddress = 0x4CC6; bitfValue = value;
-            //}
-            //else if (item == "tinglestatues")
-            //{
-            //    mainAddress = 0; mainValue = 0;
-            //    bitfAddress = 0x5296; bitfValue = value;
-            //}
-        }
+
+        //public byte bagContents;
+
+        //public byte stages;
+
+        //public byte events;
+
     }
+}
 }

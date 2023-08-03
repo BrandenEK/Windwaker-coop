@@ -36,8 +36,26 @@ namespace Windwaker.Multiplayer.Client.Progress.Helpers
         protected override byte MainValue => 0x28;
         protected override uint BitfieldAddress => 0x4CBE;
     }
-    // Pirates charm
-    // Heros charm
+    internal class PiratesCharm : BitfieldItem
+    {
+        protected override string[] Names => new string[]
+        {
+            "obtained the Pirates Charm",
+        };
+
+        protected override uint BitfieldAddress => 0x4CBF;
+        protected override byte[] BitfieldValues => new byte[] { 0x01 };
+    }
+    internal class HerosCharm : BitfieldItem
+    {
+        protected override string[] Names => new string[]
+        {
+            "obtained the Hero's Charm",
+        };
+
+        protected override uint BitfieldAddress => 0x4CC0;
+        protected override byte[] BitfieldValues => new byte[] { 0x01 };
+    }
 
     internal class MaxHealth : ValueItem
     {
@@ -68,5 +86,64 @@ namespace Windwaker.Multiplayer.Client.Progress.Helpers
         protected override string Name => "a bigger rupee wallet";
 
         protected override uint MainAddress => 0x4C1A;
+    }
+
+    internal class Pearls : BitfieldItem
+    {
+        protected override string[] Names => new string[]
+        {
+            "obtained Din's Pearl",
+            "obtained Farore's Pearl",
+            "obtained Nayru's Pearl",
+        };
+
+        protected override uint BitfieldAddress => 0x4CC7;
+        protected override byte[] BitfieldValues => new byte[] { 0x02, 0x04, 0x01 };
+    }
+    internal class Shards : BitfieldItem
+    {
+        protected override string[] Names => new string[]
+        {
+            "obtained Triforce Shard #1",
+            "obtained Triforce Shard #2",
+            "obtained Triforce Shard #3",
+            "obtained Triforce Shard #4",
+            "obtained Triforce Shard #5",
+            "obtained Triforce Shard #6",
+            "obtained Triforce Shard #7",
+            "obtained Triforce Shard #8",
+        };
+
+        protected override uint BitfieldAddress => 0x4CC6;
+        protected override byte[] BitfieldValues => new byte[] { 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80 };
+    }
+    internal class Songs : BitfieldItem
+    {
+        protected override string[] Names => new string[]
+        {
+            "learned the Wind's Requiem",
+            "learned the Ballad of Gales",
+            "learned the Command Melody",
+            "learned the Earth God's Lyric",
+            "learned the Wind God's Aria",
+            "learned the Song of Passing",
+        };
+
+        protected override uint BitfieldAddress => 0x4CC5;
+        protected override byte[] BitfieldValues => new byte[] { 0x01, 0x02, 0x04, 0x08, 0x10, 0x20 };
+    }
+    internal class TingleStatues : BitfieldItem
+    {
+        protected override string[] Names => new string[]
+        {
+            "obtained the Dragon Tingle Statue",
+            "obtained the Forbidden Tingle Statue",
+            "obtained the Goddess Tingle Statue",
+            "obtained the Earth Tingle Statue",
+            "obtained the Wind Tingle Statue",
+        };
+
+        protected override uint BitfieldAddress => 0x5296;
+        protected override byte[] BitfieldValues => new byte[] { 0x04, 0x08, 0x10, 0x20, 0x40 };
     }
 }

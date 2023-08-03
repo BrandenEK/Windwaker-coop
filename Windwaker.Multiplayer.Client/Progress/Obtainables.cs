@@ -104,7 +104,45 @@ namespace Windwaker.Multiplayer.Client.Progress
         }
     }
 
-    // Bitfield item
+    /// <summary>
+    /// An item that has multiple obtainables, each in a separate bit
+    /// </summary>
+    internal abstract class BitfieldItem : BaseItem
+    {
+        protected abstract string[] Names { get; }
+
+        protected abstract uint BitfieldAddress { get; }
+        protected abstract byte[] BitfieldValues { get; }
+
+        public override void CheckForProgress(byte value)
+        {
+            byte current = Core.ProgressManager.GetBitfieldValue(Id);
+            foreach (byte b in BitfieldValues)
+            {
+                if ((current & b) == 0 && (value & b) != 0)
+                {
+                    Core.ProgressManager.FoundBitfield(Id, b);
+                }
+            }
+        }
+
+        public override void AddProgress(byte value)
+        {
+            byte bitfield = Core.ProgressManager.GetBitfieldValue(Id);
+
+            Core.DolphinManager.TryWrite(BitfieldAddress, new byte[] { bitfield });
+        }
+
+        public override string GetNotificationPart(byte value)
+        {
+            for (int i = 0; i < BitfieldValues.Length; i++)
+            {
+                if (BitfieldValues[i] == value)
+                    return $" {Names[i]}";
+            }
+            return null;
+        }
+    }
 
     /// <summary>
     /// An item that simply increases in value

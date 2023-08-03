@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Windwaker.Multiplayer.Client.Progress.Helpers;
 
 namespace Windwaker.Multiplayer.Client.Progress
 {
     internal class ProgressManager
     {
         private readonly Dictionary<string, byte> items = new();
+        private readonly Dictionary<string, byte> bitfields = new();
+
         private readonly Dictionary<string, BaseItem> progressHelpers = new();
 
         public ProgressManager()
@@ -18,30 +19,44 @@ namespace Windwaker.Multiplayer.Client.Progress
 
         public void ReceiveProgress(string player, ProgressUpdate progress)
         {
-            if (progress.type == ProgressType.Item)
+            switch (progress.type)
             {
-                byte current = GetItemLevel(progress.id);
-                if (progress.value > current)
-                {
-                    items[progress.id] = progress.value;
-                    AddProgress(progress.id, progress.value);
-                    ShowNotification(player, progress.id, progress.value);
-                }
+                case ProgressType.Item: ReceiveItem(player, progress); break;
+                case ProgressType.Bitfield: ReceiveBitfield(player, progress); break;
             }
         }
 
         public void ResetProgress()
         {
             items.Clear();
+            bitfields.Clear();
             items["maxhealth"] = 12;
         }
 
+        // Items
+
         public void ObtainItem(string item, byte value)
         {
-            items[item] = value;
             var progress = new ProgressUpdate(ProgressType.Item, item, value);
+            UpdateItemLevel(item, value);
             ShowNotification(null, item, value);
             Core.NetworkManager.SendProgress(progress);
+        }
+
+        private void ReceiveItem(string player, ProgressUpdate progress)
+        {
+            byte current = GetItemLevel(progress.id);
+            if (progress.value > current)
+            {
+                UpdateItemLevel(progress.id, progress.value);
+                AddProgress(progress.id, progress.value);
+                ShowNotification(player, progress.id, progress.value);
+            }
+        }
+
+        private void UpdateItemLevel(string item, byte value)
+        {
+            items[item] = value;
         }
 
         public byte GetItemLevel(string item)
@@ -49,17 +64,42 @@ namespace Windwaker.Multiplayer.Client.Progress
             return items.TryGetValue(item, out byte value) ? value : (byte)0;
         }
 
-        private void InitializeHelpers()
+        // Bitfields
+
+        public void FoundBitfield(string bitfield, byte value)
         {
-            foreach (Type t in Assembly.GetExecutingAssembly().GetTypes())
+            var progress = new ProgressUpdate(ProgressType.Bitfield, bitfield, value);
+            UpdateBitfieldValue(bitfield, value);
+            ShowNotification(null, bitfield, value);
+            Core.NetworkManager.SendProgress(progress);
+        }
+
+        private void ReceiveBitfield(string player, ProgressUpdate progress)
+        {
+            byte current = GetBitfieldValue(progress.id);
+            if (progress.value > 0 && (current & progress.value) == 0)
             {
-                if (t.Namespace is not null && t.Namespace.EndsWith("Progress.Helpers"))
-                {
-                    BaseItem helper = Activator.CreateInstance(t) as BaseItem;
-                    progressHelpers.Add(t.Name.ToLower(), helper);
-                }
+                UpdateBitfieldValue(progress.id, progress.value);
+                AddProgress(progress.id, progress.value);
+                ShowNotification(player, progress.id, progress.value);
             }
         }
+
+        private void UpdateBitfieldValue(string bitfield, byte value)
+        {
+            if (bitfields.ContainsKey(bitfield))
+                bitfields[bitfield] |= value;
+            else
+                bitfields.Add(bitfield, value);
+
+        }
+
+        public byte GetBitfieldValue(string bitfield)
+        {
+            return bitfields.TryGetValue(bitfield, out byte value) ? value : (byte)0;
+        }
+
+        // Helpers
 
         public void CheckForProgress(string progress, byte value)
         {
@@ -101,67 +141,16 @@ namespace Windwaker.Multiplayer.Client.Progress
             }
         }
 
-        // All of these will be gone too
-
-        #region Equipment
-
-
-        public void CheckForPiratesCharm(byte value)
+        private void InitializeHelpers()
         {
-            if ((value & 0x01) > 0 && GetItemLevel("piratescharm") < 1)
-                ObtainItem("piratescharm", 1);
+            foreach (Type t in Assembly.GetExecutingAssembly().GetTypes())
+            {
+                if (t.Namespace is not null && t.Namespace.EndsWith("Progress.Helpers"))
+                {
+                    BaseItem helper = Activator.CreateInstance(t) as BaseItem;
+                    progressHelpers.Add(t.Name.ToLower(), helper);
+                }
+            }
         }
-        public void CheckForHerosCharm(byte value)
-        {
-            if ((value & 0x01) > 0 && GetItemLevel("heroscharm") < 1)
-                ObtainItem("heroscharm", 1);
-        }
-
-
-
-        public void CheckForSongs(byte value)
-        {
-            if (GetItemLevel("songs") < value)
-                ObtainItem("songs", value);
-        }
-        public void CheckForPearls(byte value)
-        {
-            if (GetItemLevel("pearls") < value)
-                ObtainItem("pearls", value);
-        }
-        public void CheckForShards(byte value)
-        {
-            if (GetItemLevel("shards") < value)
-                ObtainItem("shards", value);
-        }
-        public void CheckForTingleStatues(byte value)
-        {
-            if (GetItemLevel("tinglestatues") < value)
-                ObtainItem("tinglestatues", value);
-        }
-
-        #endregion Equipment
-
-        public void CheckForCharts(string type, byte index, byte value)
-        {
-            string key = $"charts{type}{index}";
-            if (GetItemLevel(key) < value)
-                ObtainItem(key, value);
-        }
-
-        public void CheckForSectors(byte index, byte value)
-        {
-            string key = $"sector{index}";
-            if (GetItemLevel(key) < value)
-                ObtainItem(key, value);
-        }
-
-        public byte bagContents;
-
-        public byte warpPots;
-
-        public byte stages;
-
-        public byte events;
     }
 }
