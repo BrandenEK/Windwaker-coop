@@ -77,7 +77,7 @@ namespace Windwaker.Multiplayer.Client
 
             // Ensure that server ip has a valid length and doesn't contain a colon
             string serverIp = serverIpField.Text.Trim();
-            if (serverIp.Length < 1 || serverIp.Length > 16 || serverIp.Contains(':'))
+            if (serverIp.Length < 1 || serverIp.Length > 100)// || serverIp.Contains(':'))
             {
                 serverIp = null;
             }

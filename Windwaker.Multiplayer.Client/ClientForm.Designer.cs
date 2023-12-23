@@ -87,7 +87,7 @@ namespace Windwaker.Multiplayer.Client
             // serverIpField
             // 
             serverIpField.Location = new Point(12, 58);
-            serverIpField.MaxLength = 15;
+            serverIpField.MaxLength = 100;
             serverIpField.Name = "serverIpField";
             serverIpField.PlaceholderText = "127.0.0.1";
             serverIpField.Size = new Size(90, 23);
