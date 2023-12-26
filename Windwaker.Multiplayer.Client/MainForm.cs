@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Windwaker.Multiplayer.Client.Logging;
 using Windwaker.Multiplayer.Client.Memory;
+using Windwaker.Multiplayer.Client.Progression;
 
 namespace Windwaker.Multiplayer.Client
 {
@@ -9,13 +10,15 @@ namespace Windwaker.Multiplayer.Client
     {
         private readonly ILogger _logger;
         private readonly IMemoryReader _memoryReader;
+        private readonly IProgressChecker _progressChecker;
 
         public MainForm()
         {
             InitializeComponent();
 
-            _memoryReader = new DolphinReader();
             _logger = new FormLogger(logInner);
+            _memoryReader = new DolphinReader();
+            _progressChecker = new WindwakerProgress(_logger);
 
             TestMemory();
         }
@@ -24,8 +27,11 @@ namespace Windwaker.Multiplayer.Client
         {
             while (true)
             {
-                bool success = _memoryReader.TryRead(0x4C44, 1, out byte[] bytes);
-                _logger.Info(success ? $"Read: {bytes[0]}" : "Failed to read memory");
+                //bool success = _memoryReader.TryRead(0x4C44, 1, out byte[] bytes);
+                //_logger.Info(success ? $"Read: {bytes[0]}" : "Failed to read memory");
+
+                _progressChecker.CheckForProgress();
+
                 await Task.Delay(2000);
             }
         }
