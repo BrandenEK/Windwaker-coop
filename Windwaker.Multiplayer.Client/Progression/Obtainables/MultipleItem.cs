@@ -1,4 +1,5 @@
-﻿
+﻿using Windwaker.Multiplayer.Client.Memory;
+
 namespace Windwaker.Multiplayer.Client.Progression.Obtainables
 {
     /// <summary>
@@ -21,47 +22,58 @@ namespace Windwaker.Multiplayer.Client.Progression.Obtainables
             this.bitfieldAddress = bitfieldAddress;
         }
 
-        public bool TryRead(byte value, out byte progress)
+        public bool TryRead(IMemoryReader memoryReader, out int value)
         {
-            for (int i = mainValues.Length - 1; i >= 0; i--)
-            {
-                byte level = (byte)(i + 1);
-                if (value == mainValues[i] && currentLevel < level)
-                {
-                    currentLevel = progress = level;
-                    return true;
-                }
-            }
+            int memoryLevel = GetLevelFromValue(memoryReader.Read(mainAddress, 1)[0]);
+            bool shouldUpdate = currentLevel != memoryLevel;
 
-            progress = 0;
-            return false;
+            currentLevel = value = memoryLevel;
+            return shouldUpdate;
         }
 
-        public bool TryWrite(byte value, out byte progress)
+        public void TryWrite(IMemoryReader memoryReader, int value)
         {
-            if (value <= currentLevel)
-            {
-                progress = 0;
-                return false;
-            }
-
-            byte bitfield = 0x00;
-            for (int i = 0; i < value; i++)
-            {
-                bitfield |= (byte)(1 << i);
-            }
+            byte main = GetValueFromLevel(value);
+            byte bitfield = GetBitfieldFromLevel(value);
 
             currentLevel = value;
-            progress = value;
-            // Write to main and to bitfield
-            return true;
+            memoryReader.Write(mainAddress, new byte[] { main });
+            memoryReader.Write(bitfieldAddress, new byte[] { bitfield });
         }
 
         public void Reset() => currentLevel = 0;
 
-        public string? GetNotificationPart(byte value)
+        public string? GetNotificationPart(int value)
         {
             return value > 0 ? $" obtained {names[value - 1]}" : null;
+        }
+
+        private int GetLevelFromValue(byte value)
+        {
+            for (int i = 0; i < mainValues.Length; i++)
+            {
+                if (mainValues[i] == value)
+                    return i;
+            }
+            return -1;
+        }
+
+        private byte GetValueFromLevel(int level)
+        {
+            if (level == 0 || level > mainValues.Length)
+                return 255;
+
+            return mainValues[level - 1];
+        }
+
+        private byte GetBitfieldFromLevel(int level)
+        {
+            byte bitfield = 0;
+            for (int i = 0; i < level; i++)
+            {
+                bitfield |= (byte)(1 << i);
+            }
+            return bitfield;
         }
     }
 }

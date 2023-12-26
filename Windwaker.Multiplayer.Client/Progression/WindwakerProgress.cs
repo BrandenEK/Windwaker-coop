@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Windwaker.Multiplayer.Client.Logging;
+using Windwaker.Multiplayer.Client.Memory;
 using Windwaker.Multiplayer.Client.Progression.Obtainables;
 
 namespace Windwaker.Multiplayer.Client.Progression
@@ -8,25 +9,42 @@ namespace Windwaker.Multiplayer.Client.Progression
     {
         private readonly Dictionary<string, IObtainable> _obtainables = new();
         private readonly ILogger _logger;
+        private readonly IMemoryReader _memoryReader;
 
-        public WindwakerProgress(ILogger logger)
+        public WindwakerProgress(ILogger logger, IMemoryReader memoryReader)
         {
             _logger = logger;
+            _memoryReader = memoryReader;
 
             RegisterObtainables();
         }
 
         public void CheckForProgress()
         {
-            // For each obtainable, read its memory and check if new value, if so, send it
-            // Also send notification
-            _logger.Info("Checking for progress");
+            _logger.Info("Checking all progress");
+            foreach (var obtainable in _obtainables)
+            {
+                if (obtainable.Value.TryRead(_memoryReader, out int progress))
+                {
+                    var update = new ProgressUpdate(obtainable.Key, progress);
+                    _logger.Warning($"Found progress: {update.Id} {update.Value}");
+                    // Send progress over network
+                    ShowNotification(null, update);
+                }
+            }
         }
 
         public void ReceiveProgress(string player, ProgressUpdate progress)
         {
-            // Locate the exact obtainable and if new value, write it
-            // Also send notification
+            _logger.Info("Received progress: " + progress.Id);
+            if (!_obtainables.TryGetValue(progress.Id, out IObtainable? obtainable))
+            {
+                _logger.Error("Received unknown progress: " + progress.Id);
+                return;
+            }
+
+            obtainable.TryWrite(_memoryReader, progress.Value);
+            ShowNotification(player, progress);
         }
 
         public void ResetProgress()
@@ -39,16 +57,16 @@ namespace Windwaker.Multiplayer.Client.Progression
             // Maybe set health to 12
         }
 
-        private void ShowNotification(string player, ProgressUpdate progress)
+        private void ShowNotification(string? player, ProgressUpdate progress)
         {
             if (!_obtainables.TryGetValue(progress.Id, out IObtainable? obtainable))
             {
-                _logger.Error("Showing notification for unknown progress: " + progress);
+                _logger.Error("Showing notification for unknown progress: " + progress.Id);
                 return;
             }
 
             string playerPart = player is null ? "You have" : $"{player} has";
-            string? itemPart = obtainable.GetNotificationPart((byte)progress.Value);
+            string? itemPart = obtainable.GetNotificationPart(progress.Value);
 
             if (itemPart is not null)
                 _logger.Warning(playerPart + itemPart);

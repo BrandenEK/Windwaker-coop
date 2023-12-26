@@ -1,14 +1,15 @@
-﻿
+﻿using Windwaker.Multiplayer.Client.Memory;
+
 namespace Windwaker.Multiplayer.Client.Progression.Obtainables
 {
     internal interface IObtainable
     {
-        public bool TryRead(byte value, out byte progress);
+        public bool TryRead(IMemoryReader memoryReader, out int value);
 
-        public bool TryWrite(byte value, out byte progress);
+        public void TryWrite(IMemoryReader memoryReader, int value);
 
         public void Reset();
 
-        public string? GetNotificationPart(byte value);
+        public string? GetNotificationPart(int value);
     }
 }

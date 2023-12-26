@@ -1,4 +1,5 @@
-﻿
+﻿using Windwaker.Multiplayer.Client.Memory;
+
 namespace Windwaker.Multiplayer.Client.Progression.Obtainables
 {
     /// <summary>
@@ -10,7 +11,7 @@ namespace Windwaker.Multiplayer.Client.Progression.Obtainables
         private readonly uint bitfieldAddress;
         private readonly byte[] bitfieldValues;
 
-        private byte currentBitfield = 0;
+        private int currentBitfield = 0;
 
         public BitfieldItem(string[] names, uint bitfieldAddress, byte[] bitfieldValues)
         {
@@ -19,39 +20,25 @@ namespace Windwaker.Multiplayer.Client.Progression.Obtainables
             this.bitfieldValues = bitfieldValues;
         }
 
-        public bool TryRead(byte value, out byte progress)
+        public bool TryRead(IMemoryReader memoryReader, out int value)
         {
-            progress = 0;
+            byte memoryBitfield = memoryReader.Read(bitfieldAddress, 1)[0];
+            bool shouldUpdate = currentBitfield != memoryBitfield;
+            // Calculate new bitfield instead masked with tracked bits
 
-            foreach (byte b in bitfieldValues)
-            {
-                if ((currentBitfield & b) == 0 && (value & b) != 0)
-                {
-                    currentBitfield |= b;
-                    progress |= b;
-                }
-            }
-
-            return progress != 0;
+            currentBitfield = value = memoryBitfield;
+            return shouldUpdate;
         }
 
-        public bool TryWrite(byte value, out byte progress)
+        public void TryWrite(IMemoryReader memoryReader, int value)
         {
-            if ((currentBitfield & value) == value)
-            {
-                progress = 0;
-                return false;
-            }
-
-            progress = (byte)((currentBitfield ^ value) & value); // Check this
-            currentBitfield |= value;
-            // Write to bitfield
-            return true;
+            currentBitfield = value;
+            memoryReader.Write(bitfieldAddress, new byte[] { (byte)value });
         }
 
         public void Reset() => currentBitfield = 0;
 
-        public string? GetNotificationPart(byte value)
+        public string? GetNotificationPart(int value)
         {
             for (int i = 0; i < bitfieldValues.Length; i++)
             {

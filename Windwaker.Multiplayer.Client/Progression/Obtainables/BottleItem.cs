@@ -1,4 +1,5 @@
-﻿
+﻿using Windwaker.Multiplayer.Client.Memory;
+
 namespace Windwaker.Multiplayer.Client.Progression.Obtainables
 {
     /// <summary>
@@ -17,37 +18,29 @@ namespace Windwaker.Multiplayer.Client.Progression.Obtainables
             this.bitfieldAddress = bitfieldAddress;
         }
 
-        public bool TryRead(byte value, out byte progress)
+        public bool TryRead(IMemoryReader memoryReader, out int value)
         {
-            if (value >= 0x50 && value <= 0x59 && !currentOwned)
-            {
-                currentOwned = true;
-                progress = 1;
-                return true;
-            }
+            byte memoryBottle = memoryReader.Read(mainAddress, 1)[0];
+            bool memoryOwned = memoryBottle >= 0x50 && memoryBottle <= 0x59;
+            bool shouldUpdate = currentOwned != memoryOwned;
 
-            progress = 0;
-            return false;
+            value = memoryOwned ? 1 : 0;
+            currentOwned = memoryOwned;
+            return shouldUpdate;
         }
 
-        public bool TryWrite(byte value, out byte progress)
+        public void TryWrite(IMemoryReader memoryReader, int value)
         {
-            if (value == 0)
-            {
-                progress = 0;
-                return false;
-            }
+            bool hasItem = value == 1;
 
-
-            currentOwned = true;
-            progress = 1;
-            // Write to main and to bitfield
-            return true;
+            currentOwned = hasItem;
+            memoryReader.Write(mainAddress, new byte[] { (byte)(hasItem ? 0x50 : 0xFF) });
+            memoryReader.Write(bitfieldAddress, new byte[] { (byte)(hasItem ? 0xFF : 0x00) });
         }
 
         public void Reset() => currentOwned = false;
 
-        public string? GetNotificationPart(byte value)
+        public string? GetNotificationPart(int value)
         {
             return value > 0 ? $" obtained a new bottle" : null;
         }
