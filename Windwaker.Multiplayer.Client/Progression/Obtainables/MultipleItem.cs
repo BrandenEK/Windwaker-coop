@@ -53,9 +53,9 @@ namespace Windwaker.Multiplayer.Client.Progression.Obtainables
             for (int i = 0; i < mainValues.Length; i++)
             {
                 if (mainValues[i] == value)
-                    return i;
+                    return i + 1;
             }
-            return -1;
+            return 0;
         }
 
         private byte GetValueFromLevel(int level)

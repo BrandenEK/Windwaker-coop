@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Windwaker.Multiplayer.Client.Logging;
 using Windwaker.Multiplayer.Client.Memory;
 using Windwaker.Multiplayer.Client.Progression.Obtainables;
@@ -21,7 +22,8 @@ namespace Windwaker.Multiplayer.Client.Progression
 
         public void CheckForProgress()
         {
-            _logger.Info("Checking all progress");
+            int startTime = Environment.TickCount;
+
             foreach (var obtainable in _obtainables)
             {
                 if (obtainable.Value.TryRead(_memoryReader, out int progress))
@@ -32,6 +34,9 @@ namespace Windwaker.Multiplayer.Client.Progression
                     ShowNotification(null, update);
                 }
             }
+
+            int endTime = Environment.TickCount;
+            _logger.Info($"Progress check time: {endTime - startTime}");
         }
 
         public void ReceiveProgress(string player, ProgressUpdate progress)
