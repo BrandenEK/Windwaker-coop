@@ -28,13 +28,49 @@
         /// </summary>
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
+            logInner = new System.Windows.Forms.RichTextBox();
+            logOuter = new System.Windows.Forms.Panel();
+            logOuter.SuspendLayout();
+            SuspendLayout();
+            // 
+            // logInner
+            // 
+            logInner.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            logInner.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+            logInner.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            logInner.Location = new System.Drawing.Point(2, 2);
+            logInner.Name = "logInner";
+            logInner.ReadOnly = true;
+            logInner.Size = new System.Drawing.Size(296, 396);
+            logInner.TabIndex = 0;
+            logInner.Text = "";
+            // 
+            // logOuter
+            // 
+            logOuter.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
+            logOuter.BackColor = System.Drawing.Color.Black;
+            logOuter.Controls.Add(logInner);
+            logOuter.Location = new System.Drawing.Point(670, 150);
+            logOuter.Name = "logOuter";
+            logOuter.Size = new System.Drawing.Size(300, 400);
+            logOuter.TabIndex = 1;
+            // 
+            // MainForm
+            // 
+            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(800, 450);
-            Text = "Windwaker Multiplayer Client";
+            ClientSize = new System.Drawing.Size(984, 561);
+            Controls.Add(logOuter);
             MinimumSize = new System.Drawing.Size(1000, 600);
+            Name = "MainForm";
+            Text = "Windwaker Multiplayer Client";
+            logOuter.ResumeLayout(false);
+            ResumeLayout(false);
         }
 
         #endregion
+
+        private System.Windows.Forms.RichTextBox logInner;
+        private System.Windows.Forms.Panel logOuter;
     }
 }
