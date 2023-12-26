@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
-namespace Windwaker.Multiplayer.Client
+namespace Windwaker.Multiplayer.Client.Memory
 {
     internal class DolphinReader : IMemoryReader
     {

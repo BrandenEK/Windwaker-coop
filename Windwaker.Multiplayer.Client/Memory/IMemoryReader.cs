@@ -1,5 +1,5 @@
 ﻿
-namespace Windwaker.Multiplayer.Client
+namespace Windwaker.Multiplayer.Client.Memory
 {
     internal interface IMemoryReader
     {

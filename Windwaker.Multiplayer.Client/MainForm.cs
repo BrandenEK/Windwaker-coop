@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Windwaker.Multiplayer.Client.Logging;
+using Windwaker.Multiplayer.Client.Memory;
 
 namespace Windwaker.Multiplayer.Client
 {
