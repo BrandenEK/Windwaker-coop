@@ -17,20 +17,26 @@ namespace Windwaker.Multiplayer.Client.Logging
 
         public void Info(object message)
         {
-            _messages.Add(new Message(message.ToString(), LogLevel.Info));
-            UpdateTextBox();
+            DisplayMessage(new Message(message.ToString(), LogLevel.Info));
         }
 
         public void Warning(object message)
         {
-            _messages.Add(new Message(message.ToString(), LogLevel.Warning));
-            UpdateTextBox();
+            DisplayMessage(new Message(message.ToString(), LogLevel.Warning));
         }
 
         public void Error(object message)
         {
-            _messages.Add(new Message(message.ToString(), LogLevel.Error));
-            UpdateTextBox();
+            DisplayMessage(new Message(message.ToString(), LogLevel.Error));
+        }
+
+        private void DisplayMessage(Message message)
+        {
+            _textBox.SelectionStart = _textBox.TextLength;
+            _textBox.SelectionLength = 0;
+            _textBox.SelectionColor = GetMessageColor(message);
+            _textBox.AppendText($"[{message.Time:HH:mm:ss}] {message.Content}{Environment.NewLine}");
+            _textBox.ScrollToCaret();
         }
 
         private void UpdateTextBox()
@@ -43,6 +49,7 @@ namespace Windwaker.Multiplayer.Client.Logging
                 _textBox.SelectionLength = 0;
                 _textBox.SelectionColor = GetMessageColor(message);
                 _textBox.AppendText($"[{message.Time:HH:mm:ss}] {message.Content}{Environment.NewLine}");
+                _textBox.ScrollToCaret();
             }
         }
 
