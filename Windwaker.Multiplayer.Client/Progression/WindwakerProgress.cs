@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using Windwaker.Multiplayer.Client.Logging;
 using Windwaker.Multiplayer.Client.Memory;
 using Windwaker.Multiplayer.Client.Progression.Obtainables;
@@ -8,7 +10,7 @@ namespace Windwaker.Multiplayer.Client.Progression
 {
     internal class WindwakerProgress : IProgressChecker
     {
-        private readonly Dictionary<string, IObtainable> _obtainables = new();
+        private readonly Dictionary<string, IObtainable> _obtainables;
         private readonly ILogger _logger;
         private readonly IMemoryReader _memoryReader;
 
@@ -16,8 +18,7 @@ namespace Windwaker.Multiplayer.Client.Progression
         {
             _logger = logger;
             _memoryReader = memoryReader;
-
-            RegisterObtainables();
+            _obtainables = LoadObtainables("windwaker");
         }
 
         public void CheckForProgress()
@@ -77,6 +78,7 @@ namespace Windwaker.Multiplayer.Client.Progression
                 _logger.Warning(playerPart + itemPart);
         }
 
+        // Unused now to load from json
         private void RegisterObtainables()
         {
             _obtainables.Add("telescope", new SingleItem("Telescope", 0x4C44, 0x20, 0x4C59));
@@ -92,6 +94,29 @@ namespace Windwaker.Multiplayer.Client.Progression
             _obtainables.Add("pearls", new BitfieldItem(
                 new string[] { "obtained Din's Pearl", "obtained Farore's Pearl", "obtained Nayru's Pearl" },
                 0x4CC7, new byte[] { 0x02, 0x04, 0x01 }));
+        }
+
+        private Dictionary<string, IObtainable> LoadObtainables(string gameName)
+        {
+            var obtainables = new Dictionary<string, IObtainable>();
+
+            string path = Path.Combine(Environment.CurrentDirectory, "data", gameName, "obtainables.json");
+            if (!File.Exists(path))
+            {
+                _logger.Error($"Obtainables list for {gameName} does not exist!");
+                return obtainables;
+            }
+
+            string json = File.ReadAllText(path);
+            var obtainList = JsonConvert.DeserializeObject<ObtainableList>(json) ?? new ObtainableList();
+
+            foreach (var singleItem in obtainList.singleItems)
+                obtainables.Add(singleItem.Key, singleItem.Value);
+
+            foreach (var multipleItem in obtainList.multipleItems)
+                obtainables.Add(multipleItem.Key, multipleItem.Value);
+
+            return obtainables;
         }
     }
 }
