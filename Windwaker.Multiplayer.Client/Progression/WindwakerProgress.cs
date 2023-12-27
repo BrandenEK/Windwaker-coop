@@ -1,9 +1,8 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using Windwaker.Multiplayer.Client.Logging;
 using Windwaker.Multiplayer.Client.Memory;
+using Windwaker.Multiplayer.Client.Progression.Import;
 using Windwaker.Multiplayer.Client.Progression.Obtainables;
 
 namespace Windwaker.Multiplayer.Client.Progression
@@ -14,11 +13,11 @@ namespace Windwaker.Multiplayer.Client.Progression
         private readonly ILogger _logger;
         private readonly IMemoryReader _memoryReader;
 
-        public WindwakerProgress(ILogger logger, IMemoryReader memoryReader)
+        public WindwakerProgress(ILogger logger, IMemoryReader memoryReader, IDataImporter dataImporter)
         {
             _logger = logger;
             _memoryReader = memoryReader;
-            _obtainables = LoadObtainables("windwaker");
+            _obtainables = dataImporter.LoadObtainables();
         }
 
         public void CheckForProgress()
@@ -76,47 +75,6 @@ namespace Windwaker.Multiplayer.Client.Progression
 
             if (itemPart is not null)
                 _logger.Warning(playerPart + itemPart);
-        }
-
-        // Unused now to load from json
-        private void RegisterObtainables()
-        {
-            _obtainables.Add("telescope", new SingleItem("Telescope", 0x4C44, 0x20, 0x4C59));
-            _obtainables.Add("sail", new SingleItem("the Sail", 0x4C45, 0x78, 0x4C5A));
-            _obtainables.Add("windwaker", new SingleItem("the Windwaker", 0x4C46, 0x22, 0x4C5B));
-
-            _obtainables.Add("sword", new MultipleItem(
-                new string[] { "the Hero's Sword", "the Master Sword (Powerless)", "the Master Sword (Half power)", "the Master Sword (Full power)" },
-                0x4C16, new byte[] { 0x38, 0x39, 0x3A, 0x3E }, 0x4CBC));
-
-            _obtainables.Add("maxhealth", new ValueItem("a piece of heart", 0x4C09));
-
-            _obtainables.Add("pearls", new BitfieldItem(
-                new string[] { "obtained Din's Pearl", "obtained Farore's Pearl", "obtained Nayru's Pearl" },
-                0x4CC7, new byte[] { 0x02, 0x04, 0x01 }));
-        }
-
-        private Dictionary<string, IObtainable> LoadObtainables(string gameName)
-        {
-            var obtainables = new Dictionary<string, IObtainable>();
-
-            string path = Path.Combine(Environment.CurrentDirectory, "data", gameName, "obtainables.json");
-            if (!File.Exists(path))
-            {
-                _logger.Error($"Obtainables list for {gameName} does not exist!");
-                return obtainables;
-            }
-
-            string json = File.ReadAllText(path);
-            var obtainList = JsonConvert.DeserializeObject<ObtainableList>(json) ?? new ObtainableList();
-
-            foreach (var singleItem in obtainList.singleItems)
-                obtainables.Add(singleItem.Key, singleItem.Value);
-
-            foreach (var multipleItem in obtainList.multipleItems)
-                obtainables.Add(multipleItem.Key, multipleItem.Value);
-
-            return obtainables;
         }
     }
 }

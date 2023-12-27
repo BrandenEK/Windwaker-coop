@@ -3,6 +3,7 @@ using System.Windows.Forms;
 using Windwaker.Multiplayer.Client.Logging;
 using Windwaker.Multiplayer.Client.Memory;
 using Windwaker.Multiplayer.Client.Progression;
+using Windwaker.Multiplayer.Client.Progression.Import;
 
 namespace Windwaker.Multiplayer.Client
 {
@@ -18,7 +19,7 @@ namespace Windwaker.Multiplayer.Client
 
             _logger = new FormLogger(logInner);
             _memoryReader = new DolphinReader();
-            _progressChecker = new WindwakerProgress(_logger, _memoryReader);
+            _progressChecker = new WindwakerProgress(_logger, _memoryReader, new OldWindwakerImporter());
 
             TestMemory();
         }
