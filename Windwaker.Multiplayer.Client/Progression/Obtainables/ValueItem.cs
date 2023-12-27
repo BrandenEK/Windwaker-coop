@@ -1,4 +1,5 @@
 ﻿using Windwaker.Multiplayer.Client.Memory;
+using Windwaker.Multiplayer.Client.Notifications;
 
 namespace Windwaker.Multiplayer.Client.Progression.Obtainables
 {
@@ -18,26 +19,25 @@ namespace Windwaker.Multiplayer.Client.Progression.Obtainables
             this.mainAddress = mainAddress;
         }
 
-        public bool TryRead(IMemoryReader memoryReader, out int value)
+        public void CheckProgress(INotifier notifier, IMemoryReader memoryReader)
         {
             byte memoryValue = memoryReader.Read(mainAddress, 1)[0];
-            bool shouldUpdate = currentValue != memoryValue;
+            if (memoryValue <= currentValue) return;
 
-            currentValue = value = memoryValue;
-            return shouldUpdate;
+            currentValue = memoryValue;
+            notifier.Show($"You have obtained {name}");
+            // Send to server
         }
 
-        public void TryWrite(IMemoryReader memoryReader, int value)
+        public void ReceiveProgress(INotifier notifier, IMemoryReader memoryReader, string player, ProgressUpdate progress)
         {
-            currentValue = value;
-            memoryReader.Write(mainAddress, new byte[] { (byte)value });
+            if (progress.Value <= currentValue) return;
+
+            currentValue = progress.Value;
+            notifier.Show($"{player} has obtained {name}");
+            memoryReader.Write(mainAddress, new byte[] { (byte)progress.Value });
         }
 
-        public void Reset() => currentValue = 0;
-
-        public string? GetNotificationPart(int value)
-        {
-            return value > 0 ? $" obtained {name}" : null;
-        }
+        public void ResetProgress() => currentValue = 0;
     }
 }

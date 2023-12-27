@@ -1,4 +1,5 @@
 ﻿using Windwaker.Multiplayer.Client.Memory;
+using Windwaker.Multiplayer.Client.Notifications;
 
 namespace Windwaker.Multiplayer.Client.Progression.Obtainables
 {
@@ -22,31 +23,32 @@ namespace Windwaker.Multiplayer.Client.Progression.Obtainables
             this.bitfieldAddress = bitfieldAddress;
         }
 
-        public bool TryRead(IMemoryReader memoryReader, out int value)
+        public void CheckProgress(INotifier notifier, IMemoryReader memoryReader)
         {
-            int memoryLevel = GetLevelFromValue(memoryReader.Read(mainAddress, 1)[0]);
-            bool shouldUpdate = currentLevel != memoryLevel;
+            if (currentLevel == names.Length) return;
 
-            currentLevel = value = memoryLevel;
-            return shouldUpdate;
+            int memoryLevel = GetLevelFromValue(memoryReader.Read(mainAddress, 1)[0]);
+            if (memoryLevel <= currentLevel) return;
+
+            currentLevel = memoryLevel;
+            notifier.Show($"You have obtained {names[memoryLevel - 1]}");
+            // Send to server
         }
 
-        public void TryWrite(IMemoryReader memoryReader, int value)
+        public void ReceiveProgress(INotifier notifier, IMemoryReader memoryReader, string player, ProgressUpdate progress)
         {
-            byte main = GetValueFromLevel(value);
-            byte bitfield = GetBitfieldFromLevel(value);
+            if (progress.Value <= 0 || progress.Value > names.Length) return;
 
-            currentLevel = value;
+            byte main = GetValueFromLevel(progress.Value);
+            byte bitfield = GetBitfieldFromLevel(progress.Value);
+
+            currentLevel = progress.Value;
+            notifier.Show($"{player} has obtained {names[progress.Value - 1]}");
             memoryReader.Write(mainAddress, new byte[] { main });
             memoryReader.Write(bitfieldAddress, new byte[] { bitfield });
         }
 
-        public void Reset() => currentLevel = 0;
-
-        public string? GetNotificationPart(int value)
-        {
-            return value > 0 ? $" obtained {names[value - 1]}" : null;
-        }
+        public void ResetProgress() => currentLevel = 0;
 
         private int GetLevelFromValue(byte value)
         {

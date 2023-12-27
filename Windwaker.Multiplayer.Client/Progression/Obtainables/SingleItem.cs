@@ -1,4 +1,5 @@
 ﻿using Windwaker.Multiplayer.Client.Memory;
+using Windwaker.Multiplayer.Client.Notifications;
 
 namespace Windwaker.Multiplayer.Client.Progression.Obtainables
 {
@@ -22,30 +23,25 @@ namespace Windwaker.Multiplayer.Client.Progression.Obtainables
             this.bitfieldAddress = bitfieldAddress;
         }
 
-        public bool TryRead(IMemoryReader memoryReader, out int value)
+        public void CheckProgress(INotifier notifier, IMemoryReader memoryReader)
         {
-            bool memoryOwned = memoryReader.Read(mainAddress, 1)[0] == mainValue;
-            bool shouldUpdate = currentOwned != memoryOwned;
+            if (currentOwned || memoryReader.Read(mainAddress, 1)[0] != mainValue) return;
 
-            value = memoryOwned ? 1 : 0;
-            currentOwned = memoryOwned;
-            return shouldUpdate;
+            currentOwned = true;
+            notifier.Show($"You have obtained {name}");
+            // Send to server
         }
 
-        public void TryWrite(IMemoryReader memoryReader, int value)
+        public void ReceiveProgress(INotifier notifier, IMemoryReader memoryReader, string player, ProgressUpdate progress)
         {
-            bool hasItem = value == 1;
+            if (progress.Value < 1) return;
 
-            currentOwned = hasItem;
-            memoryReader.Write(mainAddress, new byte[] { (byte)(hasItem ? mainValue : 0xFF) });
-            memoryReader.Write(bitfieldAddress, new byte[] { (byte)(hasItem ? 0xFF : 0x00) });
+            currentOwned = true;
+            notifier.Show($"{player} has obtained {name}");
+            memoryReader.Write(mainAddress, new byte[] { mainValue });
+            memoryReader.Write(bitfieldAddress, new byte[] { 0xFF });
         }
 
-        public void Reset() => currentOwned = false;
-
-        public string? GetNotificationPart(int value)
-        {
-            return value > 0 ? $" obtained {name}" : null;
-        }
+        public void ResetProgress() => currentOwned = false;
     }
 }

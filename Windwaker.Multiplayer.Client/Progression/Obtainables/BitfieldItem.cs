@@ -1,4 +1,5 @@
 ﻿using Windwaker.Multiplayer.Client.Memory;
+using Windwaker.Multiplayer.Client.Notifications;
 
 namespace Windwaker.Multiplayer.Client.Progression.Obtainables
 {
@@ -20,32 +21,44 @@ namespace Windwaker.Multiplayer.Client.Progression.Obtainables
             this.bitfieldValues = bitfieldValues;
         }
 
-        public bool TryRead(IMemoryReader memoryReader, out int value)
+        public void CheckProgress(INotifier notifier, IMemoryReader memoryReader)
         {
             byte memoryBitfield = memoryReader.Read(bitfieldAddress, 1)[0];
-            bool shouldUpdate = currentBitfield != memoryBitfield;
-            // Calculate new bitfield instead masked with tracked bits
+            byte progressMask = 0;
 
-            currentBitfield = value = memoryBitfield;
-            return shouldUpdate;
-        }
-
-        public void TryWrite(IMemoryReader memoryReader, int value)
-        {
-            currentBitfield = value;
-            memoryReader.Write(bitfieldAddress, new byte[] { (byte)value });
-        }
-
-        public void Reset() => currentBitfield = 0;
-
-        public string? GetNotificationPart(int value)
-        {
             for (int i = 0; i < bitfieldValues.Length; i++)
             {
-                if (bitfieldValues[i] == value)
-                    return $" {names[i]}";
+                byte mask = bitfieldValues[i];
+                if ((currentBitfield & mask) == 0 && (memoryBitfield & mask) != 0)
+                {
+                    progressMask |= mask;
+                    notifier.Show($"You have {names[i]}");
+                }
             }
-            return null;
+
+            if (progressMask == 0) return;
+
+            currentBitfield |= progressMask;
+            // Send to server
         }
+
+        public void ReceiveProgress(INotifier notifier, IMemoryReader memoryReader, string player, ProgressUpdate progress)
+        {
+            if ((currentBitfield & progress.Value) == progress.Value) return;
+
+            for (int i = 0; i < bitfieldValues.Length; i++)
+            {
+                byte mask = bitfieldValues[i];
+                if ((currentBitfield & mask) == 0 && (progress.Value & mask) != 0)
+                {
+                    notifier.Show($"{player} has {names[i]}");
+                }
+            }
+
+            currentBitfield |= progress.Value;
+            memoryReader.Write(bitfieldAddress, new byte[] { (byte)currentBitfield });
+        }
+
+        public void ResetProgress() => currentBitfield = 0;
     }
 }

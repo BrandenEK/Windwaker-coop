@@ -1,4 +1,5 @@
 ﻿using Windwaker.Multiplayer.Client.Memory;
+using Windwaker.Multiplayer.Client.Notifications;
 
 namespace Windwaker.Multiplayer.Client.Progression.Obtainables
 {
@@ -18,31 +19,28 @@ namespace Windwaker.Multiplayer.Client.Progression.Obtainables
             this.bitfieldAddress = bitfieldAddress;
         }
 
-        public bool TryRead(IMemoryReader memoryReader, out int value)
+        public void CheckProgress(INotifier notifier, IMemoryReader memoryReader)
         {
-            byte memoryBottle = memoryReader.Read(mainAddress, 1)[0];
-            bool memoryOwned = memoryBottle >= 0x50 && memoryBottle <= 0x59;
-            bool shouldUpdate = currentOwned != memoryOwned;
+            if (currentOwned) return;
 
-            value = memoryOwned ? 1 : 0;
-            currentOwned = memoryOwned;
-            return shouldUpdate;
+            byte memoryLevel = memoryReader.Read(mainAddress, 1)[0];
+            if (memoryLevel < 0x50 || memoryLevel > 0x59) return;
+
+            currentOwned = true;
+            notifier.Show($"You have obtained a new bottle");
+            // Send to server
         }
 
-        public void TryWrite(IMemoryReader memoryReader, int value)
+        public void ReceiveProgress(INotifier notifier, IMemoryReader memoryReader, string player, ProgressUpdate progress)
         {
-            bool hasItem = value == 1;
+            if (progress.Value < 1) return;
 
-            currentOwned = hasItem;
-            memoryReader.Write(mainAddress, new byte[] { (byte)(hasItem ? 0x50 : 0xFF) });
-            memoryReader.Write(bitfieldAddress, new byte[] { (byte)(hasItem ? 0xFF : 0x00) });
+            currentOwned = true;
+            notifier.Show($"{player} has obtained a new bottle");
+            memoryReader.Write(mainAddress, new byte[] { 0x50 });
+            memoryReader.Write(bitfieldAddress, new byte[] { 0xFF });
         }
 
-        public void Reset() => currentOwned = false;
-
-        public string? GetNotificationPart(int value)
-        {
-            return value > 0 ? $" obtained a new bottle" : null;
-        }
+        public void ResetProgress() => currentOwned = false;
     }
 }
