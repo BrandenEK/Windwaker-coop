@@ -17,7 +17,7 @@ namespace Windwaker.Multiplayer.Client
         {
             InitializeComponent();
 
-            _logger = new FormLogger(logInner);
+            _logger = new MultiLogger(new FormLogger(logInner), new FileLogger());
             _memoryReader = new DolphinReader();
             _progressChecker = new WindwakerProgress(_logger, _memoryReader, new OldWindwakerImporter());
 
