@@ -32,11 +32,20 @@ namespace Windwaker.Multiplayer.Client.Progression.Import
             string json = File.ReadAllText(path);
             var obtainList = JsonConvert.DeserializeObject<ObtainableList>(json)!;
 
-            foreach (var singleItem in obtainList.singleItems)
-                obtainables.Add(singleItem.Key, singleItem.Value);
+            foreach (var item in obtainList.singleItems)
+                obtainables.Add(item.Key, item.Value);
 
-            foreach (var multipleItem in obtainList.multipleItems)
-                obtainables.Add(multipleItem.Key, multipleItem.Value);
+            foreach (var item in obtainList.multipleItems)
+                obtainables.Add(item.Key, item.Value);
+
+            foreach (var item in obtainList.bitfieldItems)
+                obtainables.Add(item.Key, item.Value);
+
+            foreach (var item in obtainList.valueItems)
+                obtainables.Add(item.Key, item.Value);
+
+            foreach (var item in obtainList.bottleItems)
+                obtainables.Add(item.Key, item.Value);
 
             return obtainables;
         }
