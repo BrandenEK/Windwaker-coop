@@ -5,7 +5,9 @@ VisualStudioVersion = 17.6.33829.357
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Windwaker-coop", "Windwaker-coop\Windwaker-coop.csproj", "{995C2FB8-ACEE-4815-A39D-CDF153FDCD99}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Windwaker.Multiplayer.Client", "Windwaker.Multiplayer.Client\Windwaker.Multiplayer.Client.csproj", "{1953E2C7-19CA-47CF-9BCE-C723666AD9BC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Windwaker.Multiplayer.Client", "Windwaker.Multiplayer.Client\Windwaker.Multiplayer.Client.csproj", "{1953E2C7-19CA-47CF-9BCE-C723666AD9BC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Windwaker.Multiplayer.Client.Tests", "Windwaker.Multiplayer.Client.Tests\Windwaker.Multiplayer.Client.Tests.csproj", "{B8B33570-60F4-41F4-98D9-E79B7D2A9C81}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{1953E2C7-19CA-47CF-9BCE-C723666AD9BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1953E2C7-19CA-47CF-9BCE-C723666AD9BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1953E2C7-19CA-47CF-9BCE-C723666AD9BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8B33570-60F4-41F4-98D9-E79B7D2A9C81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8B33570-60F4-41F4-98D9-E79B7D2A9C81}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8B33570-60F4-41F4-98D9-E79B7D2A9C81}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8B33570-60F4-41F4-98D9-E79B7D2A9C81}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

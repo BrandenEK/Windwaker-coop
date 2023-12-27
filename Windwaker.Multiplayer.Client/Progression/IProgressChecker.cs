@@ -1,7 +1,7 @@
 ﻿
 namespace Windwaker.Multiplayer.Client.Progression
 {
-    internal interface IProgressChecker
+    public interface IProgressChecker
     {
         public void CheckForProgress();
 

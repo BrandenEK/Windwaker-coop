@@ -5,7 +5,7 @@ namespace Windwaker.Multiplayer.Client.Progression.Obtainables
     /// <summary>
     /// An item that simply increases in value
     /// </summary>
-    internal class ValueItem : IObtainable
+    public class ValueItem : IObtainable
     {
         private readonly string name;
         private readonly uint mainAddress;

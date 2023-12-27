@@ -2,7 +2,7 @@
 
 namespace Windwaker.Multiplayer.Client.Progression.Obtainables
 {
-    internal interface IObtainable
+    public interface IObtainable
     {
         public bool TryRead(IMemoryReader memoryReader, out int value);
 

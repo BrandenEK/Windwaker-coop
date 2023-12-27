@@ -5,7 +5,7 @@ namespace Windwaker.Multiplayer.Client.Progression.Obtainables
     /// <summary>
     /// An item that can only be either owned or not owned, and also stores a bitfield
     /// </summary>
-    internal class SingleItem : IObtainable
+    public class SingleItem : IObtainable
     {
         private readonly string name;
         private readonly uint mainAddress;

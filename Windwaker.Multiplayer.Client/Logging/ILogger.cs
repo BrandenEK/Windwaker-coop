@@ -1,7 +1,7 @@
 ﻿
 namespace Windwaker.Multiplayer.Client.Logging
 {
-    internal interface ILogger
+    public interface ILogger
     {
         public void Info(object message);
 

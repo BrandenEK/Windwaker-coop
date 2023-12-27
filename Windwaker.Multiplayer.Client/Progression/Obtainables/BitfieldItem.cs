@@ -5,7 +5,7 @@ namespace Windwaker.Multiplayer.Client.Progression.Obtainables
     /// <summary>
     /// An item that has multiple obtainables, each in a separate bit
     /// </summary>
-    internal class BitfieldItem : IObtainable
+    public class BitfieldItem : IObtainable
     {
         private readonly string[] names;
         private readonly uint bitfieldAddress;

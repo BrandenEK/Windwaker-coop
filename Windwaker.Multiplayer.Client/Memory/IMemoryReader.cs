@@ -1,7 +1,7 @@
 ﻿
 namespace Windwaker.Multiplayer.Client.Memory
 {
-    internal interface IMemoryReader
+    public interface IMemoryReader
     {
         public byte[] Read(uint address, int size);
 

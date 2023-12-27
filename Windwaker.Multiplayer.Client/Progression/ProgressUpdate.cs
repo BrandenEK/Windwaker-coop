@@ -1,7 +1,7 @@
 ﻿
 namespace Windwaker.Multiplayer.Client.Progression
 {
-    internal class ProgressUpdate
+    public class ProgressUpdate
     {
         public string Id { get; }
         public int Value { get; }

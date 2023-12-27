@@ -5,7 +5,7 @@ namespace Windwaker.Multiplayer.Client.Progression.Obtainables
     /// <summary>
     /// An item (bottle) that can be obtained as any value, but is only sent as empty
     /// </summary>
-    internal class BottleItem : IObtainable
+    public class BottleItem : IObtainable
     {
         private readonly uint mainAddress;
         private readonly uint bitfieldAddress;
