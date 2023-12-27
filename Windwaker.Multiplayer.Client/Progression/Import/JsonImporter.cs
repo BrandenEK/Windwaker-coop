@@ -22,7 +22,7 @@ namespace Windwaker.Multiplayer.Client.Progression.Import
         {
             var obtainables = new Dictionary<string, IObtainable>();
 
-            string path = Path.Combine(Environment.CurrentDirectory, "data", _gameName, "obtainables.json");
+            string path = Path.Combine(Environment.CurrentDirectory, "data", _gameName, "obtainables.txt");
             if (!File.Exists(path))
             {
                 _logger.Error($"Obtainables list for {_gameName} does not exist!");
@@ -30,7 +30,7 @@ namespace Windwaker.Multiplayer.Client.Progression.Import
             }
 
             string json = File.ReadAllText(path);
-            var obtainList = JsonConvert.DeserializeObject<ObtainableList>(json) ?? new ObtainableList();
+            var obtainList = JsonConvert.DeserializeObject<ObtainableList>(json)!;
 
             foreach (var singleItem in obtainList.singleItems)
                 obtainables.Add(singleItem.Key, singleItem.Value);
@@ -43,20 +43,25 @@ namespace Windwaker.Multiplayer.Client.Progression.Import
 
         class ObtainableList
         {
-            public Dictionary<string, SingleItem> singleItems;
-            public Dictionary<string, MultipleItem> multipleItems;
+            public readonly Dictionary<string, SingleItem> singleItems;
+            public readonly Dictionary<string, MultipleItem> multipleItems;
+            public readonly Dictionary<string, BitfieldItem> bitfieldItems;
+            public readonly Dictionary<string, ValueItem> valueItems;
+            public readonly Dictionary<string, BottleItem> bottleItems;
 
             [JsonConstructor]
-            public ObtainableList(Dictionary<string, SingleItem> singleItems, Dictionary<string, MultipleItem> multipleItems)
+            public ObtainableList(
+                Dictionary<string, SingleItem> singleItems,
+                Dictionary<string, MultipleItem> multipleItems,
+                Dictionary<string, BitfieldItem> bitfieldItems,
+                Dictionary<string, ValueItem> valueItems,
+                Dictionary<string, BottleItem> bottleItems)
             {
                 this.singleItems = singleItems ?? new();
                 this.multipleItems = multipleItems ?? new();
-            }
-
-            public ObtainableList()
-            {
-                singleItems = new();
-                multipleItems = new();
+                this.bitfieldItems = bitfieldItems ?? new();
+                this.valueItems = valueItems ?? new();
+                this.bottleItems = bottleItems ?? new();
             }
         }
     }

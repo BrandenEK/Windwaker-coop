@@ -24,7 +24,7 @@ namespace Windwaker.Multiplayer.Client.Progression.Obtainables
 
         public bool TryRead(IMemoryReader memoryReader, out int value)
         {
-            bool memoryOwned = memoryReader.Read(mainValue, 1)[0] == mainValue;
+            bool memoryOwned = memoryReader.Read(mainAddress, 1)[0] == mainValue;
             bool shouldUpdate = currentOwned != memoryOwned;
 
             value = memoryOwned ? 1 : 0;
