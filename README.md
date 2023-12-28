@@ -8,6 +8,12 @@ A multiplayer program for The Legend of Zelda: The Wind Waker that syncs player 
 Progress board:
 https://trello.com/b/eBKLJlX5/windwaker-coop
 
+<br>
+
+# Project is under development again!
+This time for real I hope, there should be a hugely improved version coming soon, along with a real UI
+<br><br>
+
 ## How to use:
 1. On any computer, open the Windwaker-coop application and run it as a server using the local ip address of the machine.
 2. On each computer that will be playing, open dolphin and load a save file.  Then open the Windwaker-coop application and run it as a client using the local ip address of the server machine.
