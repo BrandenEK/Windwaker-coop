@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Windwaker.Multiplayer.Client.Network.Packets
 {
@@ -11,36 +13,39 @@ namespace Windwaker.Multiplayer.Client.Network.Packets
 
     internal class IntroPacketSerializer : IPacketSerializer
     {
-        public IntroPacket Deserialize(byte[] data)
+        private const byte PACKET_TYPE = 0;
+
+        public bool TrySerialize(BasePacket p, out byte[] data)
         {
-            throw new System.NotImplementedException();
-        }
-
-        public byte[] Serialize(IntroPacket packet)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public bool CanSerialize(BasePacket packet) =>
-            packet.GetType() == typeof(IntroPacket);
-
-        public bool CanDeserialize(byte type) => type == 0;
-
-        public bool TrySerialize(BasePacket packet, out byte[] data)
-        {
-            if (packet is not IntroPacket iPacket)
+            if (p is not IntroPacket packet)
             {
                 data = Array.Empty<byte>();
                 return false;
             }
 
-            data = new byte[] { 5, 6 };
+            data = new List<byte>()
+                .Concat(packet.Name.Serialize())
+                .Concat(packet.Password.Serialize())
+                .Append(packet.Response)
+                .Append(PACKET_TYPE).ToArray();
             return true;
         }
 
         public bool TryDeserialize(byte[] data, out BasePacket packet)
         {
-            throw new System.NotImplementedException();
+            if (data[^1] != PACKET_TYPE)
+            {
+                packet = new InvalidPacket();
+                return false;
+            }
+
+            packet = new IntroPacket()
+            {
+                Name = data.Deserialize(0, out byte nameLength),
+                Password = data.Deserialize(nameLength, out byte passwordLength),
+                Response = data[passwordLength]
+            };
+            return true;
         }
     }
 }

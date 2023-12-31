@@ -23,7 +23,7 @@ namespace Windwaker.Multiplayer.Client
 
             _logger = new MultiLogger(new FormLogger(logInner), new FileLogger());
             _memoryReader = new DolphinReader();
-            _client = new NetworkClient(_logger, new GlobalSerializer());
+            _client = new NetworkClient(_logger, new GlobalPacketSerializer());
             _progressChecker = new WindwakerProgress(_logger, _memoryReader, new LogNotifier(_logger), _client, new JsonImporter(_logger, "windwaker"));
 
             //_client.Connect("127.0.0.1", 8989, "Test player", null);

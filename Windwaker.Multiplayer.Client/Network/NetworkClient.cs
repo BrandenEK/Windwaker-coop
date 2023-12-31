@@ -1,7 +1,6 @@
 ﻿using SuperSimpleTcp;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Sockets;
 using Windwaker.Multiplayer.Client.Logging;
 using Windwaker.Multiplayer.Client.Network.Packets;
@@ -84,13 +83,13 @@ namespace Windwaker.Multiplayer.Client.Network
             _logger.Error("Failed to send invalid packet: " + packet.GetType().Name);
         }
 
-        private void InternalSend(IEnumerable<byte> message)
+        private void InternalSend(byte[] message)
         {
-            if (message == null || !message.Any() || !IsConnected)
+            if (message == null || message.Length == 0 || !IsConnected)
                 return;
 
             List<byte> bytes = new();
-            bytes.AddRange(BitConverter.GetBytes((ushort)message.Count()));
+            bytes.AddRange(BitConverter.GetBytes((ushort)message.Length));
             bytes.AddRange(message);
 
             try
