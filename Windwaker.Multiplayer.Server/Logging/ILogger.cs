@@ -1,0 +1,12 @@
+﻿
+namespace Windwaker.Multiplayer.Server.Logging
+{
+    public interface ILogger
+    {
+        public void Info(object message);
+
+        public void Warning(object message);
+
+        public void Error(object message);
+    }
+}

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Windwaker.Multiplayer.Client.Logging;
 using Windwaker.Multiplayer.Client.Memory;
+using Windwaker.Multiplayer.Client.Network;
 using Windwaker.Multiplayer.Client.Notifications;
 using Windwaker.Multiplayer.Client.Progression.Import;
 using Windwaker.Multiplayer.Client.Progression.Obtainables;
@@ -14,12 +15,14 @@ namespace Windwaker.Multiplayer.Client.Progression
         private readonly ILogger _logger;
         private readonly IMemoryReader _memoryReader;
         private readonly INotifier _notifier;
+        private readonly IClient _client;
 
-        public WindwakerProgress(ILogger logger, IMemoryReader memoryReader, INotifier notifier, IDataImporter dataImporter)
+        public WindwakerProgress(ILogger logger, IMemoryReader memoryReader, INotifier notifier, IClient client, IDataImporter dataImporter)
         {
             _logger = logger;
             _memoryReader = memoryReader;
             _notifier = notifier;
+            _client = client;
             _obtainables = dataImporter.LoadObtainables();
         }
 

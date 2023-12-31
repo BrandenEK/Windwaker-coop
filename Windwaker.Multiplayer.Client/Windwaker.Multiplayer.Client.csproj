@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="SuperSimpleTcp" Version="3.0.13" />
   </ItemGroup>
 
 </Project>
