@@ -15,6 +15,7 @@ namespace Windwaker.Multiplayer.Client.Network.Packets
     {
         private const byte PACKET_TYPE = 1;
 
+        // Sends id and value
         public bool TrySerialize(BasePacket p, out byte[] data)
         {
             if (p is not ProgressPacket packet)
@@ -24,13 +25,13 @@ namespace Windwaker.Multiplayer.Client.Network.Packets
             }
 
             data = new List<byte>()
-                .Concat(packet.Player.Serialize())
                 .Concat(packet.Id.Serialize())
                 .Concat(BitConverter.GetBytes(packet.Value))
                 .Append(PACKET_TYPE).ToArray();
             return true;
         }
 
+        // Receives player, id, and value
         public bool TryDeserialize(byte[] data, out BasePacket packet)
         {
             if (data[^1] != PACKET_TYPE)
@@ -43,7 +44,7 @@ namespace Windwaker.Multiplayer.Client.Network.Packets
             {
                 Player = data.Deserialize(0, out byte playerLength),
                 Id = data.Deserialize(playerLength, out byte idLength),
-                Value = BitConverter.ToInt32(data, idLength)
+                Value = BitConverter.ToInt32(data, playerLength + idLength)
             };
             return true;
         }

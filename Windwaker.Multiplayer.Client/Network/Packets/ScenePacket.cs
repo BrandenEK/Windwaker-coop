@@ -6,14 +6,15 @@ namespace Windwaker.Multiplayer.Client.Network.Packets
 {
     public class ScenePacket : BasePacket
     {
-        public string? Player { get; init; }
-        public byte Scene { get; init; }
+        public string Player { get; init; } = string.Empty;
+        public byte Scene { get; init; } = 0;
     }
 
     internal class ScenePacketSerializer : IPacketSerializer
     {
         private const byte PACKET_TYPE = 2;
 
+        // Sends scene id
         public bool TrySerialize(BasePacket p, out byte[] data)
         {
             if (p is not ScenePacket packet)
@@ -23,12 +24,12 @@ namespace Windwaker.Multiplayer.Client.Network.Packets
             }
 
             data = new List<byte>()
-                .Concat(packet.Player.Serialize())
                 .Append(packet.Scene)
                 .Append(PACKET_TYPE).ToArray();
             return true;
         }
 
+        // Receives player and scene id
         public bool TryDeserialize(byte[] data, out BasePacket packet)
         {
             if (data[^1] != PACKET_TYPE)

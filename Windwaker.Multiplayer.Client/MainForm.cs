@@ -30,7 +30,7 @@ namespace Windwaker.Multiplayer.Client
             _client.OnConnect += OnConnect;
             _client.OnDisconnect += OnDisconnect;
 
-            //_client.Connect("127.0.0.1", 8989, "Test player", null);
+            _client.Connect("127.0.0.1", 8989, "Test player", null);
             //TestMemory();
         }
 
