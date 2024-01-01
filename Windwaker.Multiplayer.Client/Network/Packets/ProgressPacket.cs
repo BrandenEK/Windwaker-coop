@@ -6,9 +6,9 @@ namespace Windwaker.Multiplayer.Client.Network.Packets
 {
     public class ProgressPacket : BasePacket
     {
-        public string? Player { get; init; }
-        public string? Id { get; init; }
-        public int Value { get; init; }
+        public string Player { get; init; } = string.Empty;
+        public string Id { get; init; } = string.Empty;
+        public int Value { get; init; } = 0;
     }
 
     internal class ProgressPacketSerializer : IPacketSerializer

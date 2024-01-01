@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Windwaker.Multiplayer.Client.Logging;
@@ -26,6 +27,9 @@ namespace Windwaker.Multiplayer.Client
             _client = new NetworkClient(_logger, new GlobalPacketSerializer());
             _progressChecker = new WindwakerProgress(_logger, _memoryReader, new LogNotifier(_logger), _client, new JsonImporter(_logger, "windwaker"));
 
+            _client.OnConnect += OnConnect;
+            _client.OnDisconnect += OnDisconnect;
+
             //_client.Connect("127.0.0.1", 8989, "Test player", null);
             //TestMemory();
         }
@@ -41,6 +45,16 @@ namespace Windwaker.Multiplayer.Client
 
                 await Task.Delay(2000);
             }
+        }
+
+        private void OnConnect(object? _, EventArgs __)
+        {
+            _logger.Info("Connected to server");
+        }
+
+        private void OnDisconnect(object? _, EventArgs __)
+        {
+            _logger.Info("Disconnected from server");
         }
     }
 }

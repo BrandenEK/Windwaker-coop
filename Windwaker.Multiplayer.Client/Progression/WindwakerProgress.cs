@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Windwaker.Multiplayer.Client.Logging;
 using Windwaker.Multiplayer.Client.Memory;
 using Windwaker.Multiplayer.Client.Network;
+using Windwaker.Multiplayer.Client.Network.Packets;
 using Windwaker.Multiplayer.Client.Notifications;
 using Windwaker.Multiplayer.Client.Progression.Import;
 using Windwaker.Multiplayer.Client.Progression.Obtainables;
@@ -23,7 +24,9 @@ namespace Windwaker.Multiplayer.Client.Progression
             _memoryReader = memoryReader;
             _notifier = notifier;
             _client = client;
+
             _obtainables = dataImporter.LoadObtainables();
+            _client.OnPacketReceived += OnReceiveProgress;
         }
 
         public void CheckForProgress()
@@ -32,23 +35,23 @@ namespace Windwaker.Multiplayer.Client.Progression
 
             foreach (var obtainable in _obtainables)
             {
-                obtainable.Value.CheckProgress(_notifier, _memoryReader);
+                obtainable.Value.CheckProgress(_notifier, _memoryReader, _client);
             }
 
             int endTime = Environment.TickCount;
             _logger.Info($"Progress check time: {endTime - startTime}");
         }
 
-        public void ReceiveProgress(string player, ProgressUpdate progress)
+        public void ReceiveProgress(ProgressPacket packet)
         {
-            if (!_obtainables.TryGetValue(progress.Id, out IObtainable? obtainable))
+            if (!_obtainables.TryGetValue(packet.Id, out IObtainable? obtainable))
             {
-                _logger.Error("Received unknown progress: " + progress.Id);
+                _logger.Error("Received unknown progress: " + packet.Id);
                 return;
             }
 
-            _logger.Info("Received progress: " + progress.Id);
-            obtainable.ReceiveProgress(_notifier, _memoryReader, player, progress);
+            _logger.Info("Received progress: " + packet.Id);
+            obtainable.ReceiveProgress(_notifier, _memoryReader, packet);
         }
 
         public void ResetProgress()
@@ -59,6 +62,13 @@ namespace Windwaker.Multiplayer.Client.Progression
             }
             _logger.Info("Reset all progress");
             // Maybe set health to 12
+        }
+
+        private void OnReceiveProgress(object? _, PacketEventArgs e)
+        {
+            if (e.Packet is not ProgressPacket packet) return;
+
+            ReceiveProgress(packet);
         }
     }
 }

@@ -30,48 +30,61 @@ namespace Windwaker.Multiplayer.Client.Progression.Import
             }
 
             string json = File.ReadAllText(path);
-            var obtainList = JsonConvert.DeserializeObject<ObtainableList>(json)!;
+            var obtains = JsonConvert.DeserializeObject<ObtainableData[]>(json)!;
 
-            foreach (var item in obtainList.singleItems)
-                obtainables.Add(item.Key, item.Value);
-
-            foreach (var item in obtainList.multipleItems)
-                obtainables.Add(item.Key, item.Value);
-
-            foreach (var item in obtainList.bitfieldItems)
-                obtainables.Add(item.Key, item.Value);
-
-            foreach (var item in obtainList.valueItems)
-                obtainables.Add(item.Key, item.Value);
-
-            foreach (var item in obtainList.bottleItems)
-                obtainables.Add(item.Key, item.Value);
+            foreach (var data in obtains)
+            {
+                obtainables.Add(data.id, data.CreateObtainable());
+            }
 
             return obtainables;
         }
 
-        class ObtainableList
+        class ObtainableData
         {
-            public readonly Dictionary<string, SingleItem> singleItems;
-            public readonly Dictionary<string, MultipleItem> multipleItems;
-            public readonly Dictionary<string, BitfieldItem> bitfieldItems;
-            public readonly Dictionary<string, ValueItem> valueItems;
-            public readonly Dictionary<string, BottleItem> bottleItems;
+            public readonly string id;
+            public readonly string[] name;
 
-            [JsonConstructor]
-            public ObtainableList(
-                Dictionary<string, SingleItem> singleItems,
-                Dictionary<string, MultipleItem> multipleItems,
-                Dictionary<string, BitfieldItem> bitfieldItems,
-                Dictionary<string, ValueItem> valueItems,
-                Dictionary<string, BottleItem> bottleItems)
+            public readonly uint[] mainAddress;
+            public readonly byte[] mainValue;
+
+            public readonly uint[] bitfieldAddress;
+            public readonly byte[] bitfieldValue;
+
+            public readonly ObtainableType type;
+
+            public ObtainableData(string id, string[] name, byte[] mainValue, uint[] mainAddress, byte[] bitfieldValue, uint[] bitfieldAddress, ObtainableType type)
             {
-                this.singleItems = singleItems ?? new();
-                this.multipleItems = multipleItems ?? new();
-                this.bitfieldItems = bitfieldItems ?? new();
-                this.valueItems = valueItems ?? new();
-                this.bottleItems = bottleItems ?? new();
+                this.id = id;
+                this.name = name;
+                this.mainValue = mainValue;
+                this.mainAddress = mainAddress;
+                this.bitfieldValue = bitfieldValue;
+                this.bitfieldAddress = bitfieldAddress;
+                this.type = type;
             }
+
+            public IObtainable CreateObtainable()
+            {
+                return type switch
+                {
+                    ObtainableType.Single => new SingleItem(id, name[0], mainAddress[0], mainValue[0], bitfieldAddress[0]),
+                    ObtainableType.Multiple => new MultipleItem(id, name, mainAddress[0], mainValue, bitfieldAddress[0]),
+                    ObtainableType.Bitfield => new BitfieldItem(id, name, bitfieldAddress[0], bitfieldValue),
+                    ObtainableType.Value => new ValueItem(id, name[0], mainAddress[0]),
+                    ObtainableType.Bottle => new BottleItem(id, mainAddress[0], bitfieldAddress[0]),
+                    _ => throw new Exception("Invalid obtainable type")
+                };
+            }
+        }
+
+        enum ObtainableType
+        {
+            Single = 0,
+            Multiple = 1,
+            Bitfield = 2,
+            Value = 3,
+            Bottle = 4,
         }
     }
 }

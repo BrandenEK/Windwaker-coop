@@ -1,4 +1,6 @@
 ﻿using Windwaker.Multiplayer.Client.Memory;
+using Windwaker.Multiplayer.Client.Network;
+using Windwaker.Multiplayer.Client.Network.Packets;
 using Windwaker.Multiplayer.Client.Notifications;
 
 namespace Windwaker.Multiplayer.Client.Progression.Obtainables
@@ -8,6 +10,7 @@ namespace Windwaker.Multiplayer.Client.Progression.Obtainables
     /// </summary>
     public class MultipleItem : IObtainable
     {
+        private readonly string id;
         private readonly string[] names;
         private readonly uint mainAddress;
         private readonly byte[] mainValues;
@@ -15,15 +18,16 @@ namespace Windwaker.Multiplayer.Client.Progression.Obtainables
 
         private int currentLevel = 0;
 
-        public MultipleItem(string[] names, uint mainAddress, byte[] mainValues, uint bitfieldAddress)
+        public MultipleItem(string id, string[] names, uint mainAddress, byte[] mainValues, uint bitfieldAddress)
         {
+            this.id = id;
             this.names = names;
             this.mainAddress = mainAddress;
             this.mainValues = mainValues;
             this.bitfieldAddress = bitfieldAddress;
         }
 
-        public void CheckProgress(INotifier notifier, IMemoryReader memoryReader)
+        public void CheckProgress(INotifier notifier, IMemoryReader memoryReader, IClient client)
         {
             if (currentLevel == names.Length) return;
 
@@ -32,18 +36,22 @@ namespace Windwaker.Multiplayer.Client.Progression.Obtainables
 
             currentLevel = memoryLevel;
             notifier.Show($"You have obtained {names[memoryLevel - 1]}");
-            // Send to server
+            client.Send(new ProgressPacket()
+            {
+                Id = "",
+                Value = currentLevel
+            });
         }
 
-        public void ReceiveProgress(INotifier notifier, IMemoryReader memoryReader, string player, ProgressUpdate progress)
+        public void ReceiveProgress(INotifier notifier, IMemoryReader memoryReader, ProgressPacket packet)
         {
-            if (progress.Value <= 0 || progress.Value > names.Length) return;
+            if (packet.Value <= 0 || packet.Value > names.Length) return;
 
-            byte main = GetValueFromLevel(progress.Value);
-            byte bitfield = GetBitfieldFromLevel(progress.Value);
+            byte main = GetValueFromLevel(packet.Value);
+            byte bitfield = GetBitfieldFromLevel(packet.Value);
 
-            currentLevel = progress.Value;
-            notifier.Show($"{player} has obtained {names[progress.Value - 1]}");
+            currentLevel = packet.Value;
+            notifier.Show($"{packet.Player} has obtained {names[packet.Value - 1]}");
             memoryReader.Write(mainAddress, new byte[] { main });
             memoryReader.Write(bitfieldAddress, new byte[] { bitfield });
         }

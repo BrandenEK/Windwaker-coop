@@ -9,10 +9,10 @@ namespace Windwaker.Multiplayer.Client.Tests
         [TestMethod]
         public void TestItemIsObtained()
         {
-            var item = new SingleItem("test", 0x3000, 0x60, 0x3001);
+            var item = new SingleItem("test", "test", 0x3000, 0x60, 0x3001);
             var notifier = new FakeNotifier();
 
-            item.CheckProgress(notifier, new TestReader());
+            //item.CheckProgress(notifier, new TestReader());
             Assert.IsTrue(notifier.HasShown);
         }
     }

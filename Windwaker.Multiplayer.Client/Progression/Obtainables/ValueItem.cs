@@ -1,4 +1,6 @@
 ﻿using Windwaker.Multiplayer.Client.Memory;
+using Windwaker.Multiplayer.Client.Network;
+using Windwaker.Multiplayer.Client.Network.Packets;
 using Windwaker.Multiplayer.Client.Notifications;
 
 namespace Windwaker.Multiplayer.Client.Progression.Obtainables
@@ -8,34 +10,40 @@ namespace Windwaker.Multiplayer.Client.Progression.Obtainables
     /// </summary>
     public class ValueItem : IObtainable
     {
+        private readonly string id;
         private readonly string name;
         private readonly uint mainAddress;
 
         private int currentValue = 0;
 
-        public ValueItem(string name, uint mainAddress)
+        public ValueItem(string id, string name, uint mainAddress)
         {
+            this.id = id;
             this.name = name;
             this.mainAddress = mainAddress;
         }
 
-        public void CheckProgress(INotifier notifier, IMemoryReader memoryReader)
+        public void CheckProgress(INotifier notifier, IMemoryReader memoryReader, IClient client)
         {
             byte memoryValue = memoryReader.Read(mainAddress, 1)[0];
             if (memoryValue <= currentValue) return;
 
             currentValue = memoryValue;
             notifier.Show($"You have obtained {name}");
-            // Send to server
+            client.Send(new ProgressPacket()
+            {
+                Id = id,
+                Value = currentValue
+            });
         }
 
-        public void ReceiveProgress(INotifier notifier, IMemoryReader memoryReader, string player, ProgressUpdate progress)
+        public void ReceiveProgress(INotifier notifier, IMemoryReader memoryReader, ProgressPacket packet)
         {
-            if (progress.Value <= currentValue) return;
+            if (packet.Value <= currentValue) return;
 
-            currentValue = progress.Value;
-            notifier.Show($"{player} has obtained {name}");
-            memoryReader.Write(mainAddress, new byte[] { (byte)progress.Value });
+            currentValue = packet.Value;
+            notifier.Show($"{packet.Player} has obtained {name}");
+            memoryReader.Write(mainAddress, new byte[] { (byte)packet.Value });
         }
 
         public void ResetProgress() => currentValue = 0;
