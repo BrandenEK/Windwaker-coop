@@ -31,7 +31,7 @@ namespace Windwaker.Multiplayer.Client
             _client.OnDisconnect += OnDisconnect;
 
             _client.Connect("127.0.0.1", 8989, "Test player", null);
-            //TestMemory();
+            TestMemory();
         }
 
         private async void TestMemory()

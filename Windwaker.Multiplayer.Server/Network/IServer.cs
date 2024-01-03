@@ -1,14 +1,16 @@
-﻿//using Windwaker.Multiplayer.Core.Network;
-//using Windwaker.Multiplayer.Core.Network.Packets;
+﻿using System;
+using Windwaker.Multiplayer.Server.Network.Packets;
 
-//namespace Windwaker.Multiplayer.Server.Network
-//{
-//    public interface IServer
-//    {
-//        public bool Start();
+namespace Windwaker.Multiplayer.Server.Network
+{
+    public interface IServer
+    {
+        public bool Start();
 
-//        public void Stop();
+        public void Stop();
 
-//        public void Send(string ip, IPacket packet);
-//    }
-//}
+        public void Send(string ip, BasePacket packet);
+
+        public event EventHandler<PacketEventArgs> OnPacketReceived;
+    }
+}

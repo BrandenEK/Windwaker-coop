@@ -38,7 +38,7 @@ namespace Windwaker.Multiplayer.Client.Progression.Obtainables
             notifier.Show($"You have obtained {names[memoryLevel - 1]}");
             client.Send(new ProgressPacket()
             {
-                Id = "",
+                Id = id,
                 Value = currentLevel
             });
         }

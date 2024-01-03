@@ -27,7 +27,7 @@ namespace Windwaker.Multiplayer.Client.Network
             OnPacketReceived += OnReceiveIntro;
         }
 
-        public bool IsConnected => _client != null && _client.IsConnected && _receivedIntro;
+        public bool IsConnected => _client != null && _client.IsConnected;
 
         public bool Connect(string ipAddress, int port, string player, string? password)
         {
@@ -117,7 +117,7 @@ namespace Windwaker.Multiplayer.Client.Network
                 else
                     _logger.Error("Failed to receive invalid packet: " + message[^1]);
 
-                startIdx += 3 + length;
+                startIdx += 2 + length;
             }
 
             if (startIdx != data.Length)
