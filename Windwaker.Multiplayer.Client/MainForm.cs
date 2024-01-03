@@ -18,6 +18,8 @@ namespace Windwaker.Multiplayer.Client
         private readonly IProgressChecker _progressChecker;
         private readonly IClient _client;
 
+        private bool isSyncing = false;
+
         public MainForm()
         {
             InitializeComponent();
@@ -30,18 +32,15 @@ namespace Windwaker.Multiplayer.Client
             _client.OnConnect += OnConnect;
             _client.OnDisconnect += OnDisconnect;
 
-            _client.Connect("127.0.0.1", 8989, "Test player", null);
-            TestMemory();
+            SyncLoop();
         }
 
-        private async void TestMemory()
+        private async void SyncLoop()
         {
             while (true)
             {
-                //bool success = _memoryReader.TryRead(0x4C44, 1, out byte[] bytes);
-                //_logger.Info(success ? $"Read: {bytes[0]}" : "Failed to read memory");
-
-                _progressChecker.CheckForProgress();
+                if (isSyncing)
+                    _progressChecker.CheckForProgress();
 
                 await Task.Delay(2000);
             }
@@ -50,11 +49,30 @@ namespace Windwaker.Multiplayer.Client
         private void OnConnect(object? _, EventArgs __)
         {
             _logger.Info("Connected to server");
+            SetSyncingStatus(true);
         }
 
         private void OnDisconnect(object? _, EventArgs __)
         {
             _logger.Info("Disconnected from server");
+            SetSyncingStatus(false);
+        }
+
+        private void SetSyncingStatus(bool sync)
+        {
+            connectBtn.Text = (isSyncing = sync) ? "Disconnect" : "Connect";
+        }
+
+        private void OnConnectBtnClicked(object sender, EventArgs e)
+        {
+            if (isSyncing)
+            {
+                _client.Disconnect();
+            }
+            else
+            {
+                _client.Connect("127.0.0.1", 8989, "Test player", null);
+            }
         }
     }
 }

@@ -30,6 +30,7 @@
         {
             logInner = new System.Windows.Forms.RichTextBox();
             logOuter = new System.Windows.Forms.Panel();
+            connectBtn = new System.Windows.Forms.Button();
             logOuter.SuspendLayout();
             SuspendLayout();
             // 
@@ -55,11 +56,22 @@
             logOuter.Size = new System.Drawing.Size(300, 400);
             logOuter.TabIndex = 1;
             // 
+            // connectBtn
+            // 
+            connectBtn.Location = new System.Drawing.Point(55, 30);
+            connectBtn.Name = "connectBtn";
+            connectBtn.Size = new System.Drawing.Size(100, 25);
+            connectBtn.TabIndex = 2;
+            connectBtn.Text = "Connect";
+            connectBtn.UseVisualStyleBackColor = true;
+            connectBtn.Click += OnConnectBtnClicked;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(984, 561);
+            Controls.Add(connectBtn);
             Controls.Add(logOuter);
             MinimumSize = new System.Drawing.Size(1000, 600);
             Name = "MainForm";
@@ -72,5 +84,6 @@
 
         private System.Windows.Forms.RichTextBox logInner;
         private System.Windows.Forms.Panel logOuter;
+        private System.Windows.Forms.Button connectBtn;
     }
 }

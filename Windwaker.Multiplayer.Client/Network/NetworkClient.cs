@@ -10,7 +10,6 @@ namespace Windwaker.Multiplayer.Client.Network
     internal class NetworkClient : IClient
     {
         private SimpleTcpClient? _client;
-        private bool _receivedIntro;
 
         private readonly ILogger _logger;
         private readonly IPacketSerializer _serializer;
@@ -33,7 +32,6 @@ namespace Windwaker.Multiplayer.Client.Network
         {
             try
             {
-                _receivedIntro = false;
                 _client = new SimpleTcpClient(ipAddress, port);
 
                 _client.Events.Connected += ServerConnect;
@@ -131,7 +129,6 @@ namespace Windwaker.Multiplayer.Client.Network
             if (packet.Response == 200)
             {
                 _logger.Info($"Connection to server was approved");
-                _receivedIntro = true;
                 OnConnect?.Invoke(this, new EventArgs());
                 return;
             }
