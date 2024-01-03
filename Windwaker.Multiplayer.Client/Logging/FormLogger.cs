@@ -68,7 +68,7 @@ namespace Windwaker.Multiplayer.Client.Logging
                 LogLevel.Info => Color.White,
                 LogLevel.Warning => Color.Yellow,
                 LogLevel.Error => Color.DarkRed,
-                LogLevel.Debug => Color.LightGray,
+                LogLevel.Debug => Color.DarkBlue,
                 _ => Color.Magenta
             };
         }

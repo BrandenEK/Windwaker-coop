@@ -10,4 +10,18 @@
     <PackageReference Include="SuperSimpleTcp" Version="3.0.13" />
   </ItemGroup>
 
+  <Target Name="Development" AfterTargets="PostBuildEvent">
+
+    <!-- Copy application to export folder and zip it -->
+    <ItemGroup>
+      <BuildFolder Include="$(OutDir)*" />
+    </ItemGroup>
+    <PropertyGroup>
+      <ExportFolder>$(SolutionDir)publish\$(AssemblyName)</ExportFolder>
+    </PropertyGroup>
+    <Copy SourceFiles="@(BuildFolder)" DestinationFolder="$(ExportFolder)" />
+    <ZipDirectory SourceDirectory="$(OutDir)" DestinationFile="$(ExportFolder)\..\$(TargetName).zip" Overwrite="true" />
+
+  </Target>
+
 </Project>
