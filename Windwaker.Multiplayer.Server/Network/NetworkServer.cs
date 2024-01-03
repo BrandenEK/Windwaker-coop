@@ -63,12 +63,13 @@ namespace Windwaker.Multiplayer.Server.Network
 
         private void OnClientConnected(object? sender, ConnectionEventArgs e)
         {
-            _logger.Info("Received connection to server");
+            _logger.Debug("Received connection to server");
         }
 
         private void OnClientDisconnected(object? sender, ConnectionEventArgs e)
         {
-            _logger.Info("Client disconnected");
+            string playerName = _connectedPlayers.TryGetValue(e.IpPort, out PlayerData? player) ? player.Name : "Unknown";
+            _logger.Info("Player disconnected: " + playerName);
             _connectedPlayers.Remove(e.IpPort);
             //ServerForm.UpdatePlayerGrid(_connectedPlayers.Values, _connectedPlayers.Count);
         }
@@ -77,6 +78,7 @@ namespace Windwaker.Multiplayer.Server.Network
         {
             if (_serializer.TrySerialize(packet, out byte[] data))
             {
+                _logger.Debug($"Sending packet: {packet.GetType().Name} ({data.Length})");
                 InternalSend(ip, data);
                 return;
             }
@@ -114,7 +116,10 @@ namespace Windwaker.Multiplayer.Server.Network
                 byte[] message = data[(startIdx + 2)..(startIdx + 2 + length)];
 
                 if (_serializer.TryDeserialize(message, out BasePacket packet))
+                {
+                    _logger.Debug($"Receiving packet: {packet.GetType().Name} ({message.Length})");
                     OnPacketReceived?.Invoke(this, new PacketEventArgs(e.IpPort, packet));
+                }
                 else
                     _logger.Error("Failed to receive invalid packet: " + message[^1]);
 
@@ -171,6 +176,7 @@ namespace Windwaker.Multiplayer.Server.Network
 
             // Send acceptance response
             _connectedPlayers.Add(e.IpPort, new PlayerData(packet.Name));
+            _logger.Info("Player connected: " + packet.Name);
             Send(e.IpPort, new IntroPacket() { Response = 200 });
 
             //ServerForm.UpdatePlayerGrid(_connectedPlayers.Values, _connectedPlayers.Count);

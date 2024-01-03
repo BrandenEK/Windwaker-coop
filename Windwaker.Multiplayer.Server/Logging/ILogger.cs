@@ -8,5 +8,7 @@ namespace Windwaker.Multiplayer.Server.Logging
         public void Warning(object message);
 
         public void Error(object message);
+
+        public void Debug(object message);
     }
 }

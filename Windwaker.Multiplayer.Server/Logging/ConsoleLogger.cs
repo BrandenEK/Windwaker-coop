@@ -21,5 +21,11 @@ namespace Windwaker.Multiplayer.Server.Logging
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine(message);
         }
+
+        public void Debug(object message)
+        {
+            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.WriteLine(message);
+        }
     }
 }
