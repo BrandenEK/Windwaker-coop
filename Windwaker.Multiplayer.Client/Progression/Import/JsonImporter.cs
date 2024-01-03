@@ -22,7 +22,7 @@ namespace Windwaker.Multiplayer.Client.Progression.Import
         {
             var obtainables = new Dictionary<string, IObtainable>();
 
-            string path = Path.Combine(Environment.CurrentDirectory, "data", _gameName, "obtainables.txt");
+            string path = Path.Combine(Environment.CurrentDirectory, "data", $"{_gameName}.txt");
             if (!File.Exists(path))
             {
                 _logger.Error($"Obtainables list for {_gameName} does not exist!");

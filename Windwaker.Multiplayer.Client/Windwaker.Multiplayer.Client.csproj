@@ -17,11 +17,13 @@
     <!-- Copy application to export folder and zip it -->
     <ItemGroup>
       <BuildFolder Include="$(OutDir)*" />
+      <DataFiles Include="$(SolutionDir)resources\data\*" />
     </ItemGroup>
     <PropertyGroup>
       <ExportFolder>$(SolutionDir)publish\$(AssemblyName)</ExportFolder>
     </PropertyGroup>
     <Copy SourceFiles="@(BuildFolder)" DestinationFolder="$(ExportFolder)" />
+    <Copy SourceFiles="@(DataFiles)" DestinationFolder="$(ExportFolder)\data" />
     <ZipDirectory SourceDirectory="$(OutDir)" DestinationFile="$(ExportFolder)\..\$(TargetName).zip" Overwrite="true" />
 
   </Target>

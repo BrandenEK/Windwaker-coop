@@ -1,0 +1,47 @@
+[
+	{
+		"id": "telescope",
+        "name": [ "the Telescope" ],
+        "mainAddress": [ 0x4C44 ],
+        "mainValue": [ 0x20 ],
+        "bitfieldAddress": [ 0x4C59 ],
+		"type": 0
+	},
+	{
+		"id": "sail",
+        "name": [ "the Sail" ],
+        "mainAddress": [ 0x4C45 ],
+        "mainValue": [ 0x78 ],
+        "bitfieldAddress": [ 0x4C5A ],
+		"type": 0
+	},
+	{
+		"id": "windwaker",
+        "name": [ "the Windwaker" ],
+        "mainAddress": [ 0x4C46 ],
+        "mainValue": [ 0x22 ],
+        "bitfieldAddress": [ 0x4C5B ],
+		"type": 0
+	},
+	{
+		"id": "sword",
+        "name": [ "the Hero's Sword", "the Master Sword (Powerless)", "the Master Sword (Half power)", "the Master Sword (Full power)" ],
+        "mainAddress": [ 0x4C16 ],
+        "mainValue": [ 0x38, 0x39, 0x3A, 0x3E ],
+        "bitfieldAddress": [ 0x4CBC ],
+		"type": 1
+	},
+	{
+		"id": "pearls",
+        "name": [ "obtained Din's Pearl", "obtained Farore's Pearl", "obtained Nayru's Pearl" ],
+        "bitfieldAddress": [ 0x4CC7 ],
+		"bitfieldValue": [ 0x02, 0x04, 0x01 ],
+		"type": 2
+	},
+	{
+		"id": "maxhealth",
+        "name": [ "a piece of heart" ],
+        "mainAddress": [ 0x4C09 ],
+		"type": 3
+	},
+]
