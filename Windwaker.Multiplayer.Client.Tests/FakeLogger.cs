@@ -9,5 +9,7 @@ namespace Windwaker.Multiplayer.Client.Tests
         public void Warning(object message) { }
 
         public void Error(object message) { }
+
+        public void Debug(object message) { }
     }
 }

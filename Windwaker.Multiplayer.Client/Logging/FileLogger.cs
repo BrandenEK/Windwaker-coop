@@ -31,6 +31,11 @@ namespace Windwaker.Multiplayer.Client.Logging
             AddMessage(new Message(message.ToString(), LogLevel.Error));
         }
 
+        public void Debug(object message)
+        {
+            AddMessage(new Message(message.ToString(), LogLevel.Debug));
+        }
+
         private void AddMessage(Message message)
         {
             string output = $"[{message.Time:HH:mm:ss} {message.Level}] {message.Content}{Environment.NewLine}";

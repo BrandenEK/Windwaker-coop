@@ -27,5 +27,11 @@ namespace Windwaker.Multiplayer.Client.Logging
             foreach (var logger in _loggers)
                 logger.Error(message);
         }
+
+        public void Debug(object message)
+        {
+            foreach (var logger in _loggers)
+                logger.Debug(message);
+        }
     }
 }

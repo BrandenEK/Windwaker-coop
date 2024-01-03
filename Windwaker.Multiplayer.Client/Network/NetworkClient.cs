@@ -61,12 +61,12 @@ namespace Windwaker.Multiplayer.Client.Network
 
         private void ServerConnect(object? sender, ConnectionEventArgs e)
         {
-            _logger.Info($"Established connection with server");
+            _logger.Debug($"Established connection with server");
         }
 
         private void ServerDisconnect(object? sender, ConnectionEventArgs e)
         {
-            _logger.Info($"Lost connection with server");
+            _logger.Debug($"Lost connection with server");
             OnDisconnect?.Invoke(this, new EventArgs());
         }
 
@@ -74,6 +74,7 @@ namespace Windwaker.Multiplayer.Client.Network
         {
             if (_serializer.TrySerialize(packet, out byte[] data))
             {
+                _logger.Debug($"Sending packet: {packet.GetType().Name} ({data.Length})");
                 InternalSend(data);
                 return;
             }
@@ -111,7 +112,10 @@ namespace Windwaker.Multiplayer.Client.Network
                 byte[] message = data[(startIdx + 2)..(startIdx + 2 + length)];
 
                 if (_serializer.TryDeserialize(message, out BasePacket packet))
+                {
+                    _logger.Debug($"Receiving packet: {packet.GetType().Name} ({message.Length})");
                     OnPacketReceived?.Invoke(this, new PacketEventArgs(packet));
+                }
                 else
                     _logger.Error("Failed to receive invalid packet: " + message[^1]);
 
@@ -128,7 +132,6 @@ namespace Windwaker.Multiplayer.Client.Network
 
             if (packet.Response == 200)
             {
-                _logger.Info($"Connection to server was approved");
                 OnConnect?.Invoke(this, new EventArgs());
                 return;
             }

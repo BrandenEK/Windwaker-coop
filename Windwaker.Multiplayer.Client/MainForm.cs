@@ -24,7 +24,7 @@ namespace Windwaker.Multiplayer.Client
         {
             InitializeComponent();
 
-            _logger = new MultiLogger(new FormLogger(logInner), new FileLogger());
+            _logger = new MultiLogger(new FormLogger(logInner, true), new FileLogger());
             _memoryReader = new DolphinReader();
             _client = new NetworkClient(_logger, new GlobalPacketSerializer());
             _progressChecker = new WindwakerProgress(_logger, _memoryReader, new LogNotifier(_logger), _client, new JsonImporter(_logger, "windwaker"));

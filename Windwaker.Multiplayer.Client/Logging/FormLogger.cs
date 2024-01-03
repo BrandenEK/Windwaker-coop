@@ -9,10 +9,12 @@ namespace Windwaker.Multiplayer.Client.Logging
     {
         private readonly List<Message> _messages = new();
         private readonly RichTextBox _textBox;
+        private readonly bool _displayDebug;
 
-        public FormLogger(RichTextBox textbox)
+        public FormLogger(RichTextBox textbox, bool displayDebug)
         {
             _textBox = textbox;
+            _displayDebug = displayDebug;
         }
 
         public void Info(object message)
@@ -28,6 +30,12 @@ namespace Windwaker.Multiplayer.Client.Logging
         public void Error(object message)
         {
             DisplayMessage(new Message(message.ToString(), LogLevel.Error));
+        }
+
+        public void Debug(object message)
+        {
+            if (_displayDebug)
+                DisplayMessage(new Message(message.ToString(), LogLevel.Debug));
         }
 
         private void DisplayMessage(Message message)
@@ -60,6 +68,7 @@ namespace Windwaker.Multiplayer.Client.Logging
                 LogLevel.Info => Color.White,
                 LogLevel.Warning => Color.Yellow,
                 LogLevel.Error => Color.DarkRed,
+                LogLevel.Debug => Color.LightGray,
                 _ => Color.Magenta
             };
         }
